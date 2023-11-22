@@ -300,7 +300,45 @@ public class ScheduleManagerController {
 		// Return the name of the HTML template to be displayed
 		return "smv-student-list";
 	}
+	
+	@GetMapping("/smv-class-student-list")
+	public String showClassStudentListSMV(Model model) {
+	    // Retrieve the list of all courses from the repository
+	    List<Course> courses = (List<Course>) courseRepository.findAll();
+
+	    // Create a map to hold the course IDs and their respective student counts
+	    Map<Long, Long> courseStudentCountMap = new HashMap<>();
+	    for (Course course : courses) {
+	        Long studentCount = Long.valueOf(course.getStudents().size()); // Get the size of the student set
+	        courseStudentCountMap.put(course.getId(), studentCount); // Use course ID as key
+	    }
+
+	    // Add the courses and their counts to the model
+	    model.addAttribute("courses", courses);
+	    model.addAttribute("courseCounts", courseStudentCountMap);
+
+	    // Return the name of the HTML template to be displayed
+	    return "smv-class-student-list";
+	}
     
+	@GetMapping("/smv-student-list-by-class/{id}")
+	public String showStudentsListbyClassSMV(@PathVariable("id") long id, Model model) {
+		
+		Optional<Course> course = courseRepository.findById(id);
+		
+		if (course.isPresent()) {
+		    Course foundCourse = course.get();
+		    
+		    // Retrieve the list of students based on the course ID
+		    List<Student> students = studentRepository.findByCoursesId(foundCourse.getId());
+		    
+		    // Add the list of students to the model for rendering in the HTML template
+		    model.addAttribute("students", students);
+		}
+
+		// Return the name of the HTML template to be displayed
+		return "smv-student-list-by-class";
+	}
     
     @GetMapping("/instructors")
     @ResponseBody

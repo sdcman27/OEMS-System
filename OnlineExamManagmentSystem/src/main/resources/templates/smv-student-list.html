@@ -47,6 +47,27 @@
          h4{
 			text-align: center;
 		}
+		.list-buttons {
+			text-align: center;
+            margin-top: 20px;
+            display: flex;
+            justify-content:center;
+		}
+
+		.list-link {
+			text-decoration: none;
+            background-color: #007055;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 1px;
+		}
+
+		.list-link:hover {
+			background-color: #019270;
+		}
     </style>
     
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
@@ -66,7 +87,11 @@ $(function(){
 <body>
 	<br>
     <h1>Student List</h1>
-
+
+	<div class="list-buttons">
+		<a class="list-link" th:href="@{/schedule-manager/smv-class-student-list}">View Student Lists by Courses</a>
+	</div>
+	
     <table>
         <thead>
             <tr>
@@ -75,7 +100,8 @@ $(function(){
                 <th>Last Name</th>
                 <th>Email</th>
                 <th>Username</th>
-                <th>     </th>
+                <th>Edit</th>
+                <th>Delete</th>
                 
             </tr>
         </thead>
@@ -88,6 +114,7 @@ $(function(){
                 <td th:text="${student.studentEmail}"></td>
                 <td th:text="${student.studentUsername}"></td>
                 <td><a th:href="@{/schedule-manager/smv-edit-student/{id}(id=${student.studentId})}">Edit</a></td>
+                <td><a th:href="@{/schedule-manager/student/delete/{id}(id=${student.studentId})}">Delete</a></td>
             </tr>
         </tbody>
     </table>
