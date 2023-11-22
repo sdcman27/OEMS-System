@@ -1,0 +1,63 @@
+@startuml
+participant Client
+participant Controller
+participant instructorRepository
+participant userRepository
+participant Model
+participant Instructor
+participant User
+
+Client -> Controller: GET Request: /av-edit-instructor/{id}
+activate Controller
+Controller -> instructorRepository: findById(id)
+activate instructorRepository
+instructorRepository --> Controller: Instructor entity
+deactivate instructorRepository
+Controller -> Model: addAttribute("instructor", instructor)
+Model --> Controller: Updated model
+Controller --> Client: Return view: av-edit-instructor
+
+Client -> Controller: POST Request: /av-edit-instructor/{id}
+activate Controller
+Controller -> userRepository: findByUsername(instructor.getInstructorUsername())
+activate userRepository
+alt User found
+    userRepository --> Controller: User entity
+else User not found
+    userRepository --> Controller: Empty user entity
+end
+deactivate userRepository
+
+alt Validation success
+    Controller -> passwordEncoder: encode(newInstructorPassword)
+    activate passwordEncoder
+    passwordEncoder --> Controller: Encrypted password
+    deactivate passwordEncoder
+
+    Controller -> userRepository: save(user)
+    activate userRepository
+    userRepository --> Controller: Saved user entity
+    deactivate userRepository
+
+    Controller -> instructorRepository: save(instructor)
+    activate instructorRepository
+    instructorRepository --> Controller: Saved Instructor entity
+    deactivate instructorRepository
+
+    Controller --> Client: Return view: av-instructor-edit-confirmation
+else Validation failure
+    Controller --> Client: Return view: av-edit-instructor
+end
+
+Client -> Controller: GET Request: /instructor/delete/{id}
+activate Controller
+Controller -> instructorRepository: findById(id)
+activate instructorRepository
+instructorRepository --> Controller: Instructor entity
+deactivate instructorRepository
+Controller -> instructorRepository: delete(instructor)
+activate instructorRepository
+instructorRepository --> Controller: Deleted Instructor entity
+deactivate instructorRepository
+Controller --> Client: Return view: av-instructor-edit-confirmation
+@enduml
