@@ -1,0 +1,63 @@
+@startuml
+participant Client
+participant Controller
+participant SMRepo
+participant userRepository
+participant Model
+participant ScheduleManager
+participant User
+
+Client -> Controller: GET Request: /av-edit-schedule-manager/{id}
+activate Controller
+Controller -> SMRepo: findById(id)
+activate SMRepo
+SMRepo --> Controller: ScheduleManager entity
+deactivate SMRepo
+Controller -> Model: addAttribute("scheduleManager", scheduleManager)
+Model --> Controller: Updated model
+Controller --> Client: Return view: av-edit-schedule-manager
+
+Client -> Controller: POST Request: /av-edit-schedule-manager/{id}
+activate Controller
+Controller -> userRepository: findByUsername(manager.getManagerUsername())
+activate userRepository
+alt User found
+    userRepository --> Controller: User entity
+else User not found
+    userRepository --> Controller: Empty user entity
+end
+deactivate userRepository
+
+alt Validation success
+    Controller -> passwordEncoder: encode(newManagerPassword)
+    activate passwordEncoder
+    passwordEncoder --> Controller: Encrypted password
+    deactivate passwordEncoder
+
+    Controller -> userRepository: save(user)
+    activate userRepository
+    userRepository --> Controller: Saved user entity
+    deactivate userRepository
+
+    Controller -> SMRepo: save(manager)
+    activate SMRepo
+    SMRepo --> Controller: Saved ScheduleManager entity
+    deactivate SMRepo
+
+    Controller --> Client: Return view: av-schedule-manager-edit-confirmation
+else Validation failure
+    Controller --> Client: Return view: av-edit-schedule-manager
+end
+
+Client -> Controller: GET Request: /manager/delete/{id}
+activate Controller
+Controller -> SMRepo: findById(id)
+activate SMRepo
+SMRepo --> Controller: ScheduleManager entity
+deactivate SMRepo
+Controller -> SMRepo: delete(scheduleManager)
+activate SMRepo
+SMRepo --> Controller: Deleted ScheduleManager entity
+deactivate SMRepo
+Controller --> Client: Return view: av-schedule-manager-edit-confirmation
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+participant Client
+participant Controller
+participant Model
+participant studentRepository
+participant courseRepository
+
+Client -> Controller: Request: /associate
+activate Controller
+Controller -> studentRepository: findAll()
+activate studentRepository
+studentRepository --> Controller: List of students
+deactivate studentRepository
+Controller -> courseRepository: findAll()
+activate courseRepository
+courseRepository --> Controller: List of courses
+deactivate courseRepository
+Controller -> Model: addAttribute("students", students)
+Model --> Controller: Updated model with students list
+Controller -> Model: addAttribute("courses", courses)
+Model --> Controller: Updated model with courses list
+Controller --> Client: Return view: associate-students
+@enduml

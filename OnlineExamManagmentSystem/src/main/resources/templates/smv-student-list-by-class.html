@@ -119,7 +119,7 @@
 				<td th:text="${student.studentEmail}"></td>
 				<td th:text="${student.studentUsername}"></td>
 				<td><a th:href="@{/schedule-manager/smv-edit-student/{id}(id=${student.studentId})}">Edit</a></td>
-				<td><a th:href="@{/schedule-manager/student/delete/{id}(id=${student.studentId})}">Delete</a></td>
+				<td><a th:href="@{/schedule-manager/student/delete/{id}(id=${student.studentId})}" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a></td>
 			</tr>
 		</tbody>
 	</table>
