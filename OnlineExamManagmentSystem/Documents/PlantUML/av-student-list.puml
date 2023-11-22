@@ -1,0 +1,34 @@
+@startuml
+participant Client
+participant Controller
+participant Model
+participant studentRepository
+participant Student
+
+Client -> Controller: Request: /student/delete/{id}
+activate Controller
+Controller -> studentRepository: findById(id)
+activate studentRepository
+studentRepository --> Controller: Student entity
+deactivate studentRepository
+alt Student exists
+    Controller -> Model: None
+    Model --> Controller: No model update
+    Controller --> Client: None
+    Controller -> System: Print student.getCourses()
+    System --> Controller: Student courses logged
+    Controller -> student.getCourses(): clear()
+    student.getCourses() --> Controller: Courses cleared
+    Controller -> studentRepository: save(student)
+    activate studentRepository
+    studentRepository --> Controller: Saved student entity
+    deactivate studentRepository
+    Controller -> studentRepository: delete(student)
+    activate studentRepository
+    studentRepository --> Controller: Deleted student entity
+    deactivate studentRepository
+    Controller --> Client: Return view: av-edit-confirmation
+else Student not found
+    Controller --> Client: Error: Invalid user Id
+end
+@enduml

@@ -239,20 +239,6 @@ public class AdministratorController {
 		return "associate-students";
 	}
 
-//	@GetMapping("/associate-instructor")
-//	public String associateInstructorWithCourseForm(Model model) {
-//		// Retrieve the list of instructors and courses from the repository
-//		List<Instructor> instructors = instructorRepository.findAll();
-//		List<Course> courses = courseRepository.findAll();
-//
-//		// Add the lists of instructors and courses to the model for rendering in the
-//		// HTML template
-//		model.addAttribute("instructors", instructors);
-//		model.addAttribute("courses", courses);
-//
-//		// Return the name of the HTML template for the form
-//		return "associate-instructor";
-//	}
 
 	// Endpoint to associate an instructor with a course
 	@PostMapping("/instructor/course/associate")
@@ -282,18 +268,6 @@ public class AdministratorController {
 	@GetMapping("/upload-fail")
 	public String uploadFail() {
 		return "upload-fail"; // This corresponds to the name of your HTML file
-	}
-
-	@GetMapping("/students")
-	public String showStudentList(Model model) {
-		// Retrieve the list of students from the repository
-		List<Student> students = (List<Student>) studentRepository.findAll();
-
-		// Add the list of students to the model for rendering in the HTML template
-		model.addAttribute("students", students);
-
-		// Return the name of the HTML template to be displayed
-		return "student-list";
 	}
 	
 	@GetMapping("/students_list")
@@ -346,7 +320,6 @@ public class AdministratorController {
 	 
 		@Transactional
 		@PostMapping("/register-av")
-		@PreAuthorize("hasRole('ADMINISTRATOR')")
 		public String registerUserAV(@ModelAttribute ScheduleManager manager, RedirectAttributes redirectAttributes) {
 
 			if (SMRepo.findBymanagerUsername(manager.getManagerUsername()).isPresent()) {
@@ -377,55 +350,9 @@ public class AdministratorController {
 			user.setEnabled(true);
 			userRepository.save(user);
 
-	        
-	        
-//	        // Send a verification email
-	        //sendVerificationEmail(user);
-	//
-//	        // Redirect to a confirmation page or login page
 			return "redirect:/av-registration-confirmation"; //
 		}
 		
-	@Transactional
-	@PostMapping("/register")
-	public String registerUser(@ModelAttribute ScheduleManager manager, RedirectAttributes redirectAttributes) {
-
-		if (SMRepo.findBymanagerUsername(manager.getManagerUsername()).isPresent()) {
-			redirectAttributes.addFlashAttribute("errorMessage", "Manager with given username already exists.");
-			return "redirect:/register";
-		}
-
-		Roles roles = roleRepository.findById(4L).orElseThrow(() -> new RuntimeException("Role with ID 4 not found"));
-		List<Roles> rolesList = new ArrayList<>();
-		rolesList.add(roles);
-		manager.setRoles(rolesList);
-
-		SMRepo.save(manager);
-
-		User user = new User();
-		user.setEmail(manager.getManagerEmail());
-		user.setFirstName(manager.getManagerFirstName());
-		user.setLastName(manager.getManagerLastName());
-		user.setUsername(manager.getManagerUsername());
-		String hashedPassword = passwordEncoder.encode(manager.getManagerPassword());
-		user.setPassword(hashedPassword);
-
-
-		
-		rolesList.add(roles);
-		user.setRoles(rolesList);
-
-		user.setEnabled(true);
-		userRepository.save(user);
-
-        
-        
-//        // Send a verification email
-        //sendVerificationEmail(user);
-//
-//        // Redirect to a confirmation page or login page
-		return "redirect:/registration-confirmation"; //
-	}
 	
 	@GetMapping("/av-edit-student/{id}")
     public String showUpdateFormAV(@PathVariable("id") long id, Model model) {
@@ -521,19 +448,6 @@ public class AdministratorController {
 	@GetMapping("/instructor-success")
 	public String showInstructorSuccessForm() {
 		return "/instructor-success";
-	}
-
-	// Send verification email to the user
-	private void sendVerificationEmail(User user) {
-		String subject = "Email Verification";
-		String message = "Your verification code is: " + user.getVerificationCode();
-		String recipientEmail = user.getEmail();
-
-		try {
-			emailService.sendEmail(recipientEmail, subject, message);
-		} catch (Exception e) {
-			// Handle the exception (e.g., log it)
-		}
 	}
 	
 	@GetMapping("/av-edit-instructor/{id}")

@@ -1,0 +1,80 @@
+@startuml
+participant Client
+participant Controller
+participant studentRepository
+participant userRepository
+participant passwordEncoder
+participant Student
+participant User
+participant Model
+
+Client -> Controller: GET Request: /av-edit-student/{id}
+activate Controller
+Controller -> studentRepository: findById(id)
+activate studentRepository
+studentRepository --> Controller: Student entity
+deactivate studentRepository
+Controller -> Model: addAttribute("student", student)
+Model --> Controller: Updated model
+Controller --> Client: Return view: av-edit-student
+
+Client -> Controller: POST Request: /av-update/{id}
+activate Controller
+Controller -> studentRepository: findByStudentUsername(student.getStudentUsername())
+activate studentRepository
+studentRepository --> Controller: Updatestudent entity
+deactivate studentRepository
+
+alt Validation success
+    Controller -> userRepository: findByUsername(Updatestudent.getStudentUsername())
+    activate userRepository
+    userRepository --> Controller: User entity
+    deactivate userRepository
+
+    Controller -> passwordEncoder: encode(newStudentPassword)
+    activate passwordEncoder
+    passwordEncoder --> Controller: Encrypted password
+    deactivate passwordEncoder
+
+    Controller -> userRepository: save(user)
+    activate userRepository
+    userRepository --> Controller: Saved user entity
+    deactivate userRepository
+
+    Controller -> Updatestudent: Updatestudent.setStudentPassword(encryptedPassword)
+    Updatestudent --> Controller: Updated student entity
+    Controller -> Updatestudent: Updatestudent.getCourses()
+    Updatestudent --> Controller: Student courses
+    Controller -> studentRepository: save(Updatestudent)
+    activate studentRepository
+    studentRepository --> Controller: Updated student entity
+    deactivate studentRepository
+
+    Controller --> Client: Return view: av-edit-confirmation
+else Validation failure
+    Controller --> Client: Return view: av-edit-student
+end
+
+Client -> Controller: GET Request: /student/delete/{id}
+activate Controller
+Controller -> studentRepository: findById(id)
+activate studentRepository
+studentRepository --> Controller: Student entity
+deactivate studentRepository
+
+Controller -> student: student.getCourses()
+student --> Controller: Student courses
+Controller -> student: student.getCourses().clear()
+student --> Controller: Cleared courses
+Controller -> studentRepository: save(student)
+activate studentRepository
+studentRepository --> Controller: Updated student entity (without courses)
+deactivate studentRepository
+
+Controller -> studentRepository: delete(student)
+activate studentRepository
+studentRepository --> Controller: Deleted student entity
+deactivate studentRepository
+
+Controller --> Client: Return view: av-edit-confirmation
+@enduml

@@ -1,0 +1,62 @@
+@startuml
+participant Client
+participant Controller
+participant Model
+participant SMRepo
+participant roleRepository
+participant passwordEncoder
+participant userRepository
+participant ScheduleManager
+participant User
+participant RedirectAttributes
+
+Client -> Controller: Request: /av-register
+activate Controller
+Controller -> Model: addAttribute("user", new User())
+Model --> Controller: Updated model
+Controller --> Client: Return view: av-register
+
+Client -> Controller: POST Request: /register-av
+activate Controller
+
+Controller -> SMRepo: findBymanagerUsername(manager.getManagerUsername())
+activate SMRepo
+alt Manager exists
+    SMRepo --> Controller: Manager found
+    deactivate SMRepo
+
+    Controller -> RedirectAttributes: addFlashAttribute("errorMessage", "Manager with given username already exists.")
+    RedirectAttributes --> Controller: Flash attribute added
+    Controller --> Client: Redirect to /register
+else Manager does not exist
+    SMRepo --> Controller: Manager not found
+    deactivate SMRepo
+
+    Controller -> roleRepository: findById(4L)
+    activate roleRepository
+    roleRepository --> Controller: Roles with ID 4
+    deactivate roleRepository
+
+    Controller -> SMRepo: save(manager)
+    SMRepo --> Controller: Saved manager entity
+
+    Controller -> User: Initialize user entity
+    User --> Controller: User entity initialized
+
+    Controller -> User: Set user properties
+    User --> Controller: Properties set
+
+    Controller -> passwordEncoder: encode(manager.getManagerPassword())
+    activate passwordEncoder
+    passwordEncoder --> Controller: Hashed password
+    deactivate passwordEncoder
+
+    Controller -> userRepository: save(user)
+    activate userRepository
+    userRepository --> Controller: Saved user entity
+    deactivate userRepository
+
+    Controller --> Client: Redirect to /av-registration-confirmation
+end
+
+@enduml

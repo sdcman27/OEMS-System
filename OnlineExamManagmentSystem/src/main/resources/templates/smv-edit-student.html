@@ -144,7 +144,7 @@
 </form>
 
 <div class="center-delete">
-    <a class="delete-link" th:href="@{/schedule-manager/student/delete/{id}(id=${student.studentId})}">Delete</a>
+    <a class="delete-link" th:href="@{/schedule-manager/student/delete/{id}(id=${student.studentId})}" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a>
 </div>
 
 <div class="center-delete">
