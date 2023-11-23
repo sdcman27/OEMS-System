@@ -1,0 +1,53 @@
+@startuml
+participant Client
+participant Controller
+participant SecurityContextHolder
+participant SecurityContext
+participant Authentication
+participant studentRepository
+participant Course
+participant examRepository
+participant Exam
+participant DateTimeFormatter
+participant Model
+
+Client -> Controller: GET Request: /sv-course-list
+activate Controller
+
+Controller -> SecurityContextHolder: getContext()
+activate SecurityContextHolder
+SecurityContextHolder -> SecurityContext: getAuthentication()
+activate SecurityContext
+SecurityContext -> Authentication: getDetails(), getName()
+activate Authentication
+Authentication --> SecurityContext: UserDetails
+deactivate Authentication
+deactivate SecurityContext
+deactivate SecurityContextHolder
+
+Controller -> studentRepository: findByStudentUsername(studentUser)
+activate studentRepository
+studentRepository --> Controller: Student
+deactivate studentRepository
+
+Controller -> Model: addAttribute("courses", studentCourses)
+Controller --> Client: Return View: sv-course-list
+
+Client -> Controller: POST Request: /sv-course-list (when interacting with UI elements)
+activate Controller
+
+Controller -> examRepository: findByCourse(course)
+activate examRepository
+examRepository --> Controller: Set<Exam>
+deactivate examRepository
+
+Controller -> DateTimeFormatter: ofPattern("yyyy-MM-dd HH:mm")
+activate DateTimeFormatter
+DateTimeFormatter --> Controller: formatter
+deactivate DateTimeFormatter
+
+Controller -> examRepository: setFormattedStartTime(formattedStartTime)
+deactivate examRepository
+
+Controller --> Client: Render View: sv-course-list (with formatted exams)
+@enduml

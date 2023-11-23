@@ -1,0 +1,64 @@
+@startuml
+participant Client
+participant Controller
+participant SecurityContextHolder
+participant SecurityContext
+participant Authentication
+participant studentRepository
+participant Model
+participant User
+
+Client -> Controller: GET Request: /sv-account-management
+activate Controller
+
+Controller -> SecurityContextHolder: getContext()
+activate SecurityContextHolder
+SecurityContextHolder -> SecurityContext: getAuthentication()
+activate SecurityContext
+SecurityContext -> Authentication: getDetails(), getName(), getPrincipal()
+activate Authentication
+Authentication --> SecurityContext: UserDetails
+deactivate Authentication
+deactivate SecurityContext
+deactivate SecurityContextHolder
+
+Controller -> studentRepository: findBystudentUsernameContaining(studentUser)
+activate studentRepository
+studentRepository --> Controller: List<Student>
+deactivate studentRepository
+
+Controller -> Model: addAttribute("student", student)
+Controller --> Client: Return View: sv-account-management
+
+Client -> Controller: GET Request: /sv-edit-current-student/{id}
+activate Controller
+
+Controller -> studentRepository: findById(id)
+activate studentRepository
+studentRepository --> Controller: Student
+deactivate studentRepository
+
+Controller -> Model: addAttribute("student", student)
+Controller --> Client: Return View: sv-edit-current-student
+
+Client -> Controller: POST Request: /sv-edit-student/{id}
+activate Controller
+
+Controller -> studentRepository: findByUsername(student.getStudentUsername())
+activate studentRepository
+studentRepository --> Controller: Optional<User>
+deactivate studentRepository
+
+Controller -> Model: validate Student
+Controller -> userRepository: save(user)
+activate userRepository
+userRepository --> Controller: Saved User
+deactivate userRepository
+
+Controller -> studentRepository: save(student)
+activate studentRepository
+studentRepository --> Controller: Saved Student
+deactivate studentRepository
+
+Controller --> Client: Return View: sv-student-edit-confirmation
+@enduml
