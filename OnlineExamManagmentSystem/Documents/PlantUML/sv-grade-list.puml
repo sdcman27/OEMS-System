@@ -1,0 +1,60 @@
+@startuml
+participant Client
+participant Controller
+participant SecurityContextHolder
+participant SecurityContext
+participant Authentication
+participant userRepository
+participant studentRepository
+participant User
+participant Student
+participant Course
+participant Exam
+participant examRepository
+participant ExamSubmissionEntity
+participant examSubmissionRepository
+participant CourseGradeDTO
+participant Model
+
+Client -> Controller: GET Request: /sv-grade-list
+activate Controller
+
+Controller -> SecurityContextHolder: getContext()
+activate SecurityContextHolder
+SecurityContextHolder -> SecurityContext: getAuthentication()
+activate SecurityContext
+SecurityContext -> Authentication: getDetails(), getName()
+activate Authentication
+Authentication --> SecurityContext: UserDetails
+deactivate Authentication
+deactivate SecurityContext
+deactivate SecurityContextHolder
+
+Controller -> userRepository: findByUsername(studentUsername)
+activate userRepository
+userRepository --> Controller: User
+deactivate userRepository
+
+Controller -> studentRepository: findByUserId(user.getId())
+activate studentRepository
+studentRepository --> Controller: Optional<Student>
+deactivate studentRepository
+
+Controller -> Model: addAttribute("courseGrades", courseGrades)
+Controller --> Client: Return View: sv-grade-list
+
+Client -> Controller: POST Request: /sv-grade-list (interacting with UI elements)
+activate Controller
+
+Controller -> examRepository: findByCourse(course)
+activate examRepository
+examRepository --> Controller: Set<Exam>
+deactivate examRepository
+
+Controller -> examSubmissionRepository: findByUser_IdAndExam_Id(user.getId(), exam.getId())
+activate examSubmissionRepository
+examSubmissionRepository --> Controller: ExamSubmissionEntity
+deactivate examSubmissionRepository
+
+Controller --> Client: Render View: sv-grade-list (with compiled grades)
+@enduml
