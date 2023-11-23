@@ -1,0 +1,88 @@
+@startuml
+participant Client
+participant Controller
+participant instructorRepository
+participant userRepository
+participant Model
+participant Instructor
+participant User
+participant BindingResult
+participant courseRepository
+participant Course
+
+Client -> Controller: GET Request: /smv-edit-instructor/{id}
+activate Controller
+
+Controller -> instructorRepository: findById(id)
+activate instructorRepository
+instructorRepository --> Controller: Instructor entity (or null)
+deactivate instructorRepository
+
+Controller -> Model: addAttribute("instructor", instructor)
+activate Model
+Model --> Controller: Model with instructor
+deactivate Model
+
+Controller --> Client: Return HTML: smv-edit-instructor
+
+Client -> Controller: POST Request: /update/{id}
+activate Controller
+
+Controller -> userRepository: findByUsername(instructor.getInstructorUsername())
+activate userRepository
+userRepository --> Controller: User entity (or new User)
+deactivate userRepository
+
+alt Password validation
+    Controller -> instructor: setInstructorPassword(confirmInstructorPassword)
+    activate instructor
+    instructor --> Controller: Updated Instructor
+    deactivate instructor
+
+    Controller -> userRepository: Save updated user
+    activate userRepository
+    userRepository --> Controller: Saved User
+    deactivate userRepository
+else No password change
+    Controller -> userRepository: Save user with updated username and email
+    activate userRepository
+    userRepository --> Controller: Saved User
+    deactivate userRepository
+end
+
+Controller -> instructorRepository: Save updated instructor
+activate instructorRepository
+instructorRepository --> Controller: Saved Instructor
+deactivate instructorRepository
+
+Controller --> Client: Return HTML: smv-edit-instructor-confirmation
+
+Client -> Controller: GET Request: /instructor/delete/{id}
+activate Controller
+
+Controller -> instructorRepository: findById(id)
+activate instructorRepository
+instructorRepository --> Controller: Instructor entity (or null)
+deactivate instructorRepository
+
+Controller -> instructor: getCourses()
+activate instructor
+instructor --> Controller: Set of courses associated with instructor
+deactivate instructor
+
+alt Courses found
+    Controller -> courseRepository: save(course) for each course with null instructor
+    loop for each course
+        activate courseRepository
+        courseRepository --> Controller: Saved Course
+        deactivate courseRepository
+    end
+
+Controller -> instructorRepository: delete(instructor)
+activate instructorRepository
+instructorRepository --> Controller: Deleted Instructor
+deactivate instructorRepository
+
+Controller --> Client: Return HTML: smv-edit-instructor-confirmation
+
+@enduml

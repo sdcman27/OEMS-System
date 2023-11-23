@@ -1,0 +1,44 @@
+@startuml
+participant Client
+participant Controller
+participant instructorRepository
+participant roleRepository
+participant userRepository
+participant Instructor
+participant Roles
+participant User
+participant RedirectAttributes
+
+Client -> Controller: POST Request: /add
+activate Controller
+
+Controller -> instructorRepository: findByInstructorUsername(instructor.getInstructorUsername())
+activate instructorRepository
+instructorRepository --> Controller: Optional<Instructor>
+deactivate instructorRepository
+
+alt Instructor with given username exists
+    Controller -> RedirectAttributes: addFlashAttribute("errorMessage", "Instructor with given username already exists.")
+    RedirectAttributes --> Controller
+    Controller --> Client: Redirect to /schedule-manager/smv-create-instructor (with error)
+else Instructor with given username does not exist
+    Controller -> roleRepository: findById(3L)
+    activate roleRepository
+    roleRepository --> Controller: Roles entity
+    deactivate roleRepository
+
+    Controller -> instructorRepository: save(instructor)
+    activate instructorRepository
+    instructorRepository --> Controller: Saved Instructor
+    deactivate instructorRepository
+
+    Controller -> userRepository: save(newUser)
+    activate userRepository
+    userRepository --> Controller: Saved User
+    deactivate userRepository
+
+    Controller -> RedirectAttributes: addFlashAttribute("successMessage", "Instructor and corresponding user added successfully.")
+    RedirectAttributes --> Controller
+    Controller --> Client: Redirect to /schedule-manager/smv-instructor-success (with success)
+end
+@enduml

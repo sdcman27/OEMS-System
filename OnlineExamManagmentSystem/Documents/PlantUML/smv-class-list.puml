@@ -1,0 +1,35 @@
+@startuml
+participant Client
+participant Controller
+participant courseRepository
+participant Course
+participant HashMap
+participant Model
+
+Client -> Controller: GET Request: /smv-class-list
+activate Controller
+
+Controller -> courseRepository: findAll()
+activate courseRepository
+courseRepository --> Controller: List<Course>
+deactivate courseRepository
+
+alt courses is not empty
+    Controller -> HashMap: new HashMap<Long, Long>()
+    activate HashMap
+    loop for each course in courses
+        Controller -> Course: course.getStudents().size()
+        activate Course
+        Course --> Controller: studentCount
+        Controller -> HashMap: put(course.getId(), studentCount)
+    end
+    deactivate HashMap
+    Controller -> Model: addAttribute("courses", courses)
+    Controller -> Model: addAttribute("courseCounts", courseStudentCountMap)
+    Controller --> Client: Return View: smv-class-list
+else courses is empty
+    Controller -> Model: addAttribute("courses", [])
+    Controller -> Model: addAttribute("courseCounts", {})
+    Controller --> Client: Return View: smv-class-list
+end
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+participant Client
+participant Controller
+participant studentRepository
+participant Model
+
+Client -> Controller: GET Request: /list-students
+activate Controller
+Controller -> studentRepository: findAll()
+activate studentRepository
+studentRepository --> Controller: List of Students
+deactivate studentRepository
+Controller -> Model: addAttribute("students", students)
+Model --> Controller: Updated model
+Controller --> Client: Return view: smv-student-list
+@enduml

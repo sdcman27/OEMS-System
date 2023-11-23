@@ -1,0 +1,172 @@
+@startuml
+participant Client
+participant Controller
+participant MultipartFile
+participant InputStream
+participant Workbook
+participant Sheet
+participant Course
+participant Instructor
+participant Student
+participant userRepository
+participant instructorRepository
+participant passwordEncoder
+
+Client -> Controller: POST Request: /smv-upload
+activate Controller
+Controller -> MultipartFile: file
+activate MultipartFile
+alt file is empty
+    deactivate MultipartFile
+    Controller --> Client: Redirect: /schedule-manager/smv-import?error=emptyfile
+else file is not empty
+    Controller -> MultipartFile: getInputStream()
+    activate InputStream
+    InputStream -> Workbook: WorkbookFactory.create(is)
+    activate Workbook
+    Workbook -> Sheet: getSheetAt(0)
+    activate Sheet
+    Sheet -> workbook: getRow(4).getCell(0).getStringCellValue()
+    Sheet -> workbook: getRow(2).getCell(0).getStringCellValue()
+    Sheet -> workbook: getRow(1).getCell(0).getStringCellValue()
+    Sheet -> workbook: getRow(3).getCell(0).getStringCellValue()
+    Sheet -> workbook: getRow(5).getCell(0).getStringCellValue()
+    deactivate Sheet
+    deactivate Workbook
+    deactivate InputStream
+    alt Course doesn't exist
+        Controller -> Course: setId(courseId)
+        Controller -> Course: setCourseName(courseName)
+        Controller -> courseRepository: save(course)
+        activate courseRepository
+        courseRepository --> Controller: Saved Course
+        deactivate courseRepository
+    else Course exists
+        Controller -> Course: setId(courseId)
+        Controller -> Course: setCourseName(courseName)
+        Controller -> courseRepository: save(course)
+        activate courseRepository
+        courseRepository --> Controller: Saved Course
+        deactivate courseRepository
+    end
+    Controller -> removeBeforeColonString: courseIdShort
+    Controller -> Long.parseLongcourseIdShort: courseId
+    Controller -> removeBeforeColonString: courseName
+    Controller -> removeBeforeColonString: parsedInstructorName
+    Controller -> extractNamesparsedInstructorName: instructorsNames
+    Controller -> removeBeforeColonString: instructorIdshort
+    Controller -> Long.parseLonginstructorIdshort: instructorId
+    Controller -> removeBeforeColonString: instructorEmail
+    Controller -> parseEmailinstructorEmail: instructorUsername
+    Controller -> Instructor: setInstructorId(instructorId)
+    Controller -> Instructor: setInstructorFirstName(InsFirstName)
+    Controller -> Instructor: setInstructorLastName(InsLastName)
+    Controller -> Instructor: setInstructorEmail(instructorEmail)
+    Controller -> Instructor: setInstructorUsername(instructorUsername)
+    Controller -> passwordEncoder: encode("instructor")
+    activate passwordEncoder
+    passwordEncoder --> Controller: hashedPassword
+    deactivate passwordEncoder
+    alt Instructor doesn't exist
+        Controller -> instructorRepository: save(instructor)
+        activate instructorRepository
+        instructorRepository --> Controller: Saved Instructor
+        deactivate instructorRepository
+        Controller -> roleRepository: findById(3L)
+        activate roleRepository
+        roleRepository --> Controller: roles
+        deactivate roleRepository
+        Controller -> roleRepository: findById(3L)
+        activate roleRepository
+        roleRepository --> Controller: roles
+        deactivate roleRepository
+        Controller -> ListRoles: rolesList.add(roles)
+        Controller -> instructor: setRoles(rolesList)
+        alt User doesn't exist
+            Controller -> userRepository: findByUsername(instructor.getInstructorUsername())
+            activate userRepository
+            userRepository --> Controller: Optional<User>
+            deactivate userRepository
+            Controller -> User: setEmail(instructor.getInstructorEmail())
+            Controller -> User: setFirstName(instructor.getInstructorFirstName())
+            Controller -> User: setLastName(instructor.getInstructorLastName())
+            Controller -> User: setUsername(instructor.getInstructorUsername())
+            Controller -> User: setPassword(hashedPassword)
+            Controller -> User: setEnabled(true)
+            Controller -> User: setRoles(rolesList)
+            Controller -> userRepository: save(user)
+            activate userRepository
+            userRepository --> Controller: Saved User
+            deactivate userRepository
+            Controller -> course: setInstructor(instructor)
+            Controller -> courseRepository: save(course)
+            activate courseRepository
+            courseRepository --> Controller: Updated Course
+            deactivate courseRepository
+        else User exists
+            Controller --> Client: Redirect: /schedule-manager/smv-upload-fail
+        end
+    else Instructor exists
+        Controller -> instructorRepository: findByInstructorUsername(instructorUsername)
+        activate instructorRepository
+        instructorRepository --> Controller: existingInstructor
+        deactivate instructorRepository
+        alt Student doesn't exist
+            Controller -> ListRoles: rolesList.add(roles)
+            Controller -> Student: setRoles(rolesList)
+            Controller -> passwordEncoder: encode("student" + student.getStudentId())
+            activate passwordEncoder
+            passwordEncoder --> Controller: hashedPassword
+            deactivate passwordEncoder
+            Controller -> studentRepository: findByStudentUsername(student.getStudentUsername())
+            activate studentRepository
+            studentRepository --> Controller: Optional<Student>
+            deactivate studentRepository
+            alt Student doesn't exist
+                Controller -> studentRepository: save(student)
+                activate studentRepository
+                studentRepository --> Controller: Saved Student
+                deactivate studentRepository
+                Controller -> student: getCourses().add(course)
+                Controller -> studentRepository: save(student)
+                activate studentRepository
+                studentRepository --> Controller: Updated Student
+                deactivate studentRepository
+            else Student exists
+                Controller -> Student: getCourses()
+                Controller -> studentRepository: save(student)
+                activate studentRepository
+                studentRepository --> Controller: Saved Student
+                deactivate studentRepository
+            end
+            Controller -> userRepository: findByUsername(student.getStudentUsername())
+            activate userRepository
+            userRepository --> Controller: Optional<User>
+            deactivate userRepository
+            alt User doesn't exist
+                Controller -> User: setEmail(student.getStudentEmail())
+                Controller -> User: setFirstName(student.getStudentFirstName())
+                Controller -> User: setLastName(student.getStudentLastName())
+                Controller -> User: setUsername(student.getStudentUsername())
+                Controller -> User: setPassword(hashedPassword)
+                Controller -> User: setEnabled(true)
+                Controller -> User: setRoles(rolesList)
+                Controller -> userRepository: save(user)
+                activate userRepository
+                userRepository --> Controller: Saved User
+                deactivate userRepository
+                Controller -> student: setUser(user)
+                Controller -> studentRepository: save(student)
+                activate studentRepository
+                studentRepository --> Controller: Updated Student
+                deactivate studentRepository
+            else User exists
+                Controller --> Client: Redirect: /schedule-manager/smv-upload-fail
+            end
+        else Student exists
+            Controller --> Client: Redirect: /schedule-manager/smv-upload-fail
+        end
+    end
+    Controller -> Client: Redirect: /schedule-manager/smv-upload-success
+end
+@enduml
