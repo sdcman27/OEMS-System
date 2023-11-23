@@ -1,0 +1,85 @@
+@startuml
+participant Client
+participant Controller
+participant SecurityContextHolder
+participant Authentication
+participant scheduleManagerRepository
+participant Model
+participant User
+participant userRepository
+
+Client -> Controller: GET Request: /smv-account-management
+activate Controller
+Controller -> SecurityContextHolder: getContext().getAuthentication()
+activate SecurityContextHolder
+SecurityContextHolder -> Authentication: Get authentication
+activate Authentication
+Authentication --> SecurityContextHolder: Authentication object
+SecurityContextHolder --> Controller: Authentication object
+deactivate Authentication
+
+Controller -> userRepository: findByUsername(manager.getManagerUsername())
+activate userRepository
+alt User found
+    userRepository --> Controller: User entity
+else User not found
+    userRepository --> Controller: Empty user entity
+end
+deactivate userRepository
+
+Controller -> scheduleManagerRepository: findByManagerUsernameContaining(managerUser)
+activate scheduleManagerRepository
+scheduleManagerRepository --> Controller: List of ScheduleManager entities
+deactivate scheduleManagerRepository
+Controller -> Model: Add manager to model
+Model --> Controller: Updated model
+Controller --> Client: Return view: smv-password-reset
+
+Client -> Controller: GET Request: /smv-edit-current-manager/{id}
+activate Controller
+Controller -> scheduleManagerRepository: findById(id)
+activate scheduleManagerRepository
+scheduleManagerRepository --> Controller: ScheduleManager entity
+deactivate scheduleManagerRepository
+Controller -> Model: Add manager to model
+Model --> Controller: Updated model
+Controller --> Client: Return view: smv-edit-current-manager
+
+Client -> Controller: POST Request: /smv-edit-current-user/{id}
+activate Controller
+Controller -> userRepository: findByUsername(manager.getManagerUsername())
+activate userRepository
+alt User found
+    userRepository --> Controller: User entity
+else User not found
+    userRepository --> Controller: Empty user entity
+end
+deactivate userRepository
+
+Controller -> passwordEncoder: matches(currentPassword, user.getPassword())
+activate passwordEncoder
+passwordEncoder --> Controller: Boolean result
+deactivate passwordEncoder
+
+alt Password verification successful
+    Controller -> passwordEncoder: encode(newManagerPassword)
+    activate passwordEncoder
+    passwordEncoder --> Controller: Encrypted password
+    deactivate passwordEncoder
+
+    Controller -> userRepository: save(user)
+    activate userRepository
+    userRepository --> Controller: Saved user entity
+    deactivate userRepository
+
+    Controller -> scheduleManagerRepository: save(manager)
+    activate scheduleManagerRepository
+    scheduleManagerRepository --> Controller: Saved ScheduleManager entity
+    deactivate scheduleManagerRepository
+
+    Controller --> Client: Redirect to smv-user-edit-confirmation
+else Password verification failure
+    Controller --> Client: Return view: smv-edit-current-manager
+end
+
+@enduml
