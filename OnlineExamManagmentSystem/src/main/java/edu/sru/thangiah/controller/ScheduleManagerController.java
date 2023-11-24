@@ -361,50 +361,6 @@ public class ScheduleManagerController {
     }
 
     
-	/*
-	 * @GetMapping("/associate-instructor") public String
-	 * associateInstructorWithCourseForm(Model model) { // Retrieve the list of
-	 * instructors and courses from the repository List<Instructor> instructors =
-	 * instructorRepository.findAll(); List<Course> courses =
-	 * courseRepository.findAll();
-	 * 
-	 * // Add the lists of instructors and courses to the model for rendering in the
-	 * HTML template model.addAttribute("instructors", instructors);
-	 * model.addAttribute("courses", courses);
-	 * 
-	 * return "associate-instructor"; }
-	 */
-    
-	/*
-	 * @PostMapping("/associate-instructor") public String
-	 * associateInstructorWithCourse(
-	 * 
-	 * @RequestParam Long instructorId,
-	 * 
-	 * @RequestParam Long courseId, RedirectAttributes redirectAttributes) {
-	 * 
-	 * Optional<Instructor> optionalInstructor =
-	 * instructorRepository.findById(instructorId); Optional<Course> optionalCourse
-	 * = courseRepository.findById(courseId);
-	 * 
-	 * if (optionalInstructor.isPresent() && optionalCourse.isPresent()) {
-	 * Instructor instructor = optionalInstructor.get(); Course course =
-	 * optionalCourse.get();
-	 * 
-	 * // Assuming the association is bidirectional
-	 * instructor.getCourses().add(course); course.setInstructor(instructor);
-	 * 
-	 * instructorRepository.save(instructor); courseRepository.save(course);
-	 * redirectAttributes.addFlashAttribute("successMessage",
-	 * "Instructor successfully associated with the course"); } else {
-	 * redirectAttributes.addFlashAttribute("failureMessage",
-	 * "Failed to associate instructor with the course"); }
-	 * 
-	 * return "redirect:/success"; }
-	 * 
-	 */
-
-    
     @GetMapping("/iv-edit-student/{id}")
     public String showUpdateFormIV(@PathVariable("id") long id, Model model) {
 		Student student = studentRepository.findById(id)
@@ -423,49 +379,7 @@ public class ScheduleManagerController {
         return "manager"; 
     }
     
-    
-	/*
-	 * // Load/Create Instructor
-	 * 
-	 * @Transactional
-	 * 
-	 * @PostMapping("/schedule-manager/add") public String
-	 * addInstructor(@ModelAttribute Instructor instructor, RedirectAttributes
-	 * redirectAttributes) { System.out.println("Inside instructor-add method"); try
-	 * { // Check if the instructor with the given username already exists if
-	 * (instructorRepository.findByInstructorUsername(instructor.
-	 * getInstructorUsername()).isPresent()) {
-	 * redirectAttributes.addFlashAttribute("errorMessage",
-	 * "Instructor with given username already exists."); return
-	 * "redirect:/schedule-manager/create-instructor"; }
-	 * 
-	 * // Fetch the role with ID 3 and set it to the instructor Roles roles =
-	 * roleRepository.findById(3L) .orElseThrow(() -> new
-	 * RuntimeException("Role with ID 3 not found")); List<Roles> rolesList = new
-	 * ArrayList<>(); rolesList.add(roles); instructor.setRoles(rolesList);
-	 * 
-	 * // Save the new instructor instructorRepository.save(instructor);
-	 * 
-	 * // Create and save the corresponding user User newUser = new User();
-	 * newUser.setId(instructor.getInstructorId());
-	 * newUser.setUsername(instructor.getInstructorUsername()); String
-	 * hashedPassword = passwordEncoder.encode(instructor.getInstructorPassword());
-	 * newUser.setPassword(hashedPassword);
-	 * 
-	 * newUser.setRoles(rolesList);
-	 * 
-	 * 
-	 * // Set enabled for the user as well newUser.setEnabled(true);
-	 * 
-	 * userRepository.save(newUser);
-	 * 
-	 * redirectAttributes.addFlashAttribute("successMessage",
-	 * "Instructor and corresponding user added successfully."); return
-	 * "redirect:/instructor-success"; } catch (Exception e) {
-	 * System.out.println("Failed to add instructor: " + e.getMessage());
-	 * redirectAttributes.addFlashAttribute("errorMessage",
-	 * "Failed to add instructor."); return "redirect:/fail"; } }
-	 */
+   
 
 	@GetMapping("/smv-instructor-success")
 	public String showInstructorSuccessFormSMV() {
@@ -544,20 +458,6 @@ public class ScheduleManagerController {
         }
     }
 
-
-	/*
-	 * // Load/Create Course
-	 * 
-	 * @PreAuthorize("hasRole('SCHEDULE_MANAGER')")
-	 * 
-	 * @PostMapping("/add-course-api") public ResponseEntity<?>
-	 * addCourseSM(@ModelAttribute Course course){ try { Course savedCourse =
-	 * courseRepository.save(course); return ResponseEntity.ok().
-	 * body("{\"success\": true, \"message\": \"Course added.\"}"); } catch
-	 * (Exception e) { return ResponseEntity.badRequest().
-	 * body("{\"success\": false, \"message\": \"Failed to add course.\"}"); } }
-	 */
-    
     
     // Load/Create Course
     @PostMapping("/course/add")
@@ -752,9 +652,11 @@ public class ScheduleManagerController {
         
         Student Updatestudent = studentRepository.findByStudentUsername(student.getStudentUsername()).orElse(null);
         
-        Set<Course> studentCourses = Updatestudent.getCourses();
+        student.setStudentPassword(Updatestudent.getStudentPassword());
+        student.setUser(Updatestudent.getUser());
+        student.setCourses(Updatestudent.getCourses());
         
-        System.out.println(studentCourses);
+        Updatestudent = student;
         
      // checking the user to exist and creating it if it does not already exist
         User user = userRepository.findByUsername(Updatestudent.getStudentUsername())
@@ -788,7 +690,6 @@ public class ScheduleManagerController {
         System.out.println("Email: " + Updatestudent.getStudentEmail());
         System.out.println("Path Variable ID: " + Updatestudent.getStudentId());
         
-        Updatestudent.getCourses().addAll(studentCourses);
         
         studentRepository.save(Updatestudent);
         return "smv-edit-confirmation";
@@ -1302,8 +1203,6 @@ public class ScheduleManagerController {
 	        courseRepository.save(course);
 	        return "smv-edit-class-confirmation";
 	    }
-		
-		
 		
 
 }

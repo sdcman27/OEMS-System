@@ -123,9 +123,9 @@
     <input type="text" th:field="*{instructorEmail}" id="email" placeholder="Email">
     <span class="error" th:if="${#fields.hasErrors('instructorEmail')}" th:errors="*{instructorEmail}"></span>
     
-    <label for="name">Username</label>
-    <input type="text" th:field="*{instructorUsername}" id="name" placeholder="Name">
-    <span class="error" th:if="${#fields.hasErrors('instructorUsername')}" th:errors="*{instructorUsername}"></span>
+    <label for="name">Username <span style="color: #999;">(Non-editable)</span></label>
+	<input type="text" th:field="*{instructorUsername}" id="name" placeholder="Name" readonly>
+	<span class="error" th:if="${#fields.hasErrors('instructorUsername')}" th:errors="*{instructorUsername}"></span>
     
     <label for="newPassword">New Password</label>
 	<input type="password" id="newPassword" name="newPassword" placeholder="New Password:">
