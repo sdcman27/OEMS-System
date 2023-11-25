@@ -4,21 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chapter Selection for Exam Generation</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <style>
-    body {
-        font-family: 'Arial', sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f4;
-    }
-
-    header {
-        background-color: #004c3b;
-        color: #fff;
-        padding: 20px 0;
-        text-align: center;
-        border-bottom: 2px solid #003425;
-    }
+   body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto !important;
+            position: relative;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        header {
+            text-align: center;
+            background-color: rgba(0, 112, 85, 0.7);
+            color: #fff;
+            padding: 15px;
+            margin: 0;
+            border-bottom: 2px solid #004c3b;
+        }
 
     header h1 {
         margin: 0;
@@ -187,6 +191,17 @@
 </head>
 <body>
     <div id="nav-placeholder"></div>
+    
+    <script>
+        $(function() {
+            $("#nav-placeholder").load("/instructor/instructor_homepage", function(response, status, xhr) {
+                if (status == "error") {
+                    console.log("Error loading the navbar: " + xhr.status + " " + xhr.statusText);
+                }
+            });
+        });
+    </script>
+    
     <header>
         <h1>Exam Generation Portal</h1>
     </header>
@@ -245,21 +260,22 @@
                 <input type="submit" value="Update" class="submit-button">
             </form>
 
-            <!-- Form for updating Start Time -->
-            <form th:action="@{/exam/updateStartTime}" th:object="${examDetails}" method="post" class="exam-detail-form">
-                <input type="hidden" th:field="*{id}" />
-                <label class="exam-detail-label" for="startTime">Start Date:</label>
-                <input type="datetime-local" th:field="*{startTime}" id="startTime" />
-                <input type="submit" value="Update" class="submit-button">
-            </form>
+           <!-- Form for updating Start Time -->
+				<form th:action="@{/exam/updateStartTime}" th:object="${examDetails}" method="post" class="exam-detail-form">
+    <input type="hidden" th:field="*{id}" />
+    <label class="exam-detail-label" for="startTime">Start Date:</label>
+    <input type="datetime-local" th:field="*{startTime}" th:value="${formattedStartTime}" id="startTime" />
+    <input type="submit" value="Update" class="submit-button">
+</form>
 
-            <!-- Form for updating End Time -->
-            <form th:action="@{/exam/updateEndTime}" th:object="${examDetails}" method="post" class="exam-detail-form">
-                <input type="hidden" th:field="*{id}" />
-                <label class="exam-detail-label" for="endTime">End Date:</label>
-                <input type="datetime-local" th:field="*{endTime}" id="endTime" />
-                <input type="submit" value="Update" class="submit-button">
-            </form>
+<!-- Form for updating End Time -->
+<form th:action="@{/exam/updateEndTime}" th:object="${examDetails}" method="post" class="exam-detail-form">
+    <input type="hidden" th:field="*{id}" />
+    <label class="exam-detail-label" for="endTime">End Date:</label>
+    <input type="datetime-local" th:field="*{endTime}" th:value="${formattedEndTime}" id="endTime" />
+    <input type="submit" value="Update" class="submit-button">
+</form>
+
         </div>
 
         <form id="generateExamForm" action="#" th:action="@{/exam/generate}" method="post">
@@ -269,12 +285,8 @@
             </div>
         </form>
     </div>
+    
     <script>
-        $(function(){
-            $("#nav-placeholder").load("/instructor/instructor_homepage", function() {
-                $("#nav-placeholder video").remove();
-            });
-        });
         
     document.getElementById('updateExamDetailsForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -311,6 +323,8 @@
         })
         .catch(error => console.error('Error:', error));
     });
+    
+    
 </script>
 </body>
 </html>

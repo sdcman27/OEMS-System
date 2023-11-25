@@ -96,6 +96,10 @@ public class ExamController {
     public String updateStartTime(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
         boolean success = examService.updateStartTime(exam.getId(), exam.getStartTime());
         if (success) {
+            exam = examService.getExamById(exam.getId()); // Reload the updated exam
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            String formattedStartTime = exam.getStartTime().format(formatter);
+            model.addAttribute("formattedStartTime", formattedStartTime);
             model.addAttribute("successMessage", "Start time updated successfully.");
         }
         return prepareSelectChapterPage(model, session);
@@ -105,6 +109,10 @@ public class ExamController {
     public String updateEndTime(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
         boolean success = examService.updateEndTime(exam.getId(), exam.getEndTime());
         if (success) {
+            exam = examService.getExamById(exam.getId()); // Reload the updated exam
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            String formattedEndTime = exam.getEndTime().format(formatter);
+            model.addAttribute("formattedEndTime", formattedEndTime);
             model.addAttribute("successMessage", "End time updated successfully.");
         }
         return prepareSelectChapterPage(model, session);
@@ -113,7 +121,7 @@ public class ExamController {
     private String prepareSelectChapterPage(Model model, HttpSession session) {
         Long examId = (Long) session.getAttribute("currentExamId");
         if (examId == null) {
-            return "error"; // Redirect to an error page or handle as appropriate
+            return "error"; 
         }
 
         List<Integer> chapters = examService.getAllChapters();
@@ -124,10 +132,60 @@ public class ExamController {
             model.addAttribute("examDetails", exam);
         }
 
-        // Additional logic to load other necessary data
-        // ...
 
-        return "selectChapter"; // Name of your Thymeleaf template
+        return "selectChapter"; 
+    }
+    
+    @GetMapping("/selectChapter")
+    public String selectChapter(Model model, HttpSession session) {
+        Long examId = (Long) session.getAttribute("currentExamId");
+        if (examId == null) {
+            return "error"; // Handle error scenario
+        }
+
+        List<Integer> chapters = examService.getAllChapters();
+        model.addAttribute("chapters", chapters);
+
+        Exam exam = examService.getExamById(examId);
+        if (exam != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            String formattedStartTime = (exam.getStartTime() != null) ? exam.getStartTime().format(formatter) : "";
+            String formattedEndTime = (exam.getEndTime() != null) ? exam.getEndTime().format(formatter) : "";
+
+            model.addAttribute("formattedStartTime", formattedStartTime);
+            model.addAttribute("formattedEndTime", formattedEndTime);
+            model.addAttribute("examName", exam.getExamName());
+            model.addAttribute("examDuration", exam.getDurationInMinutes());
+            model.addAttribute("examDetails", exam);
+        } else {
+            model.addAttribute("examDetails", new Exam());
+        }
+
+        List<Long> selectedQuestionIds = (List<Long>) session.getAttribute("selectedQuestionIds");
+        if (selectedQuestionIds != null && !selectedQuestionIds.isEmpty()) {
+            List<ExamQuestion> selectedQuestions = selectedQuestionIds.stream()
+                                                                      .map(questionId -> examQuestionService.getExamQuestionById(questionId))
+                                                                      .collect(Collectors.toList());
+            model.addAttribute("selectedQuestions", selectedQuestions);
+        }
+
+        return prepareSelectChapterPage(model, session);
+    }
+
+
+    @PostMapping("/selectChapter")
+    public String handleChapterSelection(@RequestParam("selectedChapter") int chapter, 
+                                         HttpSession session, RedirectAttributes redirectAttributes) {
+        Long examId = (Long) session.getAttribute("currentExamId");
+        if (examId == null) {
+            return "error"; // Handle error scenario
+        }
+
+        // Store the selected chapter in the session
+        session.setAttribute("lastSelectedChapter", chapter);
+
+        redirectAttributes.addFlashAttribute("selectedChapter", chapter);
+        return "redirect:/exam/generateExam";
     }
     
     @GetMapping("/exam-questions/filterByChapter")
@@ -146,7 +204,7 @@ public class ExamController {
             return "redirect:/error"; // Or handle the error appropriately
         }
 
-        List<ExamQuestion> allQuestions = examService.getAllExamQuestions(); // Assuming this method exists
+        List<ExamQuestion> allQuestions = examService.getAllExamQuestions();
         model.addAttribute("exam", exam);
         model.addAttribute("allQuestions", allQuestions);
         model.addAttribute("selectedQuestions", exam.getQuestions());
@@ -346,57 +404,7 @@ public class ExamController {
         return "display-exam-link"; // This view will display the exam link and details to the faculty.
     }
     
-    @GetMapping("/selectChapter")
-    public String selectChapter(Model model, HttpSession session) {
-        Long examId = (Long) session.getAttribute("currentExamId");
-        if (examId == null) {
-            return "error"; // Handle error scenario
-        }
-
-        List<Integer> chapters = examService.getAllChapters();
-        model.addAttribute("chapters", chapters);
-
-        Exam exam = examService.getExamById(examId);
-        if (exam != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            String formattedStartTime = exam.getStartTime().format(formatter);
-            String formattedEndTime = exam.getEndTime().format(formatter);
-
-            model.addAttribute("examName", exam.getExamName());
-            model.addAttribute("examDuration", exam.getDurationInMinutes());
-            model.addAttribute("formattedStartTime", formattedStartTime);
-            model.addAttribute("formattedEndTime", formattedEndTime);
-            model.addAttribute("examDetails", exam);
-        } else {
-            model.addAttribute("examDetails", new Exam()); // Ensure a non-null object is added
-        }
-
-        List<Long> selectedQuestionIds = (List<Long>) session.getAttribute("selectedQuestionIds");
-        if (selectedQuestionIds != null && !selectedQuestionIds.isEmpty()) {
-            List<ExamQuestion> selectedQuestions = selectedQuestionIds.stream()
-                                                                      .map(questionId -> examQuestionService.getExamQuestionById(questionId))
-                                                                      .collect(Collectors.toList());
-            model.addAttribute("selectedQuestions", selectedQuestions);
-        }
-
-        return prepareSelectChapterPage(model, session);
-    }
-
-
-    @PostMapping("/selectChapter")
-    public String handleChapterSelection(@RequestParam("selectedChapter") int chapter, 
-                                         HttpSession session, RedirectAttributes redirectAttributes) {
-        Long examId = (Long) session.getAttribute("currentExamId");
-        if (examId == null) {
-            return "error"; // Handle error scenario
-        }
-
-        // Store the selected chapter in the session
-        session.setAttribute("lastSelectedChapter", chapter);
-
-        redirectAttributes.addFlashAttribute("selectedChapter", chapter);
-        return "redirect:/exam/generateExam";
-    }
+  
     
     @PostMapping("/updateDetails")
     public String updateExamDetails(@ModelAttribute("examDetails") Exam updatedExam) {
