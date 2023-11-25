@@ -123,9 +123,9 @@ $(function(){
     <input type="text" th:field="*{studentEmail}" id="email" placeholder="Email">
     <span class="error" th:if="${#fields.hasErrors('studentEmail')}" th:errors="*{studentEmail}"></span>
     
-    <label for="name">Username</label>
-    <input type="text" th:field="*{studentUsername}" id="name" placeholder="Name">
-    <span class="error" th:if="${#fields.hasErrors('studentUsername')}" th:errors="*{studentUsername}"></span>
+    <label for="name">Username <span style="color: #999;">(Non-editable)</span></label>
+	<input type="text" th:field="*{studentUsername}" id="name" placeholder="Name" readonly>
+	<span class="error" th:if="${#fields.hasErrors('studentUsername')}" th:errors="*{studentUsername}"></span>
     
         <!-- New Password Field -->
 	<label for="newPassword">New Password:</label>

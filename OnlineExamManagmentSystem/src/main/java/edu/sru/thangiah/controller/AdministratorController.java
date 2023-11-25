@@ -375,9 +375,11 @@ public class AdministratorController {
 		
 		Student Updatestudent = studentRepository.findByStudentUsername(student.getStudentUsername()).orElse(null);
 
-		Set<Course> studentCourses = Updatestudent.getCourses();
-
-		System.out.println(studentCourses);
+		student.setStudentPassword(Updatestudent.getStudentPassword());
+        student.setUser(Updatestudent.getUser());
+        student.setCourses(Updatestudent.getCourses());
+        
+        Updatestudent = student;
 
 		// checking the user to exist and creating it if it does not already exist
 		User user = userRepository.findByUsername(Updatestudent.getStudentUsername()).orElse(new User());
@@ -409,7 +411,6 @@ public class AdministratorController {
 		System.out.println("Email: " + Updatestudent.getStudentEmail());
 		System.out.println("Path Variable ID: " + Updatestudent.getStudentId());
 
-		Updatestudent.getCourses().addAll(studentCourses);
 
 		studentRepository.save(Updatestudent);
 		return "av-edit-confirmation";

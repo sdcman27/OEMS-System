@@ -397,9 +397,11 @@ public class InstructorController {
 	    	        
 	    	        Student Updatestudent = studentRepository.findByStudentUsername(student.getStudentUsername()).orElse(null);
 	    	        
-	    	        Set<Course> studentCourses = Updatestudent.getCourses();
+	    	        student.setStudentPassword(Updatestudent.getStudentPassword());
+	    	        student.setUser(Updatestudent.getUser());
+	    	        student.setCourses(Updatestudent.getCourses());
 	    	        
-	    	        System.out.println(studentCourses);
+	    	        Updatestudent = student;
 	    	        
 	    	     // checking the user to exist and creating it if it does not already exist
 	    	        User user = userRepository.findByUsername(Updatestudent.getStudentUsername())
@@ -432,9 +434,7 @@ public class InstructorController {
 	    	        System.out.println("Last Name: " + Updatestudent.getStudentLastName());
 	    	        System.out.println("Email: " + Updatestudent.getStudentEmail());
 	    	        System.out.println("Path Variable ID: " + Updatestudent.getStudentId());
-	    	        
-	    	        Updatestudent.getCourses().addAll(studentCourses);
-	    	        
+	    	        	    	        
 	    	        studentRepository.save(Updatestudent);
 	        return "iv-edit-confirmation";
 	    }
