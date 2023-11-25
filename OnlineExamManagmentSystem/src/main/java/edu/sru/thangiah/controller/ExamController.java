@@ -12,7 +12,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -70,6 +72,62 @@ public class ExamController {
     
     public ExamController(ExamService examService) {
         this.examService = examService;
+    }
+    
+    @PostMapping("/updateExamName")
+    public String updateExamName(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
+        boolean success = examService.updateExamName(exam.getId(), exam.getExamName());
+        if (success) {
+            model.addAttribute("successMessage", "Exam name updated successfully.");
+        }
+        return prepareSelectChapterPage(model, session);
+    }
+
+    @PostMapping("/updateDuration")
+    public String updateDuration(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
+        boolean success = examService.updateDuration(exam.getId(), exam.getDurationInMinutes());
+        if (success) {
+            model.addAttribute("successMessage", "Exam duration updated successfully.");
+        }
+        return prepareSelectChapterPage(model, session);
+    }
+
+    @PostMapping("/updateStartTime")
+    public String updateStartTime(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
+        boolean success = examService.updateStartTime(exam.getId(), exam.getStartTime());
+        if (success) {
+            model.addAttribute("successMessage", "Start time updated successfully.");
+        }
+        return prepareSelectChapterPage(model, session);
+    }
+
+    @PostMapping("/updateEndTime")
+    public String updateEndTime(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
+        boolean success = examService.updateEndTime(exam.getId(), exam.getEndTime());
+        if (success) {
+            model.addAttribute("successMessage", "End time updated successfully.");
+        }
+        return prepareSelectChapterPage(model, session);
+    }
+
+    private String prepareSelectChapterPage(Model model, HttpSession session) {
+        Long examId = (Long) session.getAttribute("currentExamId");
+        if (examId == null) {
+            return "error"; // Redirect to an error page or handle as appropriate
+        }
+
+        List<Integer> chapters = examService.getAllChapters();
+        model.addAttribute("chapters", chapters);
+
+        Exam exam = examService.getExamById(examId);
+        if (exam != null) {
+            model.addAttribute("examDetails", exam);
+        }
+
+        // Additional logic to load other necessary data
+        // ...
+
+        return "selectChapter"; // Name of your Thymeleaf template
     }
     
     @GetMapping("/exam-questions/filterByChapter")
@@ -288,11 +346,8 @@ public class ExamController {
         return "display-exam-link"; // This view will display the exam link and details to the faculty.
     }
     
-    
-
     @GetMapping("/selectChapter")
     public String selectChapter(Model model, HttpSession session) {
-        // Ensure there's an ongoing exam creation process
         Long examId = (Long) session.getAttribute("currentExamId");
         if (examId == null) {
             return "error"; // Handle error scenario
@@ -304,8 +359,6 @@ public class ExamController {
         Exam exam = examService.getExamById(examId);
         if (exam != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-            // Format startTime and endTime here
             String formattedStartTime = exam.getStartTime().format(formatter);
             String formattedEndTime = exam.getEndTime().format(formatter);
 
@@ -313,19 +366,20 @@ public class ExamController {
             model.addAttribute("examDuration", exam.getDurationInMinutes());
             model.addAttribute("formattedStartTime", formattedStartTime);
             model.addAttribute("formattedEndTime", formattedEndTime);
+            model.addAttribute("examDetails", exam);
+        } else {
+            model.addAttribute("examDetails", new Exam()); // Ensure a non-null object is added
         }
 
-        // Retrieve the selected question IDs from the session
         List<Long> selectedQuestionIds = (List<Long>) session.getAttribute("selectedQuestionIds");
         if (selectedQuestionIds != null && !selectedQuestionIds.isEmpty()) {
-            // Fetch the questions from the database based on the IDs
             List<ExamQuestion> selectedQuestions = selectedQuestionIds.stream()
-                                                                      .map(examQuestionService::getExamQuestionById)
+                                                                      .map(questionId -> examQuestionService.getExamQuestionById(questionId))
                                                                       .collect(Collectors.toList());
             model.addAttribute("selectedQuestions", selectedQuestions);
         }
 
-        return "selectChapter";
+        return prepareSelectChapterPage(model, session);
     }
 
 
@@ -343,6 +397,22 @@ public class ExamController {
         redirectAttributes.addFlashAttribute("selectedChapter", chapter);
         return "redirect:/exam/generateExam";
     }
+    
+    @PostMapping("/updateDetails")
+    public String updateExamDetails(@ModelAttribute("examDetails") Exam updatedExam) {
+        boolean success = examService.updateExamDetails(updatedExam);
+
+        if (success) {
+System.out.println("Updated");        
+} else {
+System.out.println("Error");        }
+
+        return "redirect:/exam/selectChapter"; // Redirect back to the exam page
+    }
+
+
+
+
 
     
     @GetMapping("/generateExam")

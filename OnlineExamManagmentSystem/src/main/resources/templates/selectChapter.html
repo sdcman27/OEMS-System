@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chapter Selection for Exam Generation</title>
-    <style>
+     <style>
         body {
             font-family: 'Arial', sans-serif;
             overflow-y: auto !important;
@@ -156,22 +156,67 @@
             width: 100%;
             margin-top: 20px;
         }
+        .exam-detail-form {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .exam-detail-form input[type="text"],
+        .exam-detail-form input[type="number"],
+        .exam-detail-form input[type="datetime-local"] {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        
+
+        .exam-detail-label {
+            min-width: 150px;
+            font-weight: bold;
+        }
+        
+        .exam-detail-form label {
+            flex-basis: 30%;
+            margin-right: 10px;
+        }
+
+        .exam-detail-form input:not([type="submit"]) {
+            flex-grow: 1;
+        }
+
+        .exam-detail-form input[type="submit"] {
+            flex-basis: auto;
+            margin-left: 10px;
+        }
+
+        /* Styles for success message */
+        .success-message {
+            background-color: #daf5da;
+            color: #097509;
+            border: 1px solid #0c970c;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
         
     </style>
 
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 <body>
+    <div id="nav-placeholder"></div>
 
-	<div id="nav-placeholder"></div>
-	
-		
     <header>
         <h1>Select a Chapter to Generate an Exam</h1>
     </header>
-    
 
     <div class="container">
+        <!-- Display success message if present -->
+        <div th:if="${successMessage}" class="success-message">
+            <p th:text="${successMessage}"></p>
+        </div>
+        
         <form action="#" th:action="@{/exam/selectChapter}" th:object="${selectedChapter}" method="post" class="form-section">
             <label for="chapter">Choose a chapter:</label>
             <select id="chapter" name="selectedChapter">
@@ -180,7 +225,6 @@
             <input type="submit" value="Select" class="submit-button">
         </form>
 
- <!-- Combined Exam Overview and Details Section -->
         <div class="exam-overview">
             <h2 class="overview-title">Exam Overview</h2>
             <table class="overview-table">
@@ -202,30 +246,54 @@
                             <a class="edit-remove-btn" th:href="@{'/instructor/remove-selected-question/' + ${question.id}}">Remove</a>
                         </td>
                     </tr>
-                    <tr th:if="${examName != null and examDuration != null and formattedStartTime != null and formattedEndTime != null}">
-                        <td colspan="4">
-                            <p class="exam-detail"><strong>Name:</strong> <span th:text="${examName}"></span></p>
-                            <p class="exam-detail"><strong>Duration:</strong> <span th:text="${examDuration} + ' minutes'"></span></p>
-                            <p class="exam-detail"><strong>Start Date:</strong> <span th:text="${formattedStartTime}"></span></p>
-                            <p class="exam-detail"><strong>End Date:</strong> <span th:text="${formattedEndTime}"></span></p>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
 
-        
-        
-        
-        <!-- Form to submit selected questions and generate the exam -->
+
+		<!-- Exam details forms -->
+        <div class="exam-details">
+            <!-- Form for updating Exam Name -->
+            <form th:action="@{/exam/updateExamName}" th:object="${examDetails}" method="post" class="exam-detail-form">
+                <input type="hidden" th:field="*{id}" />
+                <label class="exam-detail-label" for="examName">Name:</label>
+                <input type="text" th:field="*{examName}" id="examName" />
+                <input type="submit" value="Save" class="submit-button">
+            </form>
+
+            <!-- Form for updating Duration -->
+            <form th:action="@{/exam/updateDuration}" th:object="${examDetails}" method="post" class="exam-detail-form">
+                <input type="hidden" th:field="*{id}" />
+                <label class="exam-detail-label" for="duration">Duration (minutes):</label>
+                <input type="number" th:field="*{durationInMinutes}" id="duration" />
+                <input type="submit" value="Save" class="submit-button">
+            </form>
+
+            <!-- Form for updating Start Time -->
+            <form th:action="@{/exam/updateStartTime}" th:object="${examDetails}" method="post" class="exam-detail-form">
+                <input type="hidden" th:field="*{id}" />
+                <label class="exam-detail-label" for="startTime">Start Date:</label>
+                <input type="datetime-local" th:field="*{startTime}" id="startTime" />
+                <input type="submit" value="Save" class="submit-button">
+            </form>
+
+            <!-- Form for updating End Time -->
+            <form th:action="@{/exam/updateEndTime}" th:object="${examDetails}" method="post" class="exam-detail-form">
+                <input type="hidden" th:field="*{id}" />
+                <label class="exam-detail-label" for="endTime">End Date:</label>
+                <input type="datetime-local" th:field="*{endTime}" id="endTime" />
+                <input type="submit" value="Save" class="submit-button">
+            </form>
+        </div>
+
+
+
         <form id="generateExamForm" action="#" th:action="@{/exam/generate}" method="post">
             <input type="hidden" name="examId" th:value="${currentExamId}" />
             <div class="fixed-generate-button">
                 <input type="submit" value="Generate Exam" class="generate-button">
             </div>
         </form>
-
-        <!-- <a href="/instructor/exam/upload" class="upload-button">Upload Custom Chapter</a> -->
     </div>
 
     <script>
@@ -234,6 +302,44 @@
                 $("#nav-placeholder video").remove();
             });
         });
-    </script>
+        
+    document.getElementById('updateExamDetailsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var examId = document.querySelector('[name="examId"]').value;
+        var examName = document.querySelector('[name="examName"]').value;
+        var duration = document.querySelector('[name="duration"]').value;
+        var startTime = document.querySelector('[name="startTime"]').value;
+        var endTime = document.querySelector('[name="endTime"]').value;
+
+        var data = {
+            examId: examId,
+            examName: examName,
+            duration: duration,
+            startTime: startTime,
+            endTime: endTime
+        };
+
+        fetch('/exam/updateDetails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Exam details updated successfully');
+                // Additional actions on success (e.g., display a success message)
+            } else {
+                console.error('Error updating exam details');
+                // Additional actions on failure (e.g., display an error message)
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+
+   
 </body>
 </html>
