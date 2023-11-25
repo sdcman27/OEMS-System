@@ -264,7 +264,7 @@ public class InstructorController {
         
         // Redirect back to the question selection page with the last selected chapter
         redirectAttributes.addAttribute("selectedChapter", lastSelectedChapter);
-        return "redirect:/exam/generateExam";
+        return "redirect:/exam/selectChapter";
     }
 
 

@@ -3,6 +3,7 @@ package edu.sru.thangiah.controller;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -299,8 +300,34 @@ public class ExamController {
 
         List<Integer> chapters = examService.getAllChapters();
         model.addAttribute("chapters", chapters);
+
+        Exam exam = examService.getExamById(examId);
+        if (exam != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+            // Format startTime and endTime here
+            String formattedStartTime = exam.getStartTime().format(formatter);
+            String formattedEndTime = exam.getEndTime().format(formatter);
+
+            model.addAttribute("examName", exam.getExamName());
+            model.addAttribute("examDuration", exam.getDurationInMinutes());
+            model.addAttribute("formattedStartTime", formattedStartTime);
+            model.addAttribute("formattedEndTime", formattedEndTime);
+        }
+
+        // Retrieve the selected question IDs from the session
+        List<Long> selectedQuestionIds = (List<Long>) session.getAttribute("selectedQuestionIds");
+        if (selectedQuestionIds != null && !selectedQuestionIds.isEmpty()) {
+            // Fetch the questions from the database based on the IDs
+            List<ExamQuestion> selectedQuestions = selectedQuestionIds.stream()
+                                                                      .map(examQuestionService::getExamQuestionById)
+                                                                      .collect(Collectors.toList());
+            model.addAttribute("selectedQuestions", selectedQuestions);
+        }
+
         return "selectChapter";
     }
+
 
     @PostMapping("/selectChapter")
     public String handleChapterSelection(@RequestParam("selectedChapter") int chapter, 

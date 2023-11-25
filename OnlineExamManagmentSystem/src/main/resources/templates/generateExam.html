@@ -71,17 +71,6 @@
     <div id="nav-placeholder"></div>
 
     <h2>Generate Exam From Selected Questions</h2>
-    
-    <!-- Display already selected questions -->
-<div class="selected-questions" th:if="${selectedQuestions != null && !selectedQuestions.isEmpty()}">
-    <h3>Already Selected Questions:</h3>
-    <div th:each="question : ${selectedQuestions}" class="selected-question">
-        <span th:text="${question.questionText}">Question Text</span>
-        <!-- Edit and Remove links -->
-        <a class="edit-remove-btn" th:href="@{'/instructor/exam-questions/edit/' + ${question.id}}">Edit</a>
-        <a class="edit-remove-btn" th:href="@{'/instructor/remove-selected-question/' + ${question.id}}">Remove</a>
-    </div>
-</div>
 
 
     <div th:if="${generatedExamId != null}">
