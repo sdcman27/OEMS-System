@@ -17,6 +17,7 @@ import edu.sru.thangiah.repository.ExamSubmissionRepository;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,79 @@ public class ExamService {
     public Exam getExamById(Long id) {
         return examRepository.findById(id).orElse(null);
     }
+    
+    public boolean updateExamName(Long examId, String examName) {
+        Optional<Exam> examOptional = examRepository.findById(examId);
+        if (examOptional.isPresent()) {
+            Exam exam = examOptional.get();
+            exam.setExamName(examName);
+            examRepository.save(exam);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateDuration(Long examId, int duration) {
+        Optional<Exam> examOptional = examRepository.findById(examId);
+        if (examOptional.isPresent()) {
+            Exam exam = examOptional.get();
+            exam.setDurationInMinutes(duration);
+            examRepository.save(exam);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateStartTime(Long examId, LocalDateTime startTime) {
+        Optional<Exam> examOptional = examRepository.findById(examId);
+        if (examOptional.isPresent()) {
+            Exam exam = examOptional.get();
+            exam.setStartTime(startTime);
+            examRepository.save(exam);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateEndTime(Long examId, LocalDateTime endTime) {
+        Optional<Exam> examOptional = examRepository.findById(examId);
+        if (examOptional.isPresent()) {
+            Exam exam = examOptional.get();
+            exam.setEndTime(endTime);
+            examRepository.save(exam);
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean updateExamDetails(Exam updatedExam) {
+        // Ensure that the provided exam has a non-null ID
+        if (updatedExam.getId() == null) {
+            return false;
+        }
+
+        // Check if the exam with the given ID exists in the database
+        Optional<Exam> existingExamOptional = examRepository.findById(updatedExam.getId());
+        if (existingExamOptional.isPresent()) {
+        	System.out.println("Inside the updateExamDetails() method...");
+            Exam existingExam = existingExamOptional.get();
+            
+            // Update the exam details
+            existingExam.setExamName(updatedExam.getExamName());
+            existingExam.setDurationInMinutes(updatedExam.getDurationInMinutes());
+            existingExam.setStartTime(updatedExam.getStartTime());
+            existingExam.setEndTime(updatedExam.getEndTime());
+
+            // Save the updated exam in the repository
+            examRepository.save(existingExam);
+            return true;
+        } else {
+            // Exam not found
+            return false;
+        }
+    }
+
+
     
     public ExamResult evaluateAnswers(Map<Integer, String> userAnswers) {
         int score = 0;
