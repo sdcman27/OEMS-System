@@ -521,57 +521,73 @@ System.out.println("Error");        }
     public String submitExam(@PathVariable Long id, @RequestParam Map<String, String> formParams, Model model, Principal principal, Authentication authentication) {
         Exam exam = examService.getExamById(id);
 
-        if (exam != null) {
-            Map<Long, String> userAnswers = extractUserAnswers(formParams);
-            List<String> userAnswersList = new ArrayList<>(userAnswers.values()); // Assuming order is maintained
-            int totalScore = calculateTotalScore(exam, userAnswers);
-
-           // int totalScore = 0;
-            List<ExamQuestionDisplay> displayQuestions = new ArrayList<>();
-
-            for (ExamQuestion question : exam.getQuestions()) {
-                String userAnswer = userAnswers.get(question.getId());
-                String userAnswerText = getAnswerText(question, userAnswer);
-                
-             // Determine the user's role and add it to the model
-                String userRole = determineUserRole(principal.getName());
-                model.addAttribute("userRole", userRole);
-
-                
-                ExamQuestionDisplay displayQuestion = new ExamQuestionDisplay();
-                displayQuestion.setId(question.getId());
-                displayQuestion.setQuestionText(question.getQuestionText());
-                displayQuestion.setUserAnswer(userAnswerText);
-                displayQuestion.setCorrectAnswerText(question.getCorrectAnswerText());
-                
-                if (!question.getCorrectAnswer().equalsIgnoreCase(userAnswer)) {
-                    displayQuestions.add(displayQuestion); // Add only incorrect questions
-                }
-            }
-            
-         // Save the exam submission
-            ExamSubmission examSubmission = new ExamSubmission(); // Assuming you have a constructor or setters to set properties
-            examSubmission.setExamId(id); // Make sure you set the exam ID here as well
-            examSubmission.setAnswers(userAnswersList);
-            examSubmission.setScore(totalScore);
-            
-            // Obtain the user ID. This should be the actual logged-in user's ID.
-            Long userId = getUserIdFromAuthentication(authentication);
-            
-            // Call the method to save the exam submission
-            saveExamSubmission(examSubmission, userId);
-
-            model.addAttribute("score", totalScore);
-            model.addAttribute("totalQuestions", exam.getQuestions().size());
-            model.addAttribute("incorrectQuestions", displayQuestions);
-            
-
-            return "showScore"; // Thymeleaf template to display the score and answers
-        } else {
+        if (exam == null) {
             model.addAttribute("message", "Exam not found.");
-            return "error"; // Error page template
+            return "error";
+        }
+
+        Map<Long, String> userAnswers = extractUserAnswers(formParams);
+        List<ExamQuestionDisplay> displayQuestions = new ArrayList<>();
+        List<ExamQuestionDisplay> incorrectQuestions = new ArrayList<>();
+        int totalScore = 0;
+
+        for (ExamQuestion question : exam.getQuestions()) {
+            String userAnswerKey = userAnswers.getOrDefault(question.getId(), "No Answer");
+            String userAnswerText = mapAnswerKeyToText(question, userAnswerKey);
+            boolean isCorrect = question.getCorrectAnswer().equalsIgnoreCase(userAnswerKey);
+
+            if (isCorrect) {
+                totalScore++;
+            } else {
+                ExamQuestionDisplay incorrectQuestion = new ExamQuestionDisplay();
+                incorrectQuestion.setId(question.getId());
+                incorrectQuestion.setQuestionText(question.getQuestionText());
+                incorrectQuestion.setUserAnswer(userAnswerText);
+                incorrectQuestion.setCorrectAnswerText(question.getCorrectAnswerText());
+                incorrectQuestions.add(incorrectQuestion);
+            }
+
+            ExamQuestionDisplay displayQuestion = new ExamQuestionDisplay();
+            displayQuestion.setId(question.getId());
+            displayQuestion.setQuestionText(question.getQuestionText());
+            displayQuestion.setUserAnswer(userAnswerText);
+            displayQuestion.setCorrectAnswerText(question.getCorrectAnswerText());
+
+            displayQuestions.add(displayQuestion);
+        }
+
+        ExamSubmission examSubmission = new ExamSubmission();
+        examSubmission.setExamId(id);
+        examSubmission.setAnswers(new ArrayList<>(userAnswers.values()));
+        examSubmission.setScore(totalScore);
+
+        Long userId = getUserIdFromAuthentication(authentication);
+        saveExamSubmission(examSubmission, userId);
+
+        model.addAttribute("exam", exam);
+        model.addAttribute("score", totalScore);
+        model.addAttribute("totalQuestions", exam.getQuestions().size());
+        model.addAttribute("displayQuestions", displayQuestions);
+        model.addAttribute("incorrectQuestions", incorrectQuestions);
+
+        return "showScore";
+    }
+
+    private String mapAnswerKeyToText(ExamQuestion question, String answerKey) {
+        switch (answerKey) {
+            case "A": return question.getOptionA();
+            case "B": return question.getOptionB();
+            case "C": return question.getOptionC();
+            case "D": return question.getOptionD();
+            default: return "No Answer";
         }
     }
+
+
+
+
+
+
 
     private String getAnswerText(ExamQuestion question, String answer) {
         switch (question.getQuestionType()) {
