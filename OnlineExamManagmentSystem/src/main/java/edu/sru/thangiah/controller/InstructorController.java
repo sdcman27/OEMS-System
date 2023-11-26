@@ -423,6 +423,8 @@ public class InstructorController {
 	    	        }
 
 	    	        // updating the users username and email to match the student
+	    	        user.setFirstName(Updatestudent.getStudentFirstName());
+	    	        user.setLastName(Updatestudent.getStudentFirstName());
 	    	        user.setUsername(Updatestudent.getStudentUsername());
 	    	        user.setEmail(Updatestudent.getStudentEmail());
 	    	        userRepository.save(user);  // Save the user to userRepository
@@ -439,6 +441,7 @@ public class InstructorController {
 	    	        studentRepository.save(Updatestudent);
 	        return "iv-edit-confirmation";
 	    }
+	   /*
 
 	    Student Updatestudent = studentRepository.findByStudentUsername(student.getStudentUsername()).orElse(null);
 
@@ -484,9 +487,10 @@ public class InstructorController {
 
 	    studentRepository.save(Updatestudent);
 	    return "iv-edit-confirmation";
-	}
+}
+}
 
-	
+	*/
 	@GetMapping("/student/delete/{id}")
     public String deleteStudent(@PathVariable("id") long id, Model model) {
         Student student = studentRepository.findById(id)
