@@ -106,7 +106,7 @@
     </div>
 
 <div class="footer">
-    <form th:action="@{${userRole == 'INSTRUCTOR' ? '/instructor/instructor_homepage' : (userRole == 'STUDENT' ? '/student/course/student_homepage' : '/default_homepage')}}"
+    <form th:action="@{${userRole == 'INSTRUCTOR' ? '/instructor/instructor_homepage' : (userRole == 'STUDENT' ? '/student/course/student_homepage' : '/student/course/student_homepage')}}"
           method="get">
         <button type="submit">Return to Homepage</button>
     </form>
