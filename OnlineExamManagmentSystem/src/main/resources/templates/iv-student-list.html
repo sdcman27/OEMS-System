@@ -59,9 +59,39 @@
         .search-container button {
             margin: 5px;
         }
+        
+        th.sortable:hover {
+        background-color: #005f43; 
+        cursor: pointer;
+    }
     </style>
     
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    
+    <script>
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementsByTagName("table")[0];
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+    </script>
 
 </head>
 
@@ -95,15 +125,13 @@ $(function(){
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Username</th>
-                <th>Edit</th>
-                <th>Enable/Disable<th>
-
-                
+                 <th>ID</th>
+            <th class="sortable" onclick="sortTable(1)">First Name</th>
+            <th class="sortable" onclick="sortTable(2)">Last Name</th>
+            <th class="sortable" onclick="sortTable(3)">Email</th>
+            <th class="sortable" onclick="sortTable(4)">Username</th>
+            <th>Edit</th>
+            <th>Enable/Disable<th>
             </tr>
         </thead>
         <tbody>
