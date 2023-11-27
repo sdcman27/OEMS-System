@@ -242,41 +242,7 @@
             </table>
         </div>
 
-        <!-- Exam details forms -->
-        <div class="exam-details">
-            <!-- Form for updating Exam Name -->
-            <form th:action="@{/exam/updateExamName}" th:object="${examDetails}" method="post" class="exam-detail-form">
-                <input type="hidden" th:field="*{id}" />
-                <label class="exam-detail-label" for="examName">Name:</label>
-                <input type="text" th:field="*{examName}" id="examName" />
-                <input type="submit" value="Update" class="submit-button">
-            </form>
-
-            <!-- Form for updating Duration -->
-            <form th:action="@{/exam/updateDuration}" th:object="${examDetails}" method="post" class="exam-detail-form">
-                <input type="hidden" th:field="*{id}" />
-                <label class="exam-detail-label" for="duration">Duration (minutes):</label>
-                <input type="number" th:field="*{durationInMinutes}" id="duration" />
-                <input type="submit" value="Update" class="submit-button">
-            </form>
-
-           <!-- Form for updating Start Time -->
-				<form th:action="@{/exam/updateStartTime}" th:object="${examDetails}" method="post" class="exam-detail-form">
-    <input type="hidden" th:field="*{id}" />
-    <label class="exam-detail-label" for="startTime">Start Date:</label>
-    <input type="datetime-local" th:field="*{startTime}" th:value="${formattedStartTime}" id="startTime" />
-    <input type="submit" value="Update" class="submit-button">
-</form>
-
-<!-- Form for updating End Time -->
-<form th:action="@{/exam/updateEndTime}" th:object="${examDetails}" method="post" class="exam-detail-form">
-    <input type="hidden" th:field="*{id}" />
-    <label class="exam-detail-label" for="endTime">End Date:</label>
-    <input type="datetime-local" th:field="*{endTime}" th:value="${formattedEndTime}" id="endTime" />
-    <input type="submit" value="Update" class="submit-button">
-</form>
-
-        </div>
+       
 
         <form id="generateExamForm" action="#" th:action="@{/exam/generate}" method="post">
             <input type="hidden" name="examId" th:value="${currentExamId}" />
