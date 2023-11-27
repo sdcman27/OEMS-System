@@ -1,0 +1,7 @@
+@startuml
+skinparam classAttributeIconSize 0
+class FileDownloadController {
+    public ResponseEntity<Resource> downloadExcel()
+    public ResponseEntity<Resource> downloadClassImport()
+}
+@enduml

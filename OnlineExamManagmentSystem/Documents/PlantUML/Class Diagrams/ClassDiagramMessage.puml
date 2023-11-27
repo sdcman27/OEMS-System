@@ -1,0 +1,16 @@
+@startuml
+class Message [[java:edu.sru.thangiah.web.dto.Message]] {
+	-role: String
+	-content: String
+	+getRole(): String
+	+getContent(): String
+	+setRole(role: String): void
+	+setContent(content: String): void
+	+equals(o: Object): boolean
+	#canEqual(other: Object): boolean
+	+hashCode(): int
+	+toString(): String
+	+Message(role: String, content: String)
+	+Message()
+}
+@enduml

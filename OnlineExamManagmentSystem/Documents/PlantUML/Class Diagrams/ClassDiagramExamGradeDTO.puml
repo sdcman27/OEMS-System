@@ -1,0 +1,17 @@
+@startuml
+class ExamGradeDTO [[java:edu.sru.thangiah.web.dto.ExamGradeDTO]] {
+	-examName: String
+	-score: Integer
+	-totalQuestions: Integer
+	+ExamGradeDTO(examName: String, score: Integer, totalQuestions: Integer)
+	+getExamName(): String
+	+setExamName(examName: String): void
+	+getScore(): Integer
+	+setScore(score: Integer): void
+	+getTotalQuestions(): Integer
+	+setTotalQuestions(totalQuestions: Integer): void
+	+getFormattedScore(): String
+	+getLetterGrade(): String
+	+getPercentage(): String
+}
+@enduml

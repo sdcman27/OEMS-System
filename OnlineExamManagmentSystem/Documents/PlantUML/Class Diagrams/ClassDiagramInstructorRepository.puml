@@ -1,0 +1,10 @@
+@startuml
+interface InstructorRepository [[java:edu.sru.thangiah.repository.InstructorRepository]] {
+	findByInstructorUsername(username: String): Optional<Instructor>
+	findByInstructorFirstNameContaining(searchParam: String): List<Instructor>
+	findByInstructorUsernameContaining(searchParam: String): List<Instructor>
+}
+interface "JpaRepository<Instructor,Long>" as JpaRepository_Instructor_Long_ {
+}
+JpaRepository_Instructor_Long_ <|-- InstructorRepository
+@enduml

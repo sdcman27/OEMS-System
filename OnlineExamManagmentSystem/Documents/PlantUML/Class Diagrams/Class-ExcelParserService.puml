@@ -1,0 +1,8 @@
+@startuml
+class ExcelParserService [[java:edu.sru.thangiah.service.ExcelParserService]] {
+	-studentRepository: StudentRepository
+	-instructorRepository: InstructorRepository
+	-courseRepository: CourseRepository
+	+parseExcelFile(file: MultipartFile): String
+}
+@enduml

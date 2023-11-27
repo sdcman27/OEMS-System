@@ -1,0 +1,10 @@
+@startuml
+interface ScheduleManagerRepository [[java:edu.sru.thangiah.repository.ScheduleManagerRepository]] {
+	findBymanagerUsername(username: String): Optional<ScheduleManager>
+	findByManagerFirstNameContaining(searchParam: String): List<ScheduleManager>
+	findByManagerUsernameContaining(searchParam: String): List<ScheduleManager>
+}
+interface "JpaRepository<ScheduleManager,Long>" as JpaRepository_ScheduleManager_Long_ {
+}
+JpaRepository_ScheduleManager_Long_ <|-- ScheduleManagerRepository
+@enduml

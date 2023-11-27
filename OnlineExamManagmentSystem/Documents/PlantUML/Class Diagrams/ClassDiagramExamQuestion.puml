@@ -1,0 +1,40 @@
+@startuml
+skinparam classAttributeIconSize 0
+class ExamQuestion {
+    private Long id
+    private String questionText
+    private String userAnswer
+    private String optionA
+    private String optionB
+    private String optionC
+    private String optionD
+    private String correctAnswer
+    private int chapter
+    private QuestionType questionType
+    public String toString()
+    public String getCorrectAnswerText()
+    private String getOptionText(String)
+    public Long getId()
+    public void setId(Long)
+    public String getQuestionText()
+    public void setQuestionText(String)
+    public String getOptionA()
+    public void setOptionA(String)
+    public String getOptionB()
+    public void setOptionB(String)
+    public String getOptionC()
+    public void setOptionC(String)
+    public String getOptionD()
+    public void setOptionD(String)
+    public String getCorrectAnswer()
+    public void setCorrectAnswer(String)
+    public int getChapter()
+    public void setChapter(int)
+    public String getUserAnswer()
+    public void setUserAnswer(String)
+    public QuestionType getQuestionType()
+    public void setQuestionType(QuestionType)
+    public boolean isAiGenerated()
+    public void setAiGenerated(boolean)
+}
+@enduml

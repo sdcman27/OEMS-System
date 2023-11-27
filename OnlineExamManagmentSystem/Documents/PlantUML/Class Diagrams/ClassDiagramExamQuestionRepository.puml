@@ -1,0 +1,15 @@
+@startuml
+interface ExamQuestionRepository [[java:edu.sru.thangiah.repository.ExamQuestionRepository]] {
+	findByQuestionText(questionText: String): ExamQuestion
+	findByChapter(chapter: int): List<ExamQuestion>
+	findAllDistinctChapters(): List<Integer>
+	findQuestionsByChapter(chapter: int): List<ExamQuestion>
+	save(aiQuestions: List<ExamQuestion>): void
+	findByQuestionTextContainingIgnoreCase(searchText: String): List<ExamQuestion>
+	findById(id: Long): Optional<ExamQuestion>
+	findRandomQuestionsByType(type: ExamQuestion.QuestionType, pageable: Pageable): List<ExamQuestion>
+}
+interface "JpaRepository<ExamQuestion,Long>" as JpaRepository_ExamQuestion_Long_ {
+}
+JpaRepository_ExamQuestion_Long_ <|-- ExamQuestionRepository
+@enduml

@@ -1,0 +1,6 @@
+@startuml
+class ExcelGeneratorService [[java:edu.sru.thangiah.service.ExcelGeneratorService]] {
+	+generateExcel(quizData: List<Map<String,Object>>): byte[]
+	+{static} createExcelFile(questions: List<Question>): ByteArrayInputStream
+}
+@endumls

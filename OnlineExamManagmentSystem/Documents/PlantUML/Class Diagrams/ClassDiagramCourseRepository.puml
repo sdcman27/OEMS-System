@@ -1,0 +1,9 @@
+@startuml
+interface CourseRepository [[java:edu.sru.thangiah.repository.CourseRepository]] {
+	findByIdContaining(Id: Long): List<Course>
+	findAllByInstructor(instructor: Instructor): List<Course>
+}
+interface "JpaRepository<Course,Long>" as JpaRepository_Course_Long_ {
+}
+JpaRepository_Course_Long_ <|-- CourseRepository
+@enduml

@@ -1,0 +1,8 @@
+@startuml
+class CustomAuthenticationSuccessHandler [[java:edu.sru.thangiah.config.CustomAuthenticationSuccessHandler]] {
+	+onAuthenticationSuccess(request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication): void
+}
+class SimpleUrlAuthenticationSuccessHandler {
+}
+SimpleUrlAuthenticationSuccessHandler <|-- CustomAuthenticationSuccessHandler
+@enduml

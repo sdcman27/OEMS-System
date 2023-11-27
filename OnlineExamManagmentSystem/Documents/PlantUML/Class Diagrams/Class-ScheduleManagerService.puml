@@ -1,0 +1,11 @@
+@startuml
+class ScheduleManagerService [[java:edu.sru.thangiah.service.ScheduleManagerService]] {
+	-courseRepository: CourseRepository
+	-instructorRepository: InstructorRepository
+	+createOrUpdateInstructor(instructor: Instructor): Instructor
+	+createOrUpdateCourse(course: Course): Course
+	+deleteInstructor(id: Long): void
+	+deleteCourse(id: Long): void
+	+associateInstructorWithCourse(instructorId: Long, courseId: Long, model: Model): ResponseEntity<String>
+}
+@enduml

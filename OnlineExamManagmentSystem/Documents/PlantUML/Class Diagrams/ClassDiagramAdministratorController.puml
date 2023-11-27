@@ -1,0 +1,53 @@
+@startuml
+class AdministratorController [[java:edu.sru.thangiah.controller.AdministratorController]] {
+	-adminUsername: String
+	-adminPassword: String
+	-administratorRepository: AdministratorRepository
+	-studentRepository: StudentRepository
+	-courseRepository: CourseRepository
+	-instructorRepository: InstructorRepository
+	-emailService: EmailService
+	-userRepository: UserRepository
+	-roleRepository: RoleRepository
+	-SMRepo: ScheduleManagerRepository
+	-passwordEncoder: PasswordEncoder
+	+createAdministrator(administrator: Administrator): Administrator
+	+viewAdminHomepage(): String
+	+accountManager(model: Model): String
+	+editingCurrentUser(id: long, model: Model): String
+	+saveCurrentUserEdits(id: long, administrator: Administrator, result: BindingResult, model: Model, currentPassword: String, newAdminPassword: String, confirmAdminPassword: String): String
+	+examsPage(): String
+	+classesPage(): String
+	+mathQuizPage(): String
+	+historyQuizPage(): String
+	+scienceQuizPage(): String
+	+showCreateStudentForm(): String
+	+showCreateInstructorForm(): String
+	+showCreateCourseForm(): String
+	+importStudents(): String
+	+associateStudentWithCourseForm(model: Model): String
+	+associateInstructorWithCourse(instructorId: Long, courseId: Long, model: Model): ResponseEntity<String>
+	+uploadSuccess(): String
+	+uploadFail(): String
+	+showStudentsListAV(model: Model): String
+	+associateStudentWithCourse(studentId: Long, courseId: Long, model: Model): ResponseEntity<String>
+	+showRegistrationForm(model: Model): String
+	+showRegistrationFormAV(model: Model): String
+	+registerUserAV(manager: ScheduleManager, redirectAttributes: RedirectAttributes): String
+	+showUpdateFormAV(id: long, model: Model): String
+	+updateStudentAV(id: long, student: Student, result: BindingResult, model: Model, newStudentPassword: String, confirmStudentPassword: String): String
+	+deleteStudentAV(id: long, model: Model): String
+	+registerConfirm(): String
+	+registerConfirmAV(): String
+	+showCourseSuccessForm(): String
+	+showInstructorSuccessForm(): String
+	+showUpdateFormInstructorAV(id: long, model: Model): String
+	+deleteInstructorAV(id: long, model: Model): String
+	+updateInstructorAV(id: long, instructor: Instructor, result: BindingResult, model: Model, newInstructorPassword: String, confirmInstructorPassword: String): String
+	+showInstructorsAV(model: Model): String
+	+deleteScheduleManagerAV(id: long, model: Model): String
+	+showUpdateFormScheduleManagerAV(id: long, model: Model): String
+	+updateScheduleManagersAV(id: long, manager: ScheduleManager, result: BindingResult, model: Model, newManagerPassword: String, confirmManagerPassword: String): String
+	+showScheduleManagersAV(model: Model): String
+}
+@enduml

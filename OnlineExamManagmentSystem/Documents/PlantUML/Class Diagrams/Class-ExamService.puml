@@ -1,0 +1,31 @@
+@startuml
+class ExamService [[java:edu.sru.thangiah.service.ExamService]] {
+	-storedExamResult: ExamResult
+	-examRepository: ExamRepository
+	-examQuestionRepository: ExamQuestionRepository
+	-examSubmissionRepository: ExamSubmissionRepository
+	+allQuestions: List<Question>
+	+getAllQuestions(): List<Question>
+	+getExamById(id: Long): Exam
+	+updateExamName(examId: Long, examName: String): boolean
+	+updateDuration(examId: Long, duration: int): boolean
+	+updateStartTime(examId: Long, startTime: LocalDateTime): boolean
+	+updateEndTime(examId: Long, endTime: LocalDateTime): boolean
+	+updateExamDetails(updatedExam: Exam): boolean
+	+evaluateAnswers(userAnswers: Map<Integer,String>): ExamResult
+	+storeExamResultForUser(result: ExamResult): void
+	+getStoredExamResultForUser(): ExamResult
+	+getRandomQuestions(): List<Question>
+	-readTrueFalseQuestions(resourcePath: String): List<Question>
+	-getCellValue(cell: Cell): String
+	+generateExam(chapterOrExamType: int, numberOfQuestions: int): List<Question>
+	-readQuestionsFromExcel(resourcePath: String, includeTrueFalse: boolean): List<Question>
+	+createExcelFile(questions: List<Question>): byte[]
+	+getAllChapters(): List<Integer>
+	+generateQuestionsForChapter(chapter: int): List<ExamQuestion>
+	+deleteExam(examId: Long): boolean
+	+getAllExamQuestions(): List<ExamQuestion>
+	+updateExamQuestions(examId: Long, questionIds: List<Long>): void
+	+getAllExamsWithSubmissionCount(): List<Exam>
+}
+@enduml

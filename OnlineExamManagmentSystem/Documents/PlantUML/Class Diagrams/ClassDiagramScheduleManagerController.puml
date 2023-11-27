@@ -1,0 +1,59 @@
+@startuml
+skinparam classAttributeIconSize 0
+class ScheduleManagerController {
+    private CourseRepository courseRepository
+    private StudentRepository studentRepository
+    private InstructorRepository instructorRepository
+    private RoleRepository roleRepository
+    private UserRepository userRepository
+    private ScheduleManagerRepository scheduleManagerRepository
+    private PasswordEncoder passwordEncoder
+    private ExcelExportService excelExportService
+    public String showScheduleManagerHomepage()
+    public String passwordReset(Model)
+    public String editingCurrentUser(("id")
+    public String saveCurrentUserEdits(("id")
+    public String showCreateCourseForm()
+    public String showCreateCourseFormSMV()
+    public String showInstructorList(Model)
+    public String showCreateInstructorForm()
+    public String associateStudentWithCourseFormSMV(Model)
+    public String handleAssociateStudentWithCourse(("studentId")
+    public String associateInstructorWithCourseFormSMV(Model)
+    public String handleAssociateInstructorWithCourse(("instructorId")
+    public String showCreateInstructorFormSMV()
+    public String showStudentsListSMV(Model)
+    public String showClassStudentListSMV(Model)
+    public String showStudentsListbyClassSMV(("id")
+    public List<Instructor> getInstructors()
+    public String showSMSMV(Model)
+    public String showSM(Model)
+    public String showUpdateFormIV(("id")
+    public String loadManagerPage(Model)
+    public String showInstructorSuccessFormSMV()
+    public String addInstructorSMV(Instructor, RedirectAttributes)
+    public String showSuccessPageSMV()
+    public String addCourseSM(Course, Model)
+    public ResponseEntity<?> addCourse(Course)
+    public ResponseEntity<?> assignInstructorToCourse(Long, Long)
+    public String showInstructorUpdateFormSMV(("id")
+    public String updateInstructorSMV(("id")
+    public String deleteInstructorSMV(("id")
+    public String showCreateStudentFormSMV()
+    public String createSMV(Student, RedirectAttributes)
+    public String showUpdateFormSMV(("id")
+    public String updateStudentSMV(("id")
+    public String deleteStudentSMV(("id")
+    public ResponseEntity<String> exportStudentDataSMV()
+    public String importStudentsSMV()
+    public String uploadSuccessSMV()
+    public String uploadExcelSMV(("file")
+    public String showSmvUploadFail()
+    public String showSmvClassImport()
+    public String upload(("file")
+    public String deleteClassSMV(("id")
+    public String showClassListSMV(Model)
+    public String showUpdateClassSMV(("id")
+    public String updateClassSMV(("id")
+}
+@enduml

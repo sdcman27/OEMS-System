@@ -1,0 +1,29 @@
+@startuml
+skinparam classAttributeIconSize 0
+class ExamController {
+    private ExamService examService
+    private ExamQuestionService examQuestionService
+    private UserRepository userRepository
+    private ExamSubmissionRepository examSubmissionRepository
+    private ExamRepository examRepository
+    public String updateExamName(("examDetails")
+    public String updateDuration(("examDetails")
+    public String updateStartTime(("examDetails")
+    public String updateEndTime(("examDetails")
+    private String prepareSelectChapterPage(Model, HttpSession)
+    public String selectChapter(Model, HttpSession)
+    public String handleChapterSelection(("selectedChapter")
+    public String filterExamQuestionsByChapter(("selectedChapter")
+    public String editExam(Long, Model)
+    public String updateExamQuestions(("examId")
+    public String deleteExam(Long, RedirectAttributes)
+    public String viewExamSubmissions(Model)
+    public String viewExamDetails(Long, Model)
+    public ResponseEntity<String> generateExam(("chapter")
+    public String confirmExam(Long, Model)
+    public String addMoreChapters(("examDetails")
+    public String generateExam(("examDetails")
+    public String showExamLink(Long, Model)
+    public String updateExamDetails(("examDetails")
+}
+@enduml

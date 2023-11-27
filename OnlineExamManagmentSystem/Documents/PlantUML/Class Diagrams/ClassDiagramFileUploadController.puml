@@ -1,0 +1,10 @@
+@startuml
+skinparam classAttributeIconSize 0
+class FileUploadController {
+    private ExamRepository examRepository
+    private ExamQuestionService examQuestionService
+    private ExamService examService
+    public String uploadQuestionsAndGenerateExam(("file")
+    public String updateExamWithQuestions(("file")
+}
+@enduml

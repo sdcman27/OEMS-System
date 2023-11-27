@@ -1,0 +1,27 @@
+@startuml
+skinparam classAttributeIconSize 0
+class Administrator {
+    private Long adminId
+    private String adminFirstName
+    private String adminLastName
+    private String adminEmail
+    private String adminPassword
+    private String adminUsername
+    public Long getAdminId()
+    public void setAdminId(Long)
+    public String getAdminFirstName()
+    public void setAdminFirstName(String)
+    public String getAdminLastName()
+    public void setAdminLastName(String)
+    public String getAdminEmail()
+    public void setAdminEmail(String)
+    public String getAdminPassword()
+    public void setAdminPassword(String)
+    public String getAdminUsername()
+    public void setAdminUsername(String)
+    public List<Roles> getRoles()
+    public void setRoles(List<Roles>)
+    public void setRoot(User)
+    public void setUser(User)
+}
+@enduml

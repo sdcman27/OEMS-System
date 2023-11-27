@@ -1,0 +1,8 @@
+@startuml
+interface ExamRepository [[java:edu.sru.thangiah.repository.ExamRepository]] {
+	findByCourse(course: Course): Set<Exam>
+}
+interface "JpaRepository<Exam,Long>" as JpaRepository_Exam_Long_ {
+}
+JpaRepository_Exam_Long_ <|-- ExamRepository
+@enduml
