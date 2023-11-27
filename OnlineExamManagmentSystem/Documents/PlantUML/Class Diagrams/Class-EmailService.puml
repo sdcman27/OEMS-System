@@ -1,0 +1,6 @@
+@startuml
+class EmailService [[java:edu.sru.thangiah.service.EmailService]] {
+	-javaMailSender: JavaMailSender
+	+sendEmail(recipientEmail: String, subject: String, message: String): void
+}
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+interface ExamSubmissionRepository [[java:edu.sru.thangiah.repository.ExamSubmissionRepository]] {
+	findByUser_IdAndExam_Id(userId: Long, examId: Long): ExamSubmissionEntity
+	deleteByExam(exam: Exam): void
+	countByExam(exam: Exam): long
+	existsByUser_IdAndExam_Id(userId: Long, examId: Long): boolean
+}
+interface "JpaRepository<ExamSubmissionEntity,Long>" as JpaRepository_ExamSubmissionEntity_Long_ {
+}
+JpaRepository_ExamSubmissionEntity_Long_ <|-- ExamSubmissionRepository
+@enduml

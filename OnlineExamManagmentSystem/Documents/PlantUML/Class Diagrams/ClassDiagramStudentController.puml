@@ -1,0 +1,25 @@
+@startuml
+skinparam classAttributeIconSize 0
+class StudentController {
+    private StudentRepository studentRepository
+    private CourseRepository courseRepository
+    private UserRepository userRepository
+    private RoleRepository roleRepository
+    private ExamRepository examRepository
+    private PasswordEncoder passwordEncoder
+    private ExamSubmissionRepository examSubmissionRepository
+    private InstructorRepository instructorRepository
+    public String showStudentHomepage()
+    public String showStudentList(Model)
+    public Student saveStudentWithCourse(Student)
+    public Student findStudent(Long)
+    public List<Student> findStudentsContainingByStudentFirstName(String)
+    public List<Course> findByIdContaining(Long)
+    public String mathQuizPage()
+    public String accountManager(Model)
+    public String editingCurrentUser(("id")
+    public String saveCurrentUserEdits(("id")
+    public String showStudentCourses(Model)
+    public String showStudentGrades(Model)
+}
+@enduml

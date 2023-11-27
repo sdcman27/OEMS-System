@@ -1,0 +1,40 @@
+@startuml
+class Student [[java:edu.sru.thangiah.domain.Student]] {
+	-studentId: Long
+	-courses: Set<Course>
+	-studentFirstName: String
+	-studentLastName: String
+	-studentEmail: String
+	-studentPassword: String
+	-studentUsername: String
+	-creditsTaken: float
+	-roles: List<Roles>
+	-enabled: boolean
+	-user: User
+	+getCourses(): Set<Course>
+	+setCourses(courses: Set<Course>): void
+	+getStudentId(): Long
+	+setStudentId(studentId: Long): void
+	+getStudentFirstName(): String
+	+setStudentFirstName(studentFirstName: String): void
+	+getStudentLastName(): String
+	+setStudentLastName(studentLastName: String): void
+	+getStudentEmail(): String
+	+setStudentEmail(studentEmail: String): void
+	+getStudentPassword(): String
+	+setStudentPassword(studentPassword: String): void
+	+getStudentUsername(): String
+	+setStudentUsername(studentUsername: String): void
+	+getCreditsTaken(): float
+	+setCreditsTaken(creditsTaken: float): void
+	+getRoles(): List<Roles>
+	+setRoles(roles: List<Roles>): void
+	+isEnabled(): boolean
+	+setEnabled(enabled: boolean): void
+	+getUser(): User
+	+setUser(user: User): void
+	+Student(studentId: Long, courses: Set<Course>, studentFirstName: String, studentLastName: String, studentEmail: String, studentPassword: String, studentUsername: String, creditsTaken: float, roles: List<Roles>, user: User)
+	+Student()
+	+toggleEnabled(): void
+}
+@enduml

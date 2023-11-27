@@ -1,0 +1,28 @@
+@startuml
+class ScheduleManager [[java:edu.sru.thangiah.domain.ScheduleManager]] {
+	-managerId: Long
+	-managerFirstName: String
+	-managerLastName: String
+	-managerEmail: String
+	-managerPassword: String
+	-managerUsername: String
+	-roles: List<Roles>
+	+getManagerId(): Long
+	+setManagerId(managerId: Long): void
+	+getManagerFirstName(): String
+	+setManagerFirstName(managerFirstName: String): void
+	+getManagerLastName(): String
+	+setManagerLastName(managerLastName: String): void
+	+getManagerEmail(): String
+	+setManagerEmail(managerEmail: String): void
+	+getManagerPassword(): String
+	+setManagerPassword(managerPassword: String): void
+	+getManagerUsername(): String
+	+setManagerUsername(managerUsername: String): void
+	+getRoles(): List<Roles>
+	+setRoles(roles: List<Roles>): void
+	+setUser(scheduleManager: User): void
+	+ScheduleManager()
+	+ScheduleManager(managerId: Long, managerFirstName: String, managerLastName: String, managerEmail: String, managerPassword: String, managerUsername: String, roles: List<Roles>)
+}
+@enduml

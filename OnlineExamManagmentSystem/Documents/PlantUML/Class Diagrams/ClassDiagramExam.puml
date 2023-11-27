@@ -1,0 +1,32 @@
+@startuml
+skinparam classAttributeIconSize 0
+class Exam {
+    private Long id
+    private int submissionCount
+    private String examName
+    private int durationInMinutes
+    private LocalDateTime startTime
+    private LocalDateTime endTime
+    private Course course
+    private String formattedStartTime
+    public LocalDateTime getEndTime()
+    public void setEndTime(LocalDateTime)
+    public void formatStartTime()
+    public LocalDateTime getStartTime()
+    public void setStartTime(LocalDateTime)
+    public Long getId()
+    public void setId(Long)
+    public String getExamName()
+    public void setExamName(String)
+    public int getDurationInMinutes()
+    public void setDurationInMinutes(int)
+    public List<ExamQuestion> getQuestions()
+    public void setQuestions(List<ExamQuestion>)
+    public Course getCourse()
+    public void setCourse(Course)
+    public String getFormattedStartTime()
+    public void setFormattedStartTime(String)
+    public int getSubmissionCount()
+    public void setSubmissionCount(int)
+}
+@enduml

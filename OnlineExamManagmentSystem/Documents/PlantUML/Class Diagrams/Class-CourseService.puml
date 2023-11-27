@@ -1,0 +1,7 @@
+@startuml
+class CourseService [[java:edu.sru.thangiah.service.CourseService]] {
+	-courseRepository: CourseRepository
+	+save(course: Course): void
+	+saveAll(courses: List<Course>): void
+}
+@enduml

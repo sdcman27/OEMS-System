@@ -1,0 +1,7 @@
+@startuml
+skinparam classAttributeIconSize 0
+class CourseController {
+    private CourseRepository courseRepository
+    public String addCourse(Course, Model)
+}
+@enduml

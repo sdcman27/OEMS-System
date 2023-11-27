@@ -1,0 +1,14 @@
+@startuml
+skinparam classAttributeIconSize 0
+class MenuController {
+    private UserRepository userRepository
+    private RoleRepository roleRepository
+    private AdministratorRepository administratorRepository
+    private StudentRepository studentRepository
+    private InstructorRepository instructorRepository
+    private PasswordEncoder passwordEncoder
+    public String showMainScreen()
+    public String showSidebar()
+    public String exitProgram()
+}
+@enduml

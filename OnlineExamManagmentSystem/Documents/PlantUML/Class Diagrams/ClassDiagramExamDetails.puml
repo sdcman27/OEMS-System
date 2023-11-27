@@ -1,0 +1,16 @@
+@startuml
+skinparam classAttributeIconSize 0
+class ExamDetails {
+    private String examName
+    private int durationInMinutes
+    private int chapter
+    public List<Long> getSelectedExamQuestionIds()
+    public void setSelectedExamQuestionIds(List<Long>)
+    public String getExamName()
+    public void setExamName(String)
+    public int getDurationInMinutes()
+    public void setDurationInMinutes(int)
+    public int getChapter()
+    public void setChapter(int)
+}
+@enduml

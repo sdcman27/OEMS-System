@@ -1,0 +1,57 @@
+@startuml
+skinparam classAttributeIconSize 0
+class InstructorController {
+    private UserRepository userRepository
+    private RoleRepository roleRepository
+    private PasswordEncoder passwordEncoder
+    private ScheduleManagerRepository scheduleManagerRepository
+    private ExcelExportService excelExportService
+    private ExamService examService
+    private InstructorRepository instructorRepository
+    private CourseRepository courseRepository
+    private StudentRepository studentRepository
+    private ExamQuestionService examQuestionService
+    private ExamRepository examRepository
+    public String showInstructorHomepage()
+    public String listExamQuestions(Model)
+    public String showExamLandingPage(Model, HttpSession)
+    public String showExamUploadLandingPage()
+    public String showAllExams(Model)
+    public String captureExamLandingPageData((name, required)
+    public String showAutoExamPage()
+    public String showExamQuestionForm(Model)
+    public String editExamQuestion(Long, Model)
+    public String updateExamQuestion(ExamQuestion)
+    public String removeSelectedQuestion(Long, HttpSession, RedirectAttributes)
+    public String deleteExamQuestion(Long)
+    public String selectExamQuestions(Model, RedirectAttributes)
+    public String generateExam(("examDetails")
+    public String showInstructorList(Model)
+    public String showExamGenerator(Model)
+    public String pickExam(Model)
+    public ResponseEntity<String> createInstructor(Instructor)
+    public Instructor findInstructor(Long)
+    public String showStudentList(Model)
+    public String showSMIV(Model)
+    public String showUpdateFormIV(("id")
+    public String updateStudentIV(("id")
+    public String deleteStudent(("id")
+    public String showStudentsListIV(Model)
+    public String enableDisableStudent(Long, boolean)
+    public String showCreateStudentFormIV()
+    public String createIV(Student, RedirectAttributes)
+    public String associateStudentWithCourseFormIV(Model)
+    public String handleAssociateStudentWithCourse(("studentId")
+    public ResponseEntity<String> exportStudentDataIV()
+    public String importStudents()
+    public String uploadSuccess()
+    public String uploadExcelIV(("file")
+    public String showIvUploadFail()
+    public String showIvClassImport()
+    public String upload(("file")
+    public String accountManager(Model)
+    public String editingCurrentUser(("id")
+    public String saveCurrentUserEdits(("id")
+    public String showInstructorCourses(Model)
+}
+@enduml

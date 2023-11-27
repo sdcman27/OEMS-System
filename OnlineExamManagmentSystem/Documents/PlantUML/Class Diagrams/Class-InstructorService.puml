@@ -1,0 +1,8 @@
+@startuml
+class InstructorService [[java:edu.sru.thangiah.service.InstructorService]] {
+	-instructorRepository: InstructorRepository
+	+deleteInstructor(instructorId: Long): void
+	+saveAll(instructors: List<Instructor>): void
+	+save(instructor: Instructor): void
+}
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+interface StudentRepository [[java:edu.sru.thangiah.repository.StudentRepository]] {
+	findByStudentUsername(username: String): Optional<Student>
+	findBystudentFirstNameContaining(name: String): List<Student>
+	findBystudentUsernameContaining(studentUsername: String): List<Student>
+	findByUserId(user: User): Optional<Student>
+	findByUserId(userId: Long): Optional<Student>
+	findAllByCoursesIn(courses: List<Course>): List<Student>
+	findByCoursesId(id: Long): List<Student>
+}
+interface "JpaRepository<Student,Long>" as JpaRepository_Student_Long_ {
+}
+JpaRepository_Student_Long_ <|-- StudentRepository
+@enduml

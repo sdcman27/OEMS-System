@@ -1,0 +1,9 @@
+@startuml
+interface UserService [[java:edu.sru.thangiah.service.UserService]] {
+	save(registrationDto: UserRegistrationDto): User
+	loadUserByUsername(username: String): UserDetails
+}
+interface UserDetailsService {
+}
+UserDetailsService <|-- UserService
+@enduml

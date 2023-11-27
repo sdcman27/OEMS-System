@@ -1,0 +1,14 @@
+@startuml
+skinparam classAttributeIconSize 0
+class ExcelController {
+    private RoleRepository roleRepository
+    private StudentRepository studentRepository
+    private InstructorRepository instructorRepository
+    private CourseRepository courseRepository
+    private UserRepository userRepository
+    private PasswordEncoder passwordEncoder
+    public String showClassImportPage()
+    public String upload(("file")
+    public String uploadExcel(("file")
+}
+@enduml

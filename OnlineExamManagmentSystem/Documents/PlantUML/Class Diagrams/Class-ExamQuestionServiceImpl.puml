@@ -1,0 +1,32 @@
+@startuml
+class ExamQuestionServiceImpl [[java:edu.sru.thangiah.service.ExamQuestionServiceImpl]] {
+	-resourceLoader: ResourceLoader
+	-examQuestionRepository: ExamQuestionRepository
+	+ExamQuestionServiceImpl(resourceLoader: ResourceLoader)
+	+initializeQuestions(): void
+	+getRandomTrueFalseQuestions(numQuestions: int): List<ExamQuestion>
+	+getRandomFillInTheBlanksQuestions(numQuestions: int): List<ExamQuestion>
+	-loadTrueFalseQuestions(): void
+	-loadBlanksQuestions(): void
+	+generateFillInTheBlanksQuestions(numberOfQuestions: int): List<ExamQuestion>
+	-loadQuestionsFromFile(chapter: int): void
+	+readAIQuestionsFromFile(file: MultipartFile): List<ExamQuestion>
+	+readBlanksFromFile(): List<ExamQuestion>
+	+readTrueFalseFromFile(): List<ExamQuestion>
+	+transformForDisplay(questions: List<ExamQuestion>, userAnswers: Map<Long,String>): List<ExamQuestionDisplay>
+	-getCorrectAnswerText(question: ExamQuestion): String
+	-getOptionText(question: ExamQuestion, optionLetter: String): String
+	+getAllChapters(): List<Integer>
+	+generateQuestionsForChapter(chapter: int): List<ExamQuestion>
+	+getQuestionsByChapter(chapter: int): List<ExamQuestion>
+	+getAllExamQuestions(): List<ExamQuestion>
+	+getExamQuestionById(id: Long): ExamQuestion
+	+saveExamQuestion(examQuestion: ExamQuestion): void
+	+deleteExamQuestion(id: Long): void
+	+readExamQuestionsFromFile(): void
+	+findQuestionsContainingText(searchText: String): List<ExamQuestion>
+}
+interface ExamQuestionService {
+}
+ExamQuestionService <|.. ExamQuestionServiceImpl
+@enduml

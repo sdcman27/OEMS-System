@@ -1,0 +1,20 @@
+@startuml
+skinparam classAttributeIconSize 0
+class CustomBotController {
+    private ExcelGeneratorService excelGeneratorService
+    private String model
+    private String apiURL
+    private RestTemplate template
+    private String currentTopic
+    public ResponseEntity<Integer> getProgress()
+    public ModelAndView chooseTopic()
+    public String showChatbox()
+    public String chat(("prompt")
+    public ModelAndView setTopic(("topic")
+    public ModelAndView getQuiz()
+    public ResponseEntity<byte[]> downloadQuiz()
+    public ModelAndView getQuiz(("topic")
+    public ResponseEntity<byte[]> downloadQuizTxt()
+    private String generateTxtContent(List<Map<String, Object>>)
+}
+@enduml

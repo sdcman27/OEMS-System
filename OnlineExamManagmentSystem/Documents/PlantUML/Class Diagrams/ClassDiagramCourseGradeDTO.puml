@@ -1,0 +1,22 @@
+@startuml
+class CourseGradeDTO [[java:edu.sru.thangiah.web.dto.CourseGradeDTO]] {
+	-courseName: String
+	-examGrades: List<ExamGradeDTO>
+	-totalScore: Integer
+	-totalPossibleScore: Integer
+	-percentage: Double
+	+getCourseName(): String
+	+setCourseName(courseName: String): void
+	+getExamGrades(): List<ExamGradeDTO>
+	+setExamGrades(examGrades: List<ExamGradeDTO>): void
+	+addExamGrade(examName: String, score: Integer, totalQuestions: Integer): void
+	+addExamGrade(examGrade: ExamGradeDTO): void
+	+calculateTotalScoreAndPercentage(): void
+	+getTotalScore(): Integer
+	+setTotalScore(totalScore: Integer): void
+	+getTotalPossibleScore(): Integer
+	+setTotalPossibleScore(totalPossibleScore: Integer): void
+	+getPercentage(): Double
+	+setPercentage(percentage: Double): void
+}
+@enduml

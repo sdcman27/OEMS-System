@@ -1,0 +1,9 @@
+@startuml
+interface UserRepository [[java:edu.sru.thangiah.repository.UserRepository]] {
+	findByUsername(username: String): Optional<User>
+	findByVerificationCode(verificationCode: String): User
+}
+interface "JpaRepository<User,Long>" as JpaRepository_User_Long_ {
+}
+JpaRepository_User_Long_ <|-- UserRepository
+@enduml

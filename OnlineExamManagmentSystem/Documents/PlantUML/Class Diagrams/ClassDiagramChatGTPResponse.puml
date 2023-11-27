@@ -1,0 +1,18 @@
+@startuml
+class ChatGPTRequest [[java:edu.sru.thangiah.web.dto.ChatGPTRequest]] {
+	-model: String
+	-messages: List<Message>
+	+ChatGPTRequest(model: String, prompt: String)
+	+ChatGPTRequest(model2: Model, prompt: String)
+	+getModel(): String
+	+getMessages(): List<Message>
+	+setModel(model: String): void
+	+setMessages(messages: List<Message>): void
+	+equals(o: Object): boolean
+	#canEqual(other: Object): boolean
+	+hashCode(): int
+	+toString(): String
+	+ChatGPTRequest(model: String, messages: List<Message>)
+	+ChatGPTRequest()
+}
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+interface AdministratorRepository [[java:edu.sru.thangiah.repository.AdministratorRepository]] {
+	findByAdminUsername(username: String): Optional<Administrator>
+	findByAdminUsernameContaining(instructorUser: String): List<Administrator>
+}
+interface "JpaRepository<Administrator,Long>" as JpaRepository_Administrator_Long_ {
+}
+JpaRepository_Administrator_Long_ <|-- AdministratorRepository
+@enduml

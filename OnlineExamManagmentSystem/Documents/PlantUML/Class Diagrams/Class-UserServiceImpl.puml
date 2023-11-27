@@ -1,0 +1,10 @@
+@startuml
+class UserServiceImpl [[java:edu.sru.thangiah.service.UserServiceImpl]] {
+	-userRepository: UserRepository
+	+save(registrationDto: UserRegistrationDto): User
+	+loadUserByUsername(username: String): UserDetails
+}
+interface UserService {
+}
+UserService <|.. UserServiceImpl
+@enduml

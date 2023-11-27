@@ -1,0 +1,5 @@
+@startuml
+class ExcelExportService [[java:edu.sru.thangiah.service.ExcelExportService]] {
+	+exportStudentData(students: List<Student>, filePath: String, fileExists: boolean): void
+}
+@enduml
