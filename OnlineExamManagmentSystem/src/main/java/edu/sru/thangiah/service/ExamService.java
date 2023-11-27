@@ -43,7 +43,7 @@ public class ExamService {
     @Autowired
     private ExamSubmissionRepository examSubmissionRepository;
 
-    private List<Question> allQuestions = new ArrayList<>();
+    public List<Question> allQuestions = new ArrayList<>();
 
     
     public List<Question> getAllQuestions() {
@@ -151,7 +151,7 @@ public class ExamService {
 
         ExamResult result = new ExamResult();
         result.setScore(score);
-        result.setCorrectAnswers(new ArrayList<>(correctAnswers.keySet())); // or store the entire map if needed
+        result.setCorrectAnswers(new ArrayList<>(correctAnswers.keySet())); 
         result.setIncorrectAnswersWithCorrections(incorrectAnswersWithCorrections);
 
         return result;
@@ -353,6 +353,8 @@ public class ExamService {
         }
         return exams;
     }
+    
+    
 
 
 
