@@ -242,7 +242,27 @@
             </table>
         </div>
 
-       
+
+        <!-- Exam details forms -->
+        <div class="exam-details">
+            <!-- Form for updating Exam Name -->
+            <form th:action="@{/exam/updateExamName}" th:object="${examDetails}" method="post" class="exam-detail-form">
+                <input type="hidden" th:field="*{id}" />
+                <label class="exam-detail-label" for="examName">Name:</label>
+                <input type="text" th:field="*{examName}" id="examName" />
+                <input type="submit" value="Update" class="submit-button">
+            </form>
+
+            <!-- Form for updating Duration -->
+			<form th:action="@{/exam/updateDuration}" th:object="${examDetails}" method="post" class="exam-detail-form">
+    			<input type="hidden" th:field="*{id}" />
+    			<label class="exam-detail-label" for="duration">Duration (minutes):</label>
+    			<input type="number" th:field="*{durationInMinutes}" id="duration" min="10" /> 
+   				<input type="submit" value="Update" class="submit-button">
+			</form>
+
+        </div>
+
 
         <form id="generateExamForm" action="#" th:action="@{/exam/generate}" method="post">
             <input type="hidden" name="examId" th:value="${currentExamId}" />
@@ -253,8 +273,7 @@
     </div>
     
     <script>
-        
-    document.getElementById('updateExamDetailsForm').addEventListener('submit', function(e) {
+    document.getElementById('updateExamDetailsForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
         var examId = document.querySelector('[name="examId"]').value;
@@ -262,6 +281,12 @@
         var duration = document.querySelector('[name="duration"]').value;
         var startTime = document.querySelector('[name="startTime"]').value;
         var endTime = document.querySelector('[name="endTime"]').value;
+
+        // Validate duration
+        if (duration < 10) { // Check if duration is less than 11 minutes
+            alert("Duration must be at least 10 minutes.");
+            return; // Prevent form submission if validation fails
+        }
 
         var data = {
             examId: examId,
@@ -278,19 +303,17 @@
             },
             body: JSON.stringify(data)
         })
-        .then(response => {
-            if (response.ok) {
-                console.log('Exam details updated successfully');
-                // Additional actions on success (e.g., display a success message)
-            } else {
-                console.error('Error updating exam details');
-                // Additional actions on failure (e.g., display an error message)
-            }
-        })
-        .catch(error => console.error('Error:', error));
+            .then(response => {
+                if (response.ok) {
+                    console.log('Exam details updated successfully');
+                    // Additional actions on success (e.g., display a success message)
+                } else {
+                    console.error('Error updating exam details');
+                    // Additional actions on failure (e.g., display an error message)
+                }
+            })
+            .catch(error => console.error('Error:', error));
     });
-    
-    
 </script>
 </body>
 </html>
