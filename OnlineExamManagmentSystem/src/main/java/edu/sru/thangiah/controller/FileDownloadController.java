@@ -17,10 +17,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
                         
  */
 
+/**
+ * The {@code FileDownloadController} class manages the file download functionalities within the application.
+ * It serves the purpose of providing endpoints for downloading various resources such as Excel files.
+ */
 @Controller
 @RequestMapping("/download")
 public class FileDownloadController {
 
+	/**
+	 * Serves as an endpoint to download a pre-defined Excel file containing student data.
+	 * It sets the appropriate HTTP headers to prompt the user's browser to download the file.
+	 *
+	 * @return a response entity containing the Excel resource along with the correct content type and headers
+	 */
     @GetMapping("/students")
     public ResponseEntity<Resource> downloadExcel() {
         // Load the Excel file from the updated classpath resource location
@@ -35,6 +45,12 @@ public class FileDownloadController {
             .body(resource);
     }
     
+    /**
+     * Serves as an endpoint to download a sample Excel file that can be used as a template for class data imports.
+     * It sets the necessary HTTP headers to prompt the user's browser to handle the file as a downloadable attachment.
+     *
+     * @return a response entity containing the class import Excel resource with the correct content type and headers
+     */
     @GetMapping("/class-import")
     public ResponseEntity<Resource> downloadClassImport() {
         // Load the Excel file from the updated classpath resource location

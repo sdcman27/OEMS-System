@@ -26,6 +26,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Implementation of the ExamQuestionService interface, providing business logic
+ * for managing exam questions, including creation, retrieval, and parsing from files.
+ *
+ * This service is transactional, meaning changes will be rolled back on error
+ * and are applied when the transaction completes successfully.
+ */
 @Service
 public class ExamQuestionServiceImpl implements ExamQuestionService {
 
@@ -39,7 +46,9 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
         this.resourceLoader = resourceLoader;
     }
 
-    // Load questions from the text files only once when the application starts.
+    /**
+     * Loads exam questions from text files into the repository upon application initialization.
+     */
     @PostConstruct
     public void initializeQuestions() {
         if (examQuestionRepository.count() == 0) { // Check if the database is empty
@@ -68,11 +77,23 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
         }
     }
     
+    /**
+     * Retrieves a random selection of true/false questions from the repository.
+     *
+     * @param numQuestions The number of random questions to retrieve.
+     * @return A list of random true/false {@link ExamQuestion} entities.
+     */
     public List<ExamQuestion> getRandomTrueFalseQuestions(int numQuestions) {
         Pageable limit = PageRequest.of(0, numQuestions);
         return examQuestionRepository.findRandomQuestionsByType(ExamQuestion.QuestionType.TRUE_FALSE, limit);
     }
-
+    
+    /**
+     * Generates a list of fill-in-the-blank questions based on the specified number.
+     *
+     * @param numberOfQuestions The number of questions to generate.
+     * @return A sublist of fill-in-the-blank {@link ExamQuestion} entities.
+     */
     public List<ExamQuestion> getRandomFillInTheBlanksQuestions(int numQuestions) {
         Pageable limit = PageRequest.of(0, numQuestions);
         return examQuestionRepository.findRandomQuestionsByType(ExamQuestion.QuestionType.FILL_IN_THE_BLANK, limit);
@@ -172,6 +193,13 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
         reader.close();
     }
     
+    /**
+     * Reads exam questions from a given file and stores them in the repository.
+     *
+     * @param file The multipart file containing exam questions to parse.
+     * @return A list of {@link ExamQuestion} entities parsed from the file.
+     * @throws IOException If there is an error processing the file.
+     */
     @Override
     @Transactional
     public List<ExamQuestion> readAIQuestionsFromFile(MultipartFile file) throws IOException {
@@ -313,7 +341,13 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
         reader.close();
         return trueFalseQuestions;
     }
-    
+    /**
+     * Transforms a list of {@link ExamQuestion} entities into a display-friendly format.
+     *
+     * @param questions    The list of questions to transform.
+     * @param userAnswers  A map of user answers keyed by question ID.
+     * @return A list of {@link ExamQuestionDisplay} entities for presentation.
+     */
     public List<ExamQuestionDisplay> transformForDisplay(List<ExamQuestion> questions, Map<Long, String> userAnswers) {
         List<ExamQuestionDisplay> displayQuestions = new ArrayList<>();
         for (ExamQuestion question : questions) {
@@ -357,47 +391,95 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
 
 
 
-
+    /**
+     * Retrieves all distinct chapter numbers from the repository.
+     *
+     * @return A list of distinct chapter numbers.
+     */
     public List<Integer> getAllChapters() {
         return examQuestionRepository.findAllDistinctChapters();
     }
     
+    /**
+     * Generates a list of exam questions for a specific chapter.
+     *
+     * @param chapter The chapter number to fetch questions for.
+     * @return A list of {@link ExamQuestion} entities for the given chapter.
+     */
     public List<ExamQuestion> generateQuestionsForChapter(int chapter) {
         return examQuestionRepository.findQuestionsByChapter(chapter);
     }
 
-
+    /**
+     * Retrieves a list of exam questions by chapter.
+     *
+     * @param chapter The chapter number to fetch questions for.
+     * @return A list of {@link ExamQuestion} entities for the given chapter.
+     */
 	 @Override
 	    public List<ExamQuestion> getQuestionsByChapter(int chapter) {
 	        return examQuestionRepository.findByChapter(chapter);
 	    }
-
+	 /**
+	  * Retrieves all exam questions from the repository.
+	  *
+	  * @return A list of all {@link ExamQuestion} entities.
+	  */
 	 @Override
 	 public List<ExamQuestion> getAllExamQuestions() {
 	     return examQuestionRepository.findAll();
 	 }
 
+
+	 /**
+	  * Retrieves a specific exam question by its identifier.
+	  *
+ 	  * @param id The identifier of the exam question to retrieve.
+ 	  * @return The {@link ExamQuestion} entity if found, or null otherwise.
+ 	  */
 	 @Override
 	 public ExamQuestion getExamQuestionById(Long id) {
 	     return examQuestionRepository.findById(id).orElse(null);
 	 }
 
+	 /**
+	  * Saves an exam question to the repository.
+	  *
+	  * @param examQuestion The {@link ExamQuestion} entity to save.
+	  */
 	 @Override
 	 public void saveExamQuestion(ExamQuestion examQuestion) {
 	     examQuestionRepository.save(examQuestion);
 	 }
-
+	 
+	 /**
+	  * Deletes an exam question from the repository by its identifier.
+	  *
+	  * @param id The unique identifier of the exam question to delete.
+	  */
 	 @Override
 	 public void deleteExamQuestion(Long id) {
 	     examQuestionRepository.deleteById(id);
 	 }
 
+	 /**
+	 * Reads and parses exam questions from a file and saves them to the repository.
+	 * This method is a placeholder and needs to be implemented.
+	 *
+	 * @throws IOException If there is an error processing the file.
+	 */
 	@Override
 	public void readExamQuestionsFromFile() throws IOException {
 		// TODO Auto-generated method stub
 		
 	}
 	
+	/**
+	 * Finds exam questions containing specific text.
+	 *
+	 * @param searchText The text to search for in exam questions.
+	 * @return A list of {@link ExamQuestion} entities containing the search text.
+	 */
 	 @Override
 	    public List<ExamQuestion> findQuestionsContainingText(String searchText) {
 	        return examQuestionRepository.findByQuestionTextContainingIgnoreCase(searchText);

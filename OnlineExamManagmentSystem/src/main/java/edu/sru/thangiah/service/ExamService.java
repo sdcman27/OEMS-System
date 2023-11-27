@@ -29,6 +29,17 @@ import java.util.stream.Collectors;
                         
  */
 
+/**
+ * Service class for managing exams and their related data such as questions and results.
+ * <p>
+ * This service handles operations for creating, updating, and deleting exams,
+ * evaluating exam answers, and generating various reports and question sets.
+ * </p>
+ *
+ * The ASCII art in the class comment section is a stylistic representation and serves no functional purpose.
+ *
+ * 
+ */
 @Service
 public class ExamService {
 	
@@ -46,14 +57,33 @@ public class ExamService {
     public List<Question> allQuestions = new ArrayList<>();
 
     
+    /**
+     * Retrieves a list of all available questions.
+     *
+     * @return A list of {@link Question} entities.
+     */
     public List<Question> getAllQuestions() {
         return allQuestions;
     }
     
+    /**
+     * Retrieves a specific exam by its identifier.
+     *
+     * @param id The identifier of the exam to retrieve.
+     * @return The {@link Exam} entity if found, or null otherwise.
+     */
     public Exam getExamById(Long id) {
         return examRepository.findById(id).orElse(null);
     }
     
+
+    /**
+     * Evaluates the answers submitted by a user and calculates the exam result.
+     *
+     * @param userAnswers A map containing user answers with the question index as the key.
+     * @return The {@link ExamResult} with the user's score and answer details.
+     */
+
     public boolean updateExamName(Long examId, String examName) {
         Optional<Exam> examOptional = examRepository.findById(examId);
         if (examOptional.isPresent()) {
@@ -127,6 +157,7 @@ public class ExamService {
 
 
     
+
     public ExamResult evaluateAnswers(Map<Integer, String> userAnswers) {
         int score = 0;
         Map<String, String> correctAnswers = new HashMap<>();
@@ -157,15 +188,30 @@ public class ExamService {
         return result;
     }
 
+    /**
+     * Temporarily stores the result of an exam for a user. 
+     * This is a placeholder and should ideally be persisted in a database.
+     *
+     * @param result The {@link ExamResult} to be stored.
+     */
 
     public void storeExamResultForUser(ExamResult result) {
         this.storedExamResult = result;
     }
 
+    /**
+     * Retrieves the stored exam result for a user.
+     *
+     * @return The {@link ExamResult} that was stored previously.
+     */
     public ExamResult getStoredExamResultForUser() {
         return this.storedExamResult;
     }
-
+    /**
+     * Randomly selects a subset of questions to form an exam.
+     *
+     * @return A list of randomly selected {@link Question} entities.
+     */
     public List<Question> getRandomQuestions() {
         List<Question> selectedQuestions = new ArrayList<>();
         Collections.shuffle(allQuestions);
@@ -174,7 +220,12 @@ public class ExamService {
         return selectedQuestions;
     }
     
-    
+    /**
+     * Reads true/false questions from an Excel file located at the given resource path.
+     *
+     * @param resourcePath The classpath resource location of the Excel file to be read.
+     * @return A list of {@link Question} entities containing the true/false questions.
+     */
     private List<Question> readTrueFalseQuestions(String resourcePath) {
         List<Question> questions = new ArrayList<>();
         try (InputStream is = getClass().getResourceAsStream(resourcePath);
@@ -277,7 +328,12 @@ public class ExamService {
         return questions;
     }
     
-
+    /**
+     * Creates an Excel file for the given list of questions.
+     *
+     * @param questions The list of {@link Question} entities to include in the Excel file.
+     * @return A byte array containing the contents of the Excel file.
+     */
     
     public byte[] createExcelFile(List<Question> questions) {
 
@@ -289,19 +345,33 @@ public class ExamService {
             throw new RuntimeException("Failed to convert input stream to byte array", e);
         }
     }
-
+    /**
+     * Fetches distinct chapter numbers from the repository.
+     *
+     * @return A list of distinct chapter numbers.
+     */
     public List<Integer> getAllChapters() {
         // This method should interact with the repository to fetch all distinct chapters available.
         // Assuming you have a method in your repository class that fetches all unique chapter numbers.
         return examQuestionRepository.findAllDistinctChapters();
     }
-
+    /**
+     * Generates a list of questions for a specific chapter.
+     *
+     * @param chapter The chapter number to fetch questions for.
+     * @return A list of {@link ExamQuestion} entities for the given chapter.
+     */
     public List<ExamQuestion> generateQuestionsForChapter(int chapter) {
         // This method fetches questions from a specific chapter.
         // Assumes you have a method in your repository to find questions by chapter.
         return examQuestionRepository.findQuestionsByChapter(chapter);
     }
-    
+    /**
+     * Deletes an exam if it has no submissions.
+     *
+     * @param examId The identifier of the exam to delete.
+     * @return True if the exam was deleted, false otherwise.
+     */
     public boolean deleteExam(Long examId) {
         Optional<Exam> examOptional = examRepository.findById(examId);
         if (examOptional.isPresent()) {
@@ -324,11 +394,22 @@ public class ExamService {
     }
 
 
-    
+
+    /**
+     * Retrieves all questions from the repository.
+     *
+     * @return A list of all {@link ExamQuestion} entities.
+     */
     public List<ExamQuestion> getAllExamQuestions() {
         return examQuestionRepository.findAll();
     }
-    
+
+    /**
+     * Updates the questions for an existing exam.
+     *
+     * @param examId       The identifier of the exam to update.
+     * @param questionIds  The list of question identifiers to associate with the exam.
+     */
     public void updateExamQuestions(Long examId, List<Long> questionIds) {
         Optional<Exam> examOptional = examRepository.findById(examId);
         if (!examOptional.isPresent()) {
@@ -345,6 +426,11 @@ public class ExamService {
         examRepository.save(exam);
     }
     
+    /**
+     * Retrieves all exams with their submission counts.
+     *
+     * @return A list of {@link Exam} entities with updated submission counts.
+     */
     public List<Exam> getAllExamsWithSubmissionCount() {
         List<Exam> exams = examRepository.findAll();
         for (Exam exam : exams) {

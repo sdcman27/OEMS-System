@@ -8,10 +8,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 import lombok.NoArgsConstructor;
 
+/**
+ * The {@code ExamQuestion} class represents a question that can be used in an exam,
+ * including multiple choice, true/false, and fill-in-the-blank types.
+ */
 @NoArgsConstructor
 @Entity 
 public class ExamQuestion {
-	
+	/**
+     * Enumeration for the types of questions.
+     */
 	 public enum QuestionType {
 	        MULTIPLE_CHOICE,
 	        TRUE_FALSE,
@@ -37,7 +43,12 @@ public class ExamQuestion {
     private int chapter;
     private QuestionType questionType; 
     
-    //This is for debugging...
+    /**
+     * Returns a string representation of the object. In general, the
+     * {@code toString} method returns a string that "textually represents" this object.
+     * The result should be a concise but informative representation that is easy for a
+     * person to read.
+     */
     @Override
     public String toString() {
         return "ExamQuestion{" +
@@ -53,7 +64,12 @@ public class ExamQuestion {
                 '}';
     }
     
- // Method to return correct answer text based on question type
+
+    /**
+     * Gets the correct answer text based on the type of the question.
+     *
+     * @return A {@code String} representing the correct answer text.
+     */
     public String getCorrectAnswerText() {
         switch (this.questionType) {
             case MULTIPLE_CHOICE:
@@ -78,7 +94,12 @@ public class ExamQuestion {
         }
     }
 
-    // Helper method to get the option text based on the option letter (A, B, C, D)
+    /**
+     * Gets the text for the specified option letter.
+     *
+     * @param optionLetter A {@code String} representing the option letter.
+     * @return A {@code String} representing the text for the specified option.
+     */
     private String getOptionText(String optionLetter) {
         switch (optionLetter) {
             case "A": return this.optionA;

@@ -50,15 +50,32 @@ public class ExcelController {
     @Autowired
 	private PasswordEncoder passwordEncoder;
 
+    /**
+     * The {@code ExcelController} class manages the import and upload of Excel files related to student and course data. It provides
+     * endpoints to handle file uploads and process the data within, updating entities like courses, instructors, and students accordingly.
+     */
     public ExcelController(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
     
+    /**
+     * Presents the class import page to the user where they can import class data via an Excel file.
+     * 
+     * @return the name of the HTML file for class import page
+     */
     @GetMapping("/class-import")
     public String showClassImportPage() {
         return "class-import";
     }
     
+    /**
+     * Processes the uploaded Excel file, extracts the data, and updates the courses, instructors, and student records in the system.
+     * It handles parsing of course details, instructor information, and student registration for the course.
+     *
+     * @param file the uploaded Excel file containing course and student data
+     * @return a redirect directive based on the success or failure of the upload process
+     * @throws IOException if an error occurs during file processing
+     */
     @PostMapping("/upload")
     public String upload(@RequestParam("file") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
@@ -208,6 +225,12 @@ public class ExcelController {
             }
         }
     
+    /**
+     * Helper method to remove any text before a colon (:) from a given string input.
+     * 
+     * @param input the string input possibly containing a colon
+     * @return the substring after the colon or the original string if no colon is found
+     */
     public static String removeBeforeColon(String input) {
         int colonIndex = input.indexOf(":");
         if (colonIndex != -1) {
@@ -218,6 +241,12 @@ public class ExcelController {
         }
     }
     
+    /**
+     * Helper method to extract first and last names from a full name string where the last name and first name are separated by a comma.
+     * 
+     * @param fullName the full name string with the format "Last Name, First Name"
+     * @return an array with last name at index 0 and first name at index 1, or default "null" values if the format is incorrect
+     */
     public static String[] extractNames(String fullName) {
         // Split the full name using a comma and space as the delimiter
         String[] names = fullName.split(",\\s+");
@@ -229,6 +258,12 @@ public class ExcelController {
         }
     }
     
+    /**
+ * Helper method to parse the username part of an email address.
+ * 
+ * @param email the email address to parse
+ * @return the username part of the email, or the original email if no "@" symbol is found
+ */
     public static String parseEmail(String email) {
         int atIndex = email.indexOf("@");
         if (atIndex != -1) {
@@ -239,6 +274,13 @@ public class ExcelController {
         }
     }
 
+    /**
+     * Handles the uploading of Excel files containing student data. It reads the contents of the file, maps the data to student entities,
+     * and persists them to the database. If a student with the same ID already exists, it will handle it based on the implemented logic.
+     *
+     * @param file the uploaded Excel file containing student data
+     * @return a redirect URL indicating the outcome of the upload process
+     */
     @Transactional
     @PostMapping("/uploadExcel")
     public String uploadExcel(@RequestParam("file") MultipartFile file) {

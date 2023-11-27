@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import edu.sru.thangiah.domain.Course;
 import edu.sru.thangiah.repository.CourseRepository;
 
+/**
+ * Controller class for handling course-related actions.
+ * This class is responsible for managing the course data and interactions within the application.
+ */
 @Controller
 @RequestMapping("/course")
 public class CourseController {
@@ -17,7 +21,14 @@ public class CourseController {
     private CourseRepository courseRepository;
     
     
-
+    /**
+     * Handles the request to add a new course to the system.
+     * Only administrators are allowed to add courses, which is enforced by the PreAuthorize annotation.
+     *
+     * @param course The course object populated from the form submission.
+     * @param model  The UI Model to pass attributes to the view template.
+     * @return The name of the view to be rendered, depending on the outcome of the add operation.
+     */
     @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PostMapping("/add-course")
     public String addCourse(@ModelAttribute Course course, Model model) {

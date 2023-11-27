@@ -1,3 +1,8 @@
+/**
+ * The {@code ExamGradeDTO} class is a data transfer object used to encapsulate
+ * the data attributes of ExamSubmissionEntity for transport between various layers of the application.
+ */
+
 package edu.sru.thangiah.web.dto;
 
 public class ExamGradeDTO {

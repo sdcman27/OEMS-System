@@ -1,3 +1,8 @@
+/**
+ * The {@code UserRegistrationDto} class is a data transfer object used to encapsulate
+ * the data attributes of user details for transport between various layers of the application.
+ */
+
 package edu.sru.thangiah.web.dto;
 
 import org.springframework.lang.NonNull;

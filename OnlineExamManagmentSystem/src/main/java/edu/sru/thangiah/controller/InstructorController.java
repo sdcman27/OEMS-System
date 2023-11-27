@@ -57,6 +57,9 @@ import edu.sru.thangiah.service.ExcelExportService;
 import jakarta.servlet.http.HttpSession;
 import edu.sru.thangiah.repository.UserRepository;
 
+/**
+ * Controller responsible for handling requests related to instructors.
+ */
 @Controller
 @RequestMapping("/instructor")
 public class InstructorController {
@@ -74,6 +77,11 @@ public class InstructorController {
 	@Autowired
 	private ExamService examService;
 	
+	/**
+     * Displays the homepage for instructors.
+     * 
+     * @return The name of the instructor homepage template.
+     */
 	@RequestMapping("/instructor_homepage")
 	public String showInstructorHomepage() {
 		return "instructor_homepage";
@@ -96,6 +104,12 @@ public class InstructorController {
         this.courseRepository = courseRepository;
     }
     
+    /**
+     * Lists all exam questions available to the instructor.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template displaying exam questions.
+     */
     @GetMapping("/exam-questions")
     public String listExamQuestions(Model model) {
         try {
@@ -133,7 +147,13 @@ public class InstructorController {
     }
 
 
-    
+    /**
+     * Displays the landing page for exam management by the instructor.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @param session The HTTP session object.
+     * @return The name of the template for the exam landing page.
+     */
     @GetMapping("/exam/upload")
     public String showExamUploadLandingPage() {
         return "exam-generation-from-file";
@@ -147,6 +167,11 @@ public class InstructorController {
     }
 
 
+    /**
+     * Displays the page for uploading exam files.
+     * 
+     * @return The name of the template for exam file upload.
+     */
     @PostMapping("/exam-landing-page")
     public String captureExamLandingPageData(
             @RequestParam(name = "manual", required = false) String generateManualExam,
@@ -203,18 +228,42 @@ public class InstructorController {
 	    }
 	}
     
-    
+    /**
+     * Shows a list of all exams to the instructor.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template listing all exams.
+     */
     @GetMapping("/auto-generate")
     public String showAutoExamPage() {
         return "automatic-exam-generation";
     }
 
+    /**
+     * Handles the submission of exam landing page data and redirects accordingly.
+     * 
+     * @param generateManualExam The indicator for generating a manual exam.
+     * @param otherAction The indicator for other actions.
+     * @param examName The name of the exam.
+     * @param startDate The start date and time of the exam.
+     * @param endDate The end date and time of the exam.
+     * @param duration The duration of the exam.
+     * @param courseId The ID of the course associated with the exam.
+     * @param session The HTTP session object.
+     * @return A redirection string based on the outcome.
+     */
     @GetMapping("/exam-questions/new")
     public String showExamQuestionForm(Model model) {
         model.addAttribute("examQuestion", new ExamQuestion());
         return "editExamQuestions";
     }
 
+    /**
+     * Displays the form for creating a new exam question.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template for the exam question form.
+     */
     @GetMapping("/exam-questions/edit/{id}")
     public String editExamQuestion(@PathVariable Long id, Model model) {
         ExamQuestion examQuestion = examQuestionService.getExamQuestionById(id);
@@ -222,6 +271,13 @@ public class InstructorController {
         return "editExamQuestions";
     }
 
+    /**
+     * Displays the form to edit an existing exam question.
+     * 
+     * @param id The ID of the exam question to edit.
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template for editing exam questions.
+     */
     @PostMapping("/exam-questions/update")
     public String updateExamQuestion(@ModelAttribute ExamQuestion examQuestion) {
         // Check if the question with the given ID exists
@@ -251,6 +307,13 @@ public class InstructorController {
         return "redirect:/exam/selectChapter";
     }
     
+    /**
+     * Displays the form to edit an existing exam question.
+     * 
+     * @param id The ID of the exam question to edit.
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template for editing exam questions.
+     */
     @GetMapping("/remove-selected-question/{id}")
     public String removeSelectedQuestion(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         List<Long> selectedQuestionIds = (List<Long>) session.getAttribute("selectedQuestionIds");
@@ -270,13 +333,25 @@ public class InstructorController {
 
 
 
-
+    /**
+     * Deletes an exam question from the repository.
+     * 
+     * @param id The ID of the exam question to delete.
+     * @return A redirection string to the list of exam questions.
+     */
     @GetMapping("/exam-questions/delete/{id}")
     public String deleteExamQuestion(@PathVariable Long id) {
         examQuestionService.deleteExamQuestion(id);
         return "redirect:/instructor/exam-questions";
     }
-
+    
+    /**
+     * Selects exam questions for an exam.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @param redirectAttributes The redirect attributes to pass messages.
+     * @return The name of the template for selecting exam questions.
+     */
     @GetMapping("/exam/select-questions")
     public String selectExamQuestions(Model model, RedirectAttributes redirectAttributes) {
         // Fetch all available exam questions to display for selection
@@ -295,7 +370,13 @@ public class InstructorController {
         return "selectExamQuestions"; // This should be your Thymeleaf template for selecting exam questions.
     }
 
-    
+    /**
+     * Generates an exam based on the selected questions and exam details.
+     * 
+     * @param examDetails The exam details object containing the selected question IDs.
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template for selecting exam questions.
+     */
     @PostMapping("/exam/generate")
     public String generateExam(@ModelAttribute("examDetails") ExamDetails examDetails, Model model) {
         List<Long> selectedExamQuestionIds = examDetails.getSelectedExamQuestionIds();
@@ -323,6 +404,13 @@ public class InstructorController {
         // Return the same view which is used for selecting exam questions, not a new one
         return "selectExamQuestions"; // This should be the name of your Thymeleaf template for selecting questions
     }
+    
+    /**
+     * Displays a list of instructors.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template for the instructor list.
+     */
     @GetMapping("/list")
     public String showInstructorList(Model model) {
         List<Instructor> instructors = (List<Instructor>) instructorRepository.findAll();
@@ -330,16 +418,34 @@ public class InstructorController {
         return "instructor-list"; // Create an HTML template for instructor list
     }
     
+    /**
+     * Displays the page for generating exams.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template for the exam generator.
+     */
     @GetMapping("/generate-exam")
     public String showExamGenerator(Model model) {
         return "exam-generator"; // Create an HTML template for exam generation
     }
     
+    /**
+     * Displays the page for picking an exam for further actions.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template for picking an exam.
+     */
     @GetMapping("/pick-exam")
     public String pickExam(Model model) {
         return "pick-exam"; // Create an HTML template for exam generation
     }
 
+    /**
+     * Creates a new instructor based on the provided data.
+     * 
+     * @param instructor The instructor object to create.
+     * @return A ResponseEntity indicating the result of the creation process.
+     */
     @PostMapping("/instructor/create")
     public ResponseEntity<String> createInstructor(@RequestBody Instructor instructor) {
         try {
@@ -350,6 +456,12 @@ public class InstructorController {
         }
     }
     
+    /**
+     * Finds an instructor by their ID.
+     * 
+     * @param instructorId The ID of the instructor to find.
+     * @return The found Instructor object or null if not found.
+     */
     @GetMapping("/{instructorId}")
     public Instructor findInstructor(@PathVariable Long instructorId) {
         return instructorRepository.findById(instructorId).orElse(null);
@@ -387,6 +499,12 @@ public class InstructorController {
     }
 	
 
+	 /**
+     * Displays a list of students associated with the instructor.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template for the student list.
+     */
 	   @PostMapping("/iv-update/{id}")
 	    public String updateStudentIV(@PathVariable("id") long id, @Validated Student student, 
 	    	      BindingResult result, Model model, @RequestParam("newPassword") String newStudentPassword, 
@@ -441,56 +559,15 @@ public class InstructorController {
 	    	        studentRepository.save(Updatestudent);
 	        return "iv-edit-confirmation";
 	    }
-	   /*
 
-	    Student Updatestudent = studentRepository.findByStudentUsername(student.getStudentUsername()).orElse(null);
-
-	    // Copying existing student details
-	    student.setStudentPassword(Updatestudent.getStudentPassword());
-	    student.setUser(Updatestudent.getUser());
-	    student.setCourses(Updatestudent.getCourses());
-
-	    Updatestudent = student;
-
-	    // Checking the user to exist and creating it if it does not already exist
-	    User user = userRepository.findByUsername(Updatestudent.getStudentUsername())
-	            .orElse(new User());  
-
-	    // Checking that both the password and the confirm password field are the same
-	    if (!newStudentPassword.isEmpty() && !confirmStudentPassword.isEmpty()) {
-	        if (!newStudentPassword.equals(confirmStudentPassword)) {
-	            model.addAttribute("passwordError", "Passwords do not match");
-	            return "iv-edit-student";
-	        }
-
-	        String encryptedPassword = passwordEncoder.encode(newStudentPassword);
-	        Updatestudent.setStudentPassword(encryptedPassword);
-	        
-	        // Updating the user's password
-	        user.setPassword(encryptedPassword);
-	    }
-
-	    // Updating the user's details to match the student
-	    user.setFirstName(Updatestudent.getStudentFirstName());
-	    user.setLastName(Updatestudent.getStudentLastName());
-	    user.setUsername(Updatestudent.getStudentUsername());
-	    user.setEmail(Updatestudent.getStudentEmail());
-	    userRepository.save(user);  // Save the user to userRepository
-
-	    // Debugging: Print the received student data
-	    System.out.println("Received Student Data:");
-	    System.out.println("ID: " + Updatestudent.getStudentId());
-	    System.out.println("First Name: " + Updatestudent.getStudentFirstName());
-	    System.out.println("Last Name: " + Updatestudent.getStudentLastName());
-	    System.out.println("Email: " + Updatestudent.getStudentEmail());
-	    System.out.println("Path Variable ID: " + Updatestudent.getStudentId());
-
-	    studentRepository.save(Updatestudent);
-	    return "iv-edit-confirmation";
-}
-}
-
-	*/
+	   
+	   /**
+	    * Deletes a student by their ID. Clears their associated courses before deletion.
+	    *
+	    * @param id The ID of the student to delete.
+	    * @param model The model to pass attributes to the view.
+	    * @return The name of the template indicating successful deletion.
+	    */
 	@GetMapping("/student/delete/{id}")
     public String deleteStudent(@PathVariable("id") long id, Model model) {
         Student student = studentRepository.findById(id)
@@ -504,6 +581,12 @@ public class InstructorController {
         return "iv-edit-confirmation";
     }
 	
+	/**
+	 * Shows the form for associating students with courses.
+	 *
+	 * @param model The model to pass attributes to the view.
+	 * @return The name of the template for associating students with courses.
+	 */
 	@GetMapping("/iv-student-list")
 	public String showStudentsListIV(Model model) {
 
@@ -527,6 +610,13 @@ public class InstructorController {
 		return "iv-student-list";
 	}
 	
+	/**
+	 * Enables or disables a student account based on their ID.
+	 *
+	 * @param id The ID of the student to enable or disable.
+	 * @param enabled The new enabled status.
+	 * @return A redirection string to the student list.
+	 */
 	@GetMapping("/enable-disable-student/{id}")
 	public String enableDisableStudent(@PathVariable Long id, @RequestParam boolean enabled) {
 	    // Find the student by id
@@ -551,12 +641,23 @@ public class InstructorController {
 	    return "redirect:/instructor/iv-student-list";
 	}
 
-    
+	/**
+	 * Shows the form for creating a new student.
+	 *
+	 * @return The name of the template for creating a new student.
+	 */
 	@GetMapping("/iv-create-student")
 	public String showCreateStudentFormIV() {
 		return "iv-create-student"; // This corresponds to the name of your HTML file
 	}
 	
+	/**
+	 * Handles the creation of a new student and their corresponding user account.
+	 *
+	 * @param student The student to be created.
+	 * @param redirectAttributes Redirect attributes to pass messages.
+	 * @return A redirection string based on the outcome.
+	 */
     @Transactional
 	@PostMapping("/createIV")
 	public String createIV(@ModelAttribute Student student, RedirectAttributes redirectAttributes) {
@@ -608,6 +709,12 @@ public class InstructorController {
 	    }
 	}
     
+    /**
+     * Shows the form for associating students with courses.
+     *
+     * @param model The model to pass attributes to the view.
+     * @return The name of the template for associating students with courses.
+     */
 	@GetMapping("/associateIV")
 	public String associateStudentWithCourseFormIV(Model model) {
 		// Retrieve the list of students and courses from the repository
@@ -623,6 +730,13 @@ public class InstructorController {
 		return "iv-associate-students";
 	}
 	
+	/**
+	 * Handles the association of a student with a course.
+	 *
+	 * @param studentId The ID of the student.
+	 * @param courseId The ID of the course.
+	 * @return A redirection string based on the outcome.
+	 */
 	@PostMapping("/associateIV")
 	public String handleAssociateStudentWithCourse(@RequestParam("studentId") Long studentId, @RequestParam("courseId") Long courseId) {
 		System.out.println(studentId);
@@ -646,6 +760,11 @@ public class InstructorController {
 		}
 	}
 	
+	/**
+	 * Exports student data to a predefined location.
+	 *
+	 * @return A ResponseEntity containing the outcome message.
+	 */
 	@GetMapping("/exportStudentIV")
 	public ResponseEntity<String> exportStudentDataIV() {
 	    try {
@@ -680,16 +799,32 @@ public class InstructorController {
 	    }
 	}
 	
+	/**
+	 * Shows the form for importing student data from an Excel file.
+	 *
+	 * @return The name of the template for importing students.
+	 */
 	@GetMapping("/uploadExcelIV")
 	public String importStudents() {
 		return "iv-import"; // This corresponds to the name of your HTML file
 	}
 	
+	/**
+	 * Indicates a successful upload operation.
+	 *
+	 * @return The name of the template indicating a successful upload.
+	 */
 	@GetMapping("/iv-upload-success")
 	public String uploadSuccess() {
 		return "iv-upload-success"; // This corresponds to the name of your HTML file
 	}
 	
+	/**
+	 * Handles the upload and processing of an Excel file containing student data.
+	 *
+	 * @param file The uploaded Excel file.
+	 * @return A redirection string based on the outcome.
+	 */
 	@Transactional
 	@PostMapping("/uploadExcelIV")
 	public String uploadExcelIV(@RequestParam("file") MultipartFile file) {
@@ -812,16 +947,32 @@ public class InstructorController {
 //        return "iv-edit-confirmation";
 //    }
 	
+	/**
+	 * Indicates a failed upload operation.
+	 *
+	 * @return The name of the template indicating a failed upload.
+	 */
 	@GetMapping("/iv-upload-fail")
 	public String showIvUploadFail() {
 		return "iv-upload-fail"; // This corresponds to the name of your HTML file
 	}
 	
+	/**
+	 * Shows the form for importing class data from an Excel file.
+	 *
+	 * @return The name of the template for importing class data.
+	 */
 	@GetMapping("/iv-class-import")
 	public String showIvClassImport() {
 		return "iv-class-import"; // This corresponds to the name of your HTML file
 	}
 	
+	/**
+	 * Handles the upload of an Excel file containing class data.
+	 *
+	 * @param file The uploaded Excel file.
+	 * @return A redirection string based on the outcome.
+	 */
 	 @PostMapping("/iv-upload")
 	    public String upload(@RequestParam("file") MultipartFile file) throws IOException {
 	        if (file.isEmpty()) {
@@ -1030,6 +1181,12 @@ public class InstructorController {
 	    }
 	    
 	    
+	    /**
+	     * Manages the account settings for the instructor.
+	     *
+	     * @param model The model to pass attributes to the view.
+	     * @return The name of the template for account management.
+	     */
 	    @GetMapping("/iv-account-management")
 		public String accountManager(Model model){
 			
@@ -1048,7 +1205,16 @@ public class InstructorController {
 			return "iv-account-management";
 		}
 	    
-	    
+
+
+
+/**
+ * Shows the form for the current instructor to edit their personal information.
+ *
+ * @param id The ID of the instructor.
+ * @param model The model to pass attributes to the view.
+ * @return The name of the template for editing the current instructor.
+ */
 	    @GetMapping("/iv-edit-current-instructor/{id}")
 		public String editingCurrentUser(@PathVariable("id") long id, Model model) {
 	    	Instructor instructor = instructorRepository.findById(id)
@@ -1058,7 +1224,18 @@ public class InstructorController {
 		    return "iv-edit-current-instructor"; 
 		}
 	    
-	    
+	    /**
+	     * Saves the edits made to the current instructor's account.
+	     *
+	     * @param id The ID of the instructor.
+	     * @param instructor The updated instructor object.
+	     * @param result BindingResult for form validation.
+	     * @param model The model to pass attributes to the view.
+	     * @param currentPassword The current password of the instructor.
+	     * @param newInstructorPassword The new password of the instructor.
+	     * @param confirmInstructorPassword The confirmation for the new password.
+	     * @return A redirection string based on the outcome.
+	     */
 	    @Transactional
 		@PostMapping("/iv-edit-instructor/{id}")
 		public String saveCurrentUserEdits(@PathVariable("id") long id, @Validated Instructor instructor, 
@@ -1117,7 +1294,12 @@ public class InstructorController {
 		    return "iv-instructor-edit-confirmation"; 
 		}
 	    
-	    
+	    /**
+	     * Shows the list of courses managed by the instructor.
+	     *
+	     * @param model The model to pass attributes to the view.
+	     * @return The name of the template for the instructor's course list.
+	     */
 	    @GetMapping("/iv-course-list")
 		public String showInstructorCourses(Model model) {
 		    // retrieve the currently authenticated user's name

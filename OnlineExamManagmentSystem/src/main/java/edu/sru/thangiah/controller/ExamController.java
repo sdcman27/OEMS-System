@@ -51,6 +51,11 @@ import edu.sru.thangiah.service.ExamService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 
+
+/**
+ * The {@code ExamController} class handles all web requests related to exam management including
+ * viewing, creating, updating, and deleting exams, as well as managing exam questions and submissions.
+ */
 @Controller
 @RequestMapping("/exam")
 public class ExamController {
@@ -74,6 +79,14 @@ public class ExamController {
         this.examService = examService;
     }
     
+
+    /**
+     * Filters exam questions by a specific chapter and adds them to the model for display.
+     *
+     * @param chapter the chapter number to filter questions by
+     * @param model the {@code Model} object to which the filtered questions and chapter list are added
+     * @return the name of the view to display the list of filtered exam questions
+     */
     @PostMapping("/updateExamName")
     public String updateExamName(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
         boolean success = examService.updateExamName(exam.getId(), exam.getExamName());
@@ -135,7 +148,15 @@ public class ExamController {
 
         return "selectChapter"; 
     }
-    
+  
+    /**
+     * Handles the chapter selection for exam generation and updates the session with the selected chapter.
+     *
+     * @param chapter The chapter number that has been selected.
+     * @param session The HTTP session to store the selected chapter number.
+     * @param redirectAttributes Attributes for a redirect scenario.
+     * @return A redirection to the exam generation page.
+     */
     @GetMapping("/selectChapter")
     public String selectChapter(Model model, HttpSession session) {
         Long examId = (Long) session.getAttribute("currentExamId");
@@ -172,7 +193,14 @@ public class ExamController {
         return prepareSelectChapterPage(model, session);
     }
 
-
+    /**
+     * Generates an exam based on a specific chapter and displays it to the user.
+     *
+     * @param chapter The chapter number from which the exam is generated.
+     * @param model The model to add attributes to for the view.
+     * @param session The HTTP session to verify the ongoing exam creation process.
+     * @return The view name for the exam generation page.
+     */
     @PostMapping("/selectChapter")
     public String handleChapterSelection(@RequestParam("selectedChapter") int chapter, 
                                          HttpSession session, RedirectAttributes redirectAttributes) {
@@ -188,6 +216,7 @@ public class ExamController {
         return "redirect:/exam/generateExam";
     }
     
+
     @GetMapping("/exam-questions/filterByChapter")
     public String filterExamQuestionsByChapter(@RequestParam("selectedChapter") int chapter, Model model) {
         List<ExamQuestion> questions = examService.generateQuestionsForChapter(chapter);
@@ -196,7 +225,13 @@ public class ExamController {
         return "listExamQuestions"; 
     }
 
-    
+    /**
+     * Retrieves an exam for editing and adds its details to the model.
+     *
+     * @param id the ID of the exam to be edited
+     * @param model the {@code Model} object to which the exam details are added
+     * @return the name of the view to edit the exam or a redirect if the exam is not found
+     */
     @GetMapping("/edit/{id}")
     public String editExam(@PathVariable Long id, Model model) {
         Exam exam = examService.getExamById(id);
@@ -212,6 +247,13 @@ public class ExamController {
         return "editExam";
     }
     
+    /**
+     * Updates the questions for a given exam.
+     *
+     * @param examId the ID of the exam to update
+     * @param questionIds the list of question IDs to associate with the exam
+     * @return a redirect URL to the exam details page
+     */
     @PostMapping("/updateQuestions")
     public String updateExamQuestions(@RequestParam("examId") Long examId, @RequestParam("questionIds") List<Long> questionIds) {
         examService.updateExamQuestions(examId, questionIds);
@@ -219,7 +261,13 @@ public class ExamController {
     }
 
 
-    
+    /**
+     * Deletes an exam with the given ID.
+     *
+     * @param id the ID of the exam to be deleted
+     * @param redirectAttributes attributes for a redirect scenario
+     * @return a redirect URL to the list of all exams
+     */
     @GetMapping("/delete/{id}")
     public String deleteExam(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         boolean isDeleted = examService.deleteExam(id);
@@ -231,7 +279,12 @@ public class ExamController {
     }
 
 
-    
+    /**
+     * Retrieves all exam submissions and adds them to the model for viewing.
+     *
+     * @param model the {@code Model} object to which the submissions are added
+     * @return the name of the view to display exam submissions
+     */
     @GetMapping("/submissions")
     public String viewExamSubmissions(Model model) {
     	List<ExamSubmissionEntity> submissions = examSubmissionRepository.findAll();
@@ -242,6 +295,13 @@ public class ExamController {
         return "examSubmissions"; 
     }
     
+    /**
+     * Displays the details of a specific exam.
+     *
+     * @param id the ID of the exam to view details for
+     * @param model the {@code Model} object to which the exam details are added
+     * @return the name of the view to display the exam details or a redirect if the exam is not found
+     */
     @GetMapping("/details/{id}")
     public String viewExamDetails(@PathVariable Long id, Model model) {
         Exam exam = examService.getExamById(id); // Implement this method in your service
@@ -256,7 +316,18 @@ public class ExamController {
         return "examDetails"; 
     }
     
-   
+    /**
+     * Generates an exam with questions from a specific chapter and of specific types based on the request parameters.
+     * The method handles the question generation process and stores the generated exam in the session.
+     *
+     * @param chapter The chapter number from which to generate the questions.
+     * @param numMultipleChoice The number of multiple-choice questions to generate.
+     * @param numTrueFalse The number of true/false questions to generate.
+     * @param numBlanks The number of fill-in-the-blank questions to generate.
+     * @param session The HTTP session to store the current exam ID.
+     * @return A {@code ResponseEntity} with the exam ID if successful, or an error message if not.
+     * @throws IOException If there is an input/output error during question generation.
+     */
     @PostMapping("/manual-auto-generate")
     public ResponseEntity<String> generateExam(
             @RequestParam("chapter") int chapter, 
@@ -295,7 +366,13 @@ public class ExamController {
         return ResponseEntity.ok().body(String.valueOf(exam.getId()));
     }
 
-    
+    /**
+     * Confirms the creation of an auto-generated exam and presents its details.
+     *
+     * @param examId The ID of the generated exam.
+     * @param model The model to add attributes to for the view.
+     * @return The view name for the exam confirmation page.
+     */
     @GetMapping("/confirmation/{examId}")
     public String confirmExam(@PathVariable Long examId, Model model) {
         Optional<Exam> exam = examRepository.findById(examId);
@@ -310,6 +387,13 @@ public class ExamController {
         return "autoExamConfirmation"; 
     }
     
+    /**
+     * Adds more chapters to the current exam being generated and updates the session with the selected question IDs.
+     *
+     * @param examDetails The details of the exam including selected chapters and questions.
+     * @param session The HTTP session to store the selected question IDs.
+     * @return A redirection to the chapter selection page.
+     */
     @PostMapping("/addMoreChapters")
     public String addMoreChapters(@ModelAttribute("examDetails") ExamDetails examDetails,
                                   HttpSession session) {
@@ -329,7 +413,15 @@ public class ExamController {
         return "redirect:/exam/selectChapter"; 
     }
     
-    
+    /**
+     * Finalizes the generation of an exam by combining previously selected questions with the current selection and
+     * saves the exam to the repository.
+     *
+     * @param examDetails The details of the exam including selected chapters and questions.
+     * @param session The HTTP session containing the current exam and selected question IDs.
+     * @param model The model to add attributes to for the view.
+     * @return The view name for the exam generated confirmation page.
+     */
     @Transactional
     @PostMapping("/generate")
     public String generateExam(@ModelAttribute("examDetails") ExamDetails examDetails,
@@ -385,7 +477,13 @@ public class ExamController {
 
 
     
-
+    /**
+     * Displays the link for an exam so that it can be shared with students.
+     *
+     * @param id The ID of the exam for which the link is generated.
+     * @param model The model to add attributes to for the view.
+     * @return The view name for displaying the exam link.
+     */
     @GetMapping("/{id}/link")
     public String showExamLink(@PathVariable Long id, Model model) {
         Exam exam = examRepository.findById(id).orElse(null); // Fetching the exam from the database.
@@ -406,6 +504,7 @@ public class ExamController {
     
   
     
+
     @PostMapping("/updateDetails")
     public String updateExamDetails(@ModelAttribute("examDetails") Exam updatedExam) {
         boolean success = examService.updateExamDetails(updatedExam);
@@ -415,14 +514,23 @@ System.out.println("Updated");
 } else {
 System.out.println("Error");        }
 
+
         return "redirect:/exam/selectChapter"; // Redirect back to the exam page
     }
 
 
 
-
-
     
+    /**
+     * Processes the submission of an exam by a student, evaluates the answers, and displays the score.
+     *
+     * @param id The ID of the exam being submitted.
+     * @param formParams The submitted answers from the form.
+     * @param model The model to add attributes to for the view.
+     * @param principal The principal to identify the user.
+     * @param authentication The authentication to obtain the user's details.
+     * @return The view name for displaying the exam score or an error message.
+     */
     @GetMapping("/generateExam")
     public String generateExam(@ModelAttribute("selectedChapter") int chapter, Model model, HttpSession session) {
         // Generate questions based on the selected chapter.
@@ -444,6 +552,15 @@ System.out.println("Error");        }
     }
 
 
+    /**
+     * Handles the request to take an exam by an examinee and determines if the exam duration is still valid.
+     * If the exam is valid and found, it is added to the model and the view for taking the exam is returned.
+     * Otherwise, an error message is set and the error view is returned.
+     *
+     * @param id The ID of the exam to be taken.
+     * @param model The {@link Model} to which the exam and message attributes are added.
+     * @return The view name for taking the exam or an error page.
+     */
     @GetMapping("/{id}")
     public String takeExamz(@PathVariable Long id, Model model) {
         // Retrieve the exam by ID from the repository
@@ -464,6 +581,15 @@ System.out.println("Error");        }
         return "error"; 
     }
     
+    /**
+     * Handles the request to take an exam by an examinee and determines if the exam duration is still valid.
+     * If the exam is valid and found, it is added to the model and the view for taking the exam is returned.
+     * Otherwise, an error message is set and the error view is returned.
+     *
+     * @param id The ID of the exam to be taken.
+     * @param model The {@link Model} to which the exam and message attributes are added.
+     * @return The view name for taking the exam or an error page.
+     */
     @GetMapping("/take/{id}")
     public String takeExam(@PathVariable Long id, Model model) {
         try {
@@ -493,6 +619,15 @@ System.out.println("Error");        }
         return "error"; // The name of the error view template
     }
 
+    /**
+     * Handles the request to take an exam by an examinee and determines if the exam duration is still valid.
+     * If the exam is valid and found, it is added to the model and the view for taking the exam is returned.
+     * Otherwise, an error message is set and the error view is returned.
+     *
+     * @param id The ID of the exam to be taken.
+     * @param model The {@link Model} to which the exam and message attributes are added.
+     * @return The view name for taking the exam or an error page.
+     */
     @GetMapping("/exam/{id}/link")
     public String generateExamLink(@PathVariable Long id, Model model) {
         // Get the exam details from the database using the provided id
@@ -517,7 +652,18 @@ System.out.println("Error");        }
     }
 
 
-    @PostMapping("/submit/{id}")
+    /**
+     * Processes the submission of an exam by a student, evaluates the answers, and displays the score and any incorrect questions.
+     * If the exam is not found, an error message is set and the error page template is returned.
+     *
+     * @param id The ID of the exam being submitted.
+     * @param formParams The map containing the submitted answers from the form.
+     * @param model The {@link Model} to which the score and message attributes are added.
+     * @param principal The {@link Principal} to identify the user.
+     * @param authentication The {@link Authentication} to obtain the user's details.
+     * @return The view name for displaying the score or an error page.
+     */
+@PostMapping("/submit/{id}")
     public String submitExam(@PathVariable Long id, @RequestParam Map<String, String> formParams, Model model, Principal principal, Authentication authentication) {
         Exam exam = examService.getExamById(id);
 
@@ -573,7 +719,7 @@ System.out.println("Error");        }
         return "showScore";
     }
 
-    private String mapAnswerKeyToText(ExamQuestion question, String answerKey) {
+private String mapAnswerKeyToText(ExamQuestion question, String answerKey) {
         switch (answerKey) {
             case "A": return question.getOptionA();
             case "B": return question.getOptionB();
@@ -741,6 +887,7 @@ System.out.println("Error");        }
         }
     }
     
+    
     @PostMapping("/exam/generate")
     public String generateExam(@ModelAttribute("examDetails") ExamDetails examDetails, RedirectAttributes redirectAttributes) {
         // Assuming examDetails now includes a field for 'chapter' which is populated from the form.
@@ -782,6 +929,12 @@ System.out.println("Error");        }
         return "edit-exam"; 
     }
     
+    /**
+     * Submits the edited questions for an exam in Excel format and returns the generated file as a downloadable resource.
+     *
+     * @param editedQuestions The list of edited questions to be included in the Excel file.
+     * @return A {@link ResponseEntity} containing the byte array of the Excel file and the headers for download.
+     */
     @PostMapping(value = "/submitEditedExam", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<byte[]> submitEditedExam(@RequestBody List<Question> editedQuestions) {
     	System.out.println("Inside POST");
@@ -799,8 +952,12 @@ System.out.println("Error");        }
     }
 
 
-
-    // This method receives the submitted answers, evaluates them, and redirects to the results page
+    /**
+     * Receives the submitted answers via AJAX, evaluates them, and provides a URL for redirection to the results page.
+     *
+     * @param userAnswers A map of user answers with question IDs as keys and selected answers as values.
+     * @return A map containing the URL for redirection to the results page.
+     */
     @PostMapping("/submitAnswers")
     @ResponseBody
     public Map<String, Object> submitAnswers(@RequestBody Map<Integer, String> userAnswers) {
@@ -817,7 +974,12 @@ System.out.println("Error");        }
         return response;
     }
 
-    // This method prepares and shows the results page to the user
+    /**
+     * Prepares and displays the results page to the user after an exam has been submitted.
+     *
+     * @param model The {@link Model} to which the exam result attributes are added.
+     * @return The view name for the results page.
+     */
     @GetMapping("/submit-answers")
     public String showResults(Model model) {
         // Retrieve the results from the service or session

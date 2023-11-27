@@ -13,6 +13,23 @@ import edu.sru.thangiah.domain.Instructor;
 import edu.sru.thangiah.repository.CourseRepository;
 import edu.sru.thangiah.repository.InstructorRepository;
 
+
+
+/**
+ * Service class for handling operations related to schedule management.
+ * <p>
+ * Provides methods for creating or updating instructor and course information,
+ * as well as for deleting instructors and courses from the system.
+ * </p>
+ *
+ * Note: This class also seems to have an HTTP POST endpoint mapping,
+ * which is typically not a responsibility of a service class. Service classes
+ * should be free of web layer annotations like {@code @PostMapping}.
+ * Such methods should be moved to a controller class.
+ *
+ * @author Your Name
+ * @version 1.0
+ */
 @Service
 public class ScheduleManagerService {
 
@@ -22,17 +39,41 @@ public class ScheduleManagerService {
     @Autowired
     private InstructorRepository instructorRepository;
 
+    /**
+     * Creates or updates an instructor in the database.
+     *
+     * @param instructor The instructor entity to save.
+     * @return The saved instructor entity.
+     */
     public Instructor createOrUpdateInstructor(Instructor instructor) {
         return instructorRepository.save(instructor);
     }
 
+    /**
+     * Creates or updates a course in the database.
+     *
+     * @param course The course entity to save.
+     * @return The saved course entity.
+     */
     public Course createOrUpdateCourse(Course course) {
         return courseRepository.save(course);
     }
 
+    /**
+     * Creates or updates a course in the database.
+     *
+     * @param course The course entity to save.
+     * @return The saved course entity.
+     */
     public void deleteInstructor(Long id) {
         instructorRepository.deleteById(id);
     }
+    
+    /**
+     * Deletes an instructor by their identifier.
+     *
+     * @param id The unique identifier of the instructor to delete.
+     */
 
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
