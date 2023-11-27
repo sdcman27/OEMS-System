@@ -23,6 +23,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "STUDENT")
 
+
+/**
+ * Entity class representing a student within the system.
+ * Maps to the STUDENT table in the database and includes relationships to courses and roles.
+ */
 public class Student {
     
     @Id
@@ -41,7 +46,7 @@ public class Student {
 
     
     
- // Getter and setter for courses
+    
     public Set<Course> getCourses() {
         return courses;
     }

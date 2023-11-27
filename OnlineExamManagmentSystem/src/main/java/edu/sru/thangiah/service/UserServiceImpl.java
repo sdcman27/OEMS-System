@@ -9,6 +9,16 @@ import edu.sru.thangiah.model.User;
 import edu.sru.thangiah.repository.UserRepository;
 import edu.sru.thangiah.web.dto.UserRegistrationDto;
 
+
+/**
+ * Service implementation for user management operations.
+ * <p>
+ * This class implements the {@link UserService} interface and provides
+ * concrete implementations for the methods to handle user registration
+ * and to load user details for authentication purposes.
+ * </p>
+ *
+ */
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -23,7 +33,12 @@ public class UserServiceImpl implements UserService {
 	 * // Save the user to the database return userRepository.save(user); }
 	 */
 
-	
+    /**
+     * Registers a new user account with the information provided from the registration DTO.
+     *
+     * @param registrationDto the data transfer object containing user registration details
+     * @return the registered {@link User} entity after saving it to the database
+     */
 	@Override
 	public User save(UserRegistrationDto registrationDto) {
 		User user = new User(null, registrationDto.getFirstName(), registrationDto.getLastName(),
@@ -34,7 +49,13 @@ public class UserServiceImpl implements UserService {
 
 	}
 	
-
+	/**
+     * Loads the user-specific data necessary for authentication.
+     *
+     * @param username the username identifying the user whose data is to be loaded
+     * @return the {@link UserDetails} of the requested user
+     * @throws UsernameNotFoundException if the user with the given username is not found
+     */
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

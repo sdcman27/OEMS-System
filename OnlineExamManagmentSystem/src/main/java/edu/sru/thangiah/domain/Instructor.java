@@ -18,7 +18,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
-
+/**
+ * Represents an instructor entity associated with courses and roles.
+ */
 @Entity
 @Table(name = "instructor", uniqueConstraints = @UniqueConstraint(columnNames = "id"))
 public class Instructor {
@@ -147,10 +149,22 @@ public class Instructor {
 		this.courses = courses;
 	}
 	
-	// Constructors
-    public Instructor() {
+	/**
+     * Default constructor for JPA.
+     */
+	public Instructor() {
     }
 
+	/**
+     * Constructor to create an instructor with the specified details.
+     *
+     * @param instructorFirstName First name of the instructor.
+     * @param instructorLastName  Last name of the instructor.
+     * @param instructorEmail     Email address of the instructor.
+     * @param instructorPassword  Password of the instructor.
+     * @param instructorUsername  Username of the instructor.
+     * @param creditsTaught       Number of credits taught by the instructor.
+     */
     public Instructor(String instructorFirstName, String instructorLastName, String instructorEmail,
                       String instructorPassword, String instructorUsername, float creditsTaught) {
         this.instructorFirstName = instructorFirstName;
@@ -165,6 +179,12 @@ public class Instructor {
 		this.instructorId = instructorId;
 	}
 
+	 /**
+     * Sets the user entity to the instructor. This includes setting the first name, last name, email,
+     * password, username, and roles from the user entity to the instructor.
+     *
+     * @param instructor User entity that contains the instructor information.
+     */
 	public void setUser(User instructor) {
 	    this.instructorFirstName = instructor.getFirstName();
 	    this.instructorLastName = instructor.getLastName();

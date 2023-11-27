@@ -16,6 +16,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.util.Optional;
 
+
+/**
+ * Service class for parsing Excel files and saving the data to the database.
+ * <p>
+ * It utilizes Apache POI to read Excel files and extracts data to create and persist
+ * {@link Course}, {@link Instructor}, and {@link Student} entities.
+ * </p>
+ *
+ * 
+ */
 @Transactional
 @Service
 public class ExcelParserService {
@@ -28,6 +38,13 @@ public class ExcelParserService {
 
     @Autowired
     private CourseRepository courseRepository;
+    
+    /**
+     * Parses an Excel file and creates or updates corresponding entities in the database.
+     * 
+     * @param file A {@link MultipartFile} object representing the Excel file to be processed.
+     * @return A string indicating the status of the file processing.
+     */
 
     public String parseExcelFile(MultipartFile file) {
         if (file.isEmpty()) {

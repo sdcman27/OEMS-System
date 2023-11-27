@@ -16,6 +16,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+/**
+ * Entity class representing a schedule manager within the system.
+ * Maps to the ScheduleManager table in the database and includes relationships to roles.
+ */
 @Entity
 @Table(name = "ScheduleManager", uniqueConstraints = @UniqueConstraint(columnNames = "id"))
 public class ScheduleManager {
@@ -110,6 +114,11 @@ public class ScheduleManager {
 		this.roles = roles;
 	}
 
+	 /**
+     * Sets the schedule manager's attributes based on a User entity.
+     *
+     * @param scheduleManager The User entity from which to copy properties.
+     */
 	public void setUser(User scheduleManager) {
 		this.managerId = scheduleManager.getId();	
 		this.managerFirstName = scheduleManager.getFirstName();
@@ -120,10 +129,22 @@ public class ScheduleManager {
 	    this.roles = scheduleManager.getRoles();
 	}
 
-	
+	  /**
+     * Default constructor for JPA.
+     */
 	public ScheduleManager() {}
 
-	
+	  /**
+     * Constructs a new ScheduleManager with the specified details.
+     *
+     * @param managerId        The unique ID of the schedule manager.
+     * @param managerFirstName The first name of the schedule manager.
+     * @param managerLastName  The last name of the schedule manager.
+     * @param managerEmail     The email address of the schedule manager.
+     * @param managerPassword  The password for the schedule manager.
+     * @param managerUsername  The username for the schedule manager.
+     * @param roles            The roles associated with the schedule manager.
+     */
 	public ScheduleManager(Long managerId, String managerFirstName, String managerLastName, String managerEmail,
 			String managerPassword, String managerUsername, List<Roles> roles) {
 		super();

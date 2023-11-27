@@ -17,10 +17,32 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Custom authentication success handler for managing redirection after successful authentication
+ * based on user roles and certain conditions like default passwords.
+ * <p>
+ * This class extends {@link SimpleUrlAuthenticationSuccessHandler} to override the
+ * {@code onAuthenticationSuccess} method. It determines the role of the authenticated user
+ * and performs redirection to different URLs based on their role and whether they are using
+ * a default password.
+ * </p>
+ */
 @Component
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-	
+	/**
+     * Handles the redirection logic after successful authentication.
+     * <p>
+     * If the user has a default password, they are redirected to change it. Otherwise, they are
+     * redirected to the homepage corresponding to their role. It uses the {@code HttpSession} to pass
+     * messages between redirects.
+     * </p>
+     *
+     * @param request The request during which the authentication attempt occurred.
+     * @param response The response.
+     * @param authentication The authentication object which was created during the authentication process.
+     * @throws IOException On input/output exceptions during redirection.
+     */
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         

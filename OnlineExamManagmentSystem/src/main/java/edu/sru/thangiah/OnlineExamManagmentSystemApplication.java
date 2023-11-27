@@ -46,7 +46,12 @@ import edu.sru.thangiah.repository.UserRepository;
 
 @SpringBootApplication
 public class OnlineExamManagmentSystemApplication {
-
+	
+	/**
+     * The main method to start the Spring Boot application.
+     * 
+     * @param args Command-line arguments passed to the application.
+     */
     public static void main(String[] args) {
         SpringApplication.run(OnlineExamManagmentSystemApplication.class, args);
     }
@@ -74,6 +79,12 @@ public class OnlineExamManagmentSystemApplication {
     @Autowired
     private ScheduleManagerRepository scheduleManagerRepository;
 
+    /**
+     * CommandLineRunner bean to set up roles in the database.
+     * It checks for the existence of roles and creates them if not found.
+     *
+     * @return The CommandLineRunner bean.
+     */
     @Bean
     public CommandLineRunner setupRoles() {
         return args -> {
@@ -85,6 +96,12 @@ public class OnlineExamManagmentSystemApplication {
         };
     }
 
+    /**
+     * CommandLineRunner bean to set up a default user in the database.
+     * It checks for the existence of users and creates them with default roles if not found.
+     *
+     * @return The CommandLineRunner bean.
+     */
     @Bean
     public CommandLineRunner setupDefaultUser() {
         return args -> {
@@ -96,12 +113,27 @@ public class OnlineExamManagmentSystemApplication {
     }
 
 
+    /**
+     * Helper method to create a role if it does not exist.
+     * 
+     * @param roleName The name of the role to create.
+     */
     private void createRoleIfNotFound(String roleName) {
         if (!roleRepository.findByName(roleName).isPresent()) {
             roleRepository.save(new Roles(null, roleName));
         }
     }
-
+    
+    /**
+     * Helper method to create a user with the specified details if the user does not exist.
+     * 
+     * @param username The username for the user.
+     * @param password The password for the user.
+     * @param roleName The role to assign to the user.
+     * @param email The email for the user.
+     * @param firstName The first name of the user.
+     * @param lastName The last name of the user.
+     */
     private void createUserIfNotFound(String username, String password, String roleName, String email, String firstName, String lastName) {
         if (!userRepository.findByUsername(username).isPresent()) {
         	User user = new User();

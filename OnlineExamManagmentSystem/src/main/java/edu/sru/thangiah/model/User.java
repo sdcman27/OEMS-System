@@ -24,8 +24,11 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+/**
+ * Entity class representing a user in the system. It includes user details and implements
+ * Spring Security's UserDetails interface for authentication and authorization purposes.
+ */
 @Entity
-
 @Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = "id"))
 public class User implements UserDetails{
 	
@@ -156,6 +159,10 @@ public class User implements UserDetails{
 		this.enabled = enabled;
 	}
 
+    /**
+     * Returns the authorities granted to the user. Essentially, the roles that the user has.
+     * @return a collection of GrantedAuthority objects.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());

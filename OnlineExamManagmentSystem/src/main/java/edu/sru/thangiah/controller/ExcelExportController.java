@@ -20,6 +20,10 @@ import java.util.List;
                         
  */
 
+/**
+ * The {@code ExcelExportController} class handles the exportation of student data to an Excel file.
+ * It provides RESTful endpoints to trigger the export process and retrieve the status of the export operation.
+ */
 @RestController
 @RequestMapping("/export")
 public class ExcelExportController {
@@ -32,7 +36,13 @@ public class ExcelExportController {
         this.excelExportService = excelExportService;
         this.studentRepository = studentRepository;
     }
-
+    /**
+     * Exports the data of all students from the database into an Excel file.
+     * The method retrieves the data, invokes the export service, and saves the Excel file to the user's download directory.
+     * It returns a status message indicating the success or failure of the export process.
+     *
+     * @return a string message indicating the result of the export process
+     */
     @GetMapping("/students")
     public String exportStudentData() {
     	

@@ -20,8 +20,25 @@ import java.util.Map;
                         
  */
 
+
+/**
+ * Service for generating Excel spreadsheets from quiz data.
+ * This service uses Apache POI to create workbooks that can be used to download quiz data in the Excel format.
+ * <p>
+ * The ASCII art in the class comment section is a stylistic representation and serves no functional purpose.
+ * </p>
+ */
 @Service
 public class ExcelGeneratorService {
+	
+	 /**
+     * Generates an Excel file in byte array format from a list of quiz data maps.
+     * Each map in the list represents a quiz question and its associated choices.
+     *
+     * @param quizData A list of maps, where each map contains data for a single quiz question.
+     * @return A byte array representing the Excel file.
+     * @throws IOException If there is an error writing to the byte array output stream.
+     */
 
     public byte[] generateExcel(List<Map<String, Object>> quizData) throws IOException {
         Workbook workbook = new XSSFWorkbook();
@@ -63,7 +80,15 @@ public class ExcelGeneratorService {
         return byteArrayOutputStream.toByteArray();
     }
     
-
+    /**
+     * Generates an Excel file in byte array format from a list of quiz data maps.
+     * Each map in the list represents a quiz question and its associated choices.
+     *
+     * @param quizData A list of maps, where each map contains data for a single quiz question.
+     * @return A byte array representing the Excel file.
+     * @throws IOException If there is an error writing to the byte array output stream.
+     */
+    
     public static ByteArrayInputStream createExcelFile(List<Question> questions) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
             Sheet sheet = workbook.createSheet("Questions");
