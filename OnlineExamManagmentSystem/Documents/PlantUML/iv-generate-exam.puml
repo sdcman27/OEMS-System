@@ -1,0 +1,41 @@
+@startuml
+
+actor User
+participant "Web Page" as WebPage
+participant "Controller" as Controller
+participant "Model" as Model
+participant "ExamDetails" as ExamDetails
+participant "ExamQuestionService" as ExamQuestionService
+participant "Exam" as Exam
+participant "ExamRepository" as ExamRepository
+
+User -> WebPage: Fill exam details
+User -> WebPage: Submit exam details
+
+WebPage -> Controller: generateExam(examDetails)
+
+activate Controller
+Controller -> ExamDetails: Get selectedExamQuestionIds
+ExamDetails --> Controller: Return selectedExamQuestionIds
+Controller -> ExamQuestionService: getExamQuestionById for each selected ID
+activate ExamQuestionService
+ExamQuestionService --> Controller: Return selected questions
+deactivate ExamQuestionService
+
+Controller -> Exam: Create new exam
+Controller -> Exam: Set exam properties
+Controller -> ExamRepository: Save exam
+activate ExamRepository
+ExamRepository --> Controller: Return savedExam
+deactivate ExamRepository
+
+Controller -> Model: Add generatedExamId attribute
+Controller -> ExamQuestionService: getAllExamQuestions
+activate ExamQuestionService
+ExamQuestionService --> Controller: Return examQuestions
+deactivate ExamQuestionService
+
+Controller -> Model: Add examQuestions attribute
+Controller --> WebPage: Return selectExamQuestions view
+
+@enduml

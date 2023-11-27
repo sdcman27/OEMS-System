@@ -1,0 +1,38 @@
+@startuml
+
+actor User
+participant "Web Browser" as Browser
+participant "Controller" as Controller
+participant "Authentication" as Authentication
+participant "InstructorRepository" as InstructorRepository
+participant "CourseRepository" as CourseRepository
+participant "Instructor" as Instructor
+participant "Course" as Course
+participant "Model" as Model
+
+User -> Browser: Access /iv-course-list
+Browser -> Controller: GET /iv-course-list
+
+Controller -> Authentication: Get authentication details
+activate Authentication
+Authentication --> Controller: Return user details
+deactivate Authentication
+
+Controller -> InstructorRepository: Find instructor by username
+activate InstructorRepository
+InstructorRepository --> Controller: Return instructor details
+deactivate InstructorRepository
+
+alt Instructor found
+    Controller -> CourseRepository: Find courses by instructor
+    activate CourseRepository
+    CourseRepository --> Controller: Return instructor's courses
+    deactivate CourseRepository
+
+    Controller -> Model: Add attributes for courses and course counts
+    Controller --> Browser: Return iv-course-list view with course information
+else Instructor not found
+    Controller --> Browser: Redirect to error page or handle appropriately
+end
+
+@enduml

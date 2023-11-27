@@ -1,0 +1,42 @@
+@startuml
+
+actor User
+participant "Upload Page" as UploadPage
+participant "Controller" as Controller
+participant "ExamQuestionService" as ExamQuestionService
+participant "Exam" as Exam
+participant "ExamRepository" as ExamRepository
+participant "RedirectAttributes" as RedirectAttributes
+participant "Model" as Model
+participant "examGeneratedConfirmation" as ExamConfirmationPage
+
+User -> UploadPage: Uploads file
+User -> UploadPage: Submits file
+
+UploadPage -> Controller: uploadQuestionsAndGenerateExam(file)
+
+Controller -> Controller: Check if file is empty
+alt file is empty
+    Controller -> RedirectAttributes: Add message\n'No file uploaded'
+    Controller -> UploadPage: Redirect to\nupload-path
+else file is not empty
+    Controller -> ExamQuestionService: readAIQuestionsFromFile(file)
+    ExamQuestionService -> ExamQuestionService: Read questions\nfrom file
+    ExamQuestionService -> ExamQuestionService: Get list of persisted questions
+
+    alt Generate Exam
+        Controller -> Exam: Create Exam
+        Exam -> Exam: Set exam name and duration
+        Exam -> Exam: Set uploaded questions
+        Controller -> ExamRepository: Save exam
+        ExamRepository -> ExamRepository: Save exam to database
+        Controller -> Model: Add attributes\nfor confirmation page
+        Model -> ExamConfirmationPage: Return generatedExamId,\nexamDuration, and\nselectedQuestions
+        Controller -> ExamConfirmationPage: Redirect to\nexamGeneratedConfirmation
+    else Error while generating exam
+        Controller -> RedirectAttributes: Add message\n'Failed to upload file\nand generate exam'
+        Controller -> UploadPage: Redirect to\nupload-path
+    end
+end
+
+@enduml
