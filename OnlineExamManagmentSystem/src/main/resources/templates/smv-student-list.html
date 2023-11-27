@@ -47,9 +47,60 @@
          h4{
 			text-align: center;
 		}
+		.list-buttons {
+			text-align: center;
+            margin-top: 20px;
+            display: flex;
+            justify-content:center;
+		}
+
+		.list-link {
+			text-decoration: none;
+            background-color: #007055;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 1px;
+		}
+
+		.list-link:hover {
+			background-color: #019270;
+		}
+		
+		th.sortable:hover {
+            background-color: #005f43; 
+            cursor: pointer;
+        }
     </style>
     
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    
+    <script>
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementsByTagName("table")[0];
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+    </script>
 
 </head>
 
@@ -66,16 +117,21 @@ $(function(){
 <body>
 	<br>
     <h1>Student List</h1>
-
+
+	<div class="list-buttons">
+		<a class="list-link" th:href="@{/schedule-manager/smv-class-student-list}">View Student Lists by Courses</a>
+	</div>
+	
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Username</th>
-                <th>     </th>
+                 <th>ID</th>
+                <th class="sortable" onclick="sortTable(1)">First Name</th>
+                <th class="sortable" onclick="sortTable(2)">Last Name</th>
+                <th class="sortable" onclick="sortTable(3)">Email</th>
+                <th class="sortable" onclick="sortTable(4)">Username</th>
+                <th>Edit</th>
+                <th>Delete</th>
                 
             </tr>
         </thead>
@@ -88,6 +144,7 @@ $(function(){
                 <td th:text="${student.studentEmail}"></td>
                 <td th:text="${student.studentUsername}"></td>
                 <td><a th:href="@{/schedule-manager/smv-edit-student/{id}(id=${student.studentId})}">Edit</a></td>
+                <td><a th:href="@{/schedule-manager/student/delete/{id}(id=${student.studentId})}" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a></td>
             </tr>
         </tbody>
     </table>

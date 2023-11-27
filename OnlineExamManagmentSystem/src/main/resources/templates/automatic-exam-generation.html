@@ -11,7 +11,7 @@
             overflow-y: auto !important;
             position: relative;
             color: #333;
-            background-color: #f4f4f4; /* Light background for better contrast */
+            background-color: #f4f4f4;
         }
 
         h1 {
@@ -22,6 +22,35 @@
             margin: 0;
             border-bottom: 2px solid #004c3b;
         }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin: 10px 0;
+        }
+
+        label, select {
+            margin-right: 10px;
+        }
+
+        button {
+            background-color: #007055;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #00563f;
+        }
     </style>
 </head>
 <body>
@@ -29,116 +58,120 @@
 
     <h1>Automatic Exam Generation</h1>
 
-    <label for="chapterSelection">Chapter Selection:</label>
-    <select id="chapterSelection">
-        <option value="1">Chapter 1</option>
-        <option value="2">Chapter 2</option>
-        <option value="3">Chapter 3</option>
-        <option value="4">Chapter 4</option>
-        <option value="5">Chapter 5</option>
-        <option value="6">Chapter 6</option>
-        <option value="7">Chapter 7</option>
-        <option value="8">Chapter 8</option>
-        <option value="9">Chapter 9</option>
-    </select> <br>
+    <div class="form-container">
+        <form id="examForm">
+            <div class="form-group">
+                <label for="chapterSelection">Chapter Selection:</label>
+                <select id="chapterSelection">
+                    <option value="1">Chapter 1</option>
+                    <option value="2">Chapter 2</option>
+                    <option value="3">Chapter 3</option>
+                    <option value="4">Chapter 4</option>
+                    <option value="5">Chapter 5</option>
+                    <option value="6">Chapter 6</option>
+                    <option value="7">Chapter 7</option>
+                    <option value="8">Chapter 8</option>
+                    <option value="9">Chapter 9</option>
+                </select>
+            </div>
 
-    <label for="numMultipleChoice">Number of Multiple Choice Questions:</label>
-    <select id="numMultipleChoice">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-    </select> <br>
+            <div class="form-group">
+                <label for="numMultipleChoice">Number of Multiple Choice Questions:</label>
+                <select id="numMultipleChoice">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
 
-    <label for="numTrueFalse">Number of True/False Questions:</label>
-    <select id="numTrueFalse">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-    </select> <br>
+            <div class="form-group">
+                <label for="numTrueFalse">Number of True/False Questions:</label>
+                <select id="numTrueFalse">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
 
-    <label for="numBlanks">Number of Fill-in-the-Blanks:</label>
-    <select id="numBlanks">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-        <option value="11">11</option>
-        <option value="12">12</option>
-        <option value="13">13</option>
-        <option value="14">14</option>
-        <option value="15">15</option>
-        <option value="16">16</option>
-        <option value="17">17</option>
-        <option value="18">18</option>
-        <option value="19">19</option>
-        <option value="20">20</option>
-    </select> <br>
+            <div class="form-group">
+                <label for="numBlanks">Number of Fill-in-the-Blanks:</label>
+                <select id="numBlanks">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
 
-    <button type="button" onclick="generateQuiz()">Generate Exam</button>
+            <button type="button" onclick="generateQuiz()">Generate Exam</button>
+        </form>
+    </div>
 
     <script>
         $(document).ready(function() {
             $("#nav-placeholder").load("/instructor/instructor_homepage", function() {
-                // Once the navbar content is loaded, remove any video elements from the loaded content
                 $("#nav-placeholder video").remove();
             });
         });
 
-function generateQuiz() {
-    // Get selected chapter, MCQ, True/False, and fill-in-the-blanks values
-    var selectedChapter = $("#chapterSelection").val();
-    var numMCQ = $("#numMultipleChoice").val();
-    var numTrueFalse = $("#numTrueFalse").val();
-    var numBlanks = $("#numBlanks").val();
+        function generateQuiz() {
+            var selectedChapter = $("#chapterSelection").val();
+            var numMCQ = $("#numMultipleChoice").val();
+            var numTrueFalse = $("#numTrueFalse").val();
+            var numBlanks = $("#numBlanks").val();
 
-    // Log these values to the console
-    console.log("Selected Chapter: " + selectedChapter);
-    console.log("Number of MCQ: " + numMCQ);
-    console.log("Number of True/False: " + numTrueFalse);
-    console.log("Number of Fill-in-the-Blanks: " + numBlanks);
+            console.log("Selected Chapter: " + selectedChapter);
+            console.log("Number of MCQ: " + numMCQ);
+            console.log("Number of True/False: " + numTrueFalse);
+            console.log("Number of Fill-in-the-Blanks: " + numBlanks);
 
-    // AJAX request to backend to generate the exam
-    $.ajax({
-        type: 'POST',
-        url: '/exam/manual-auto-generate',
-        data: {
-            chapter: selectedChapter,
-            numMultipleChoice: numMCQ,
-            numTrueFalse: numTrueFalse,
-            numBlanks: numBlanks
-        },
-        success: function(response) {
-            // Redirect to the confirmation page with the exam ID
-            window.location.href = "/exam/confirmation/" + response;
-        },
-        error: function(xhr, status, error) {
-            console.error("An error occurred: " + error);
+            $.ajax({
+                type: 'POST',
+                url: '/exam/manual-auto-generate',
+                data: {
+                    chapter: selectedChapter,
+                    numMultipleChoice: numMCQ,
+                    numTrueFalse: numTrueFalse,
+                    numBlanks: numBlanks
+                },
+                success: function(response) {
+                    window.location.href = "/exam/confirmation/" + response;
+                },
+                error: function(xhr, status, error) {
+                    console.error("An error occurred: " + error);
+                }
+            });
         }
-    });
-}
-
-
-
     </script>
 </body>
 </html>

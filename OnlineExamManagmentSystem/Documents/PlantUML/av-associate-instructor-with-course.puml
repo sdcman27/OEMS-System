@@ -1,0 +1,38 @@
+@startuml
+participant Client
+participant Controller
+participant instructorRepository
+participant courseRepository
+participant Instructor
+participant Course
+
+Client -> Controller: POST Request: /instructor/course/associate
+activate Controller
+
+Controller -> instructorRepository: findById(instructorId)
+activate instructorRepository
+instructorRepository --> Controller: Instructor entity
+deactivate instructorRepository
+
+Controller -> courseRepository: findById(courseId)
+activate courseRepository
+courseRepository --> Controller: Course entity
+deactivate courseRepository
+
+alt Entities found
+    Controller -> Instructor: instructor.getCourses().add(course)
+    activate Instructor
+    Instructor --> Controller: Updated instructor entity
+    deactivate Instructor
+
+    Controller -> instructorRepository: save(instructor)
+    activate instructorRepository
+    instructorRepository --> Controller: Saved instructor entity
+    deactivate instructorRepository
+
+    Controller --> Client: ResponseEntity.ok("Instructor associated with the course successfully")
+else Entities not found
+    Controller --> Client: ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Instructor or course not found")
+end
+
+@enduml

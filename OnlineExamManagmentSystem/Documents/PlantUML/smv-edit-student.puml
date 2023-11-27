@@ -1,0 +1,95 @@
+@startuml
+participant Client
+participant Controller
+participant studentRepository
+participant userRepository
+participant Model
+participant Student
+participant User
+participant passwordEncoder
+
+Client -> Controller: GET Request: /smv-edit-student/{id}
+activate Controller
+Controller -> studentRepository: findById(id)
+activate studentRepository
+studentRepository --> Controller: Student
+deactivate studentRepository
+Controller -> Model: Add student attribute
+activate Model
+Model --> Controller: Updated Model
+deactivate Model
+Controller --> Client: Return View: smv-edit-student
+deactivate Controller
+
+Client -> Controller: POST Request: /smv-update/{id}
+activate Controller
+Controller -> studentRepository: findByStudentUsername(student.getStudentUsername())
+activate studentRepository
+studentRepository --> Controller: Optional<Student>
+deactivate studentRepository
+alt Student exists
+    Controller -> userRepository: findByUsername(student.getStudentUsername())
+    activate userRepository
+    userRepository --> Controller: Optional<User>
+    deactivate userRepository
+    alt User exists
+        Controller -> passwordEncoder: encode(newStudentPassword)
+        activate passwordEncoder
+        passwordEncoder --> Controller: Encoded Password
+        deactivate passwordEncoder
+        Controller -> userRepository: save(user)
+        activate userRepository
+        userRepository --> Controller: Saved User
+        deactivate userRepository
+        Controller -> Updatestudent: setStudentPassword(encryptedPassword)
+        activate Updatestudent
+        Updatestudent --> Controller: Updated Student
+        deactivate Updatestudent
+        Controller -> userRepository: save(user)
+        activate userRepository
+        userRepository --> Controller: Saved User
+        deactivate userRepository
+        Controller -> Updatestudent: getCourses()
+        activate Updatestudent
+        Updatestudent --> Controller: Student Courses
+        deactivate Updatestudent
+        Controller -> studentRepository: save(Updatestudent)
+        activate studentRepository
+        studentRepository --> Controller: Saved Student
+        deactivate studentRepository
+        Controller --> Client: Return View: smv-edit-confirmation
+        deactivate Controller
+    else User does not exist
+        Controller --> Client: Error View: smv-edit-student
+        deactivate Controller
+    end
+else Student does not exist
+    Controller --> Client: Error View: smv-edit-student
+    deactivate Controller
+end
+
+Client -> Controller: GET Request: /student/delete/{id}
+activate Controller
+Controller -> studentRepository: findById(id)
+activate studentRepository
+studentRepository --> Controller: Student
+deactivate studentRepository
+Controller -> student: getCourses()
+activate student
+student --> Controller: Student Courses
+deactivate student
+Controller -> student: clearCourses()
+activate student
+student --> Controller: Cleared Courses
+deactivate student
+Controller -> studentRepository: save(student)
+activate studentRepository
+studentRepository --> Controller: Saved Student
+deactivate studentRepository
+Controller -> studentRepository: delete(student)
+activate studentRepository
+studentRepository --> Controller: Deleted Student
+deactivate studentRepository
+Controller --> Client: Return View: smv-edit-confirmation
+deactivate Controller
+@enduml

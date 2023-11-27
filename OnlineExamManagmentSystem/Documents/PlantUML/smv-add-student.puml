@@ -1,0 +1,93 @@
+@startuml
+participant Client
+participant Controller
+participant studentRepository
+participant userRepository
+participant RedirectAttributes
+participant Student
+participant User
+participant passwordEncoder
+participant roleRepository
+participant Roles
+
+Client -> Controller: POST Request: /create
+activate Controller
+
+Controller -> studentRepository: findByStudentUsername(student.getStudentUsername())
+activate studentRepository
+studentRepository --> Controller: Optional<Student>
+deactivate studentRepository
+
+alt Student exists
+    Controller -> RedirectAttributes: addFlashAttribute("errorMessage", "Student with given username already exists.")
+    activate RedirectAttributes
+    RedirectAttributes --> Controller: Flash Attribute
+    deactivate RedirectAttributes
+
+    Controller --> Client: Return Redirect: /schedule-manager/create-students
+    deactivate Controller
+else Student does not exist
+    Controller -> userRepository: findById(student.getStudentId())
+    activate userRepository
+    userRepository --> Controller: Optional<User>
+    deactivate userRepository
+
+    alt User exists with given ID
+        Controller -> RedirectAttributes: addFlashAttribute("errorMessage", "User with given ID already exists.")
+        activate RedirectAttributes
+        RedirectAttributes --> Controller: Flash Attribute
+        deactivate RedirectAttributes
+
+        Controller --> Client: Return Redirect: /schedule-manager/create-students
+        deactivate Controller
+    else User does not exist with given ID
+        Controller -> User: Create new User
+        activate User
+        User --> Controller: New User
+        deactivate User
+
+        Controller -> passwordEncoder: encode(student.getStudentPassword())
+        activate passwordEncoder
+        passwordEncoder --> Controller: Encoded Password
+        deactivate passwordEncoder
+
+        Controller -> roleRepository: findById(2L)
+        activate roleRepository
+        roleRepository --> Controller: Roles
+        deactivate roleRepository
+
+        Controller -> Collections: singletonList(roles)
+        activate Collections
+        Collections --> Controller: List of Roles
+        deactivate Collections
+
+        Controller -> User: Set User properties
+        activate User
+        User --> Controller: Updated User
+        deactivate User
+
+        Controller -> userRepository: Save User
+        activate userRepository
+        userRepository --> Controller: Saved User
+        deactivate userRepository
+
+        Controller -> student: setStudentPassword(hashedPassword)
+        activate student
+        student --> Controller: Updated Student
+        deactivate student
+
+        Controller -> studentRepository: Save Student
+        activate studentRepository
+        studentRepository --> Controller: Saved Student
+        deactivate studentRepository
+
+        Controller -> RedirectAttributes: addFlashAttribute("successMessage", "Student and corresponding user added successfully.")
+        activate RedirectAttributes
+        RedirectAttributes --> Controller: Flash Attribute
+        deactivate RedirectAttributes
+
+        Controller --> Client: Return Redirect: /smv-upload-success
+        deactivate Controller
+    end
+end
+@enduml

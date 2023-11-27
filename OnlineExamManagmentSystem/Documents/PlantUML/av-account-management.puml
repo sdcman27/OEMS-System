@@ -1,0 +1,65 @@
+@startuml
+participant Client
+participant Controller
+participant Model
+participant SecurityContextHolder
+participant administratorRepository
+participant userRepository
+participant passwordEncoder
+participant BindingResult
+
+Client -> Controller: Request: /av-account-management
+activate Controller
+Controller -> SecurityContextHolder: getContext().getAuthentication()
+activate SecurityContextHolder
+alt Authenticated
+    SecurityContextHolder --> Controller: Authentication
+    Controller -> System: Print auth details
+    activate System
+    System --> Controller: Printed auth details
+    deactivate System
+    Controller -> administratorRepository: findByAdminUsernameContaining(instructorUser)
+    activate administratorRepository
+    administratorRepository --> Controller: Administrator data
+    deactivate administratorRepository
+    Controller -> Model: addAttribute("administrator", administrator)
+    Model --> Controller: Updated model
+    Controller --> Client: Return view: av-account-management
+else Not Authenticated
+    SecurityContextHolder --> Controller: Unauthenticated
+    Controller --> Client: Redirect to login
+end
+
+Client -> Controller: Request: /av-edit-current-admin/{id}
+activate Controller
+Controller -> administratorRepository: findById(id)
+activate administratorRepository
+administratorRepository --> Controller: Administrator data
+deactivate administratorRepository
+Controller -> Model: addAttribute("administrator", administrator)
+Model --> Controller: Updated model
+Controller --> Client: Return view: av-edit-current-admin
+
+Client -> Controller: POST Request: /av-edit-admin/{id}
+activate Controller
+Controller -> userRepository: findByUsername(administrator.getAdminUsername())
+activate userRepository
+alt User found
+    userRepository --> Controller: User data
+else User not found
+    userRepository --> Controller: Empty user data
+end
+deactivate userRepository
+
+Controller -> passwordEncoder: matches(currentPassword, user.getPassword())
+activate passwordEncoder
+alt Password correct
+    passwordEncoder --> Controller: True
+else Password incorrect
+    passwordEncoder --> Controller: False
+    Controller -> Model: addAttribute("passwordError", "Current password is incorrect")
+    Model --> Controller: Updated model
+    Controller --> Client: Return view: av-edit-current-admin
+    deactivate passwordEncoder
+    deactivate Controller
+@enduml

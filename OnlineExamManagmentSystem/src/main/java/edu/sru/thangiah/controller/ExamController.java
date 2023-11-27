@@ -3,6 +3,7 @@ package edu.sru.thangiah.controller;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -76,6 +79,7 @@ public class ExamController {
         this.examService = examService;
     }
     
+
     /**
      * Filters exam questions by a specific chapter and adds them to the model for display.
      *
@@ -83,6 +87,136 @@ public class ExamController {
      * @param model the {@code Model} object to which the filtered questions and chapter list are added
      * @return the name of the view to display the list of filtered exam questions
      */
+    @PostMapping("/updateExamName")
+    public String updateExamName(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
+        boolean success = examService.updateExamName(exam.getId(), exam.getExamName());
+        if (success) {
+            model.addAttribute("successMessage", "Exam name updated successfully.");
+        }
+        return prepareSelectChapterPage(model, session);
+    }
+
+    @PostMapping("/updateDuration")
+    public String updateDuration(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
+        boolean success = examService.updateDuration(exam.getId(), exam.getDurationInMinutes());
+        if (success) {
+            model.addAttribute("successMessage", "Exam duration updated successfully.");
+        }
+        return prepareSelectChapterPage(model, session);
+    }
+
+    @PostMapping("/updateStartTime")
+    public String updateStartTime(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
+        boolean success = examService.updateStartTime(exam.getId(), exam.getStartTime());
+        if (success) {
+            exam = examService.getExamById(exam.getId()); // Reload the updated exam
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            String formattedStartTime = exam.getStartTime().format(formatter);
+            model.addAttribute("formattedStartTime", formattedStartTime);
+            model.addAttribute("successMessage", "Start time updated successfully.");
+        }
+        return prepareSelectChapterPage(model, session);
+    }
+
+    @PostMapping("/updateEndTime")
+    public String updateEndTime(@ModelAttribute("examDetails") Exam exam, Model model, HttpSession session) {
+        boolean success = examService.updateEndTime(exam.getId(), exam.getEndTime());
+        if (success) {
+            exam = examService.getExamById(exam.getId()); // Reload the updated exam
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            String formattedEndTime = exam.getEndTime().format(formatter);
+            model.addAttribute("formattedEndTime", formattedEndTime);
+            model.addAttribute("successMessage", "End time updated successfully.");
+        }
+        return prepareSelectChapterPage(model, session);
+    }
+
+    private String prepareSelectChapterPage(Model model, HttpSession session) {
+        Long examId = (Long) session.getAttribute("currentExamId");
+        if (examId == null) {
+            return "error"; 
+        }
+
+        List<Integer> chapters = examService.getAllChapters();
+        model.addAttribute("chapters", chapters);
+
+        Exam exam = examService.getExamById(examId);
+        if (exam != null) {
+            model.addAttribute("examDetails", exam);
+        }
+
+
+        return "selectChapter"; 
+    }
+  
+    /**
+     * Handles the chapter selection for exam generation and updates the session with the selected chapter.
+     *
+     * @param chapter The chapter number that has been selected.
+     * @param session The HTTP session to store the selected chapter number.
+     * @param redirectAttributes Attributes for a redirect scenario.
+     * @return A redirection to the exam generation page.
+     */
+    @GetMapping("/selectChapter")
+    public String selectChapter(Model model, HttpSession session) {
+        Long examId = (Long) session.getAttribute("currentExamId");
+        if (examId == null) {
+            return "error"; // Handle error scenario
+        }
+
+        List<Integer> chapters = examService.getAllChapters();
+        model.addAttribute("chapters", chapters);
+
+        Exam exam = examService.getExamById(examId);
+        if (exam != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            String formattedStartTime = (exam.getStartTime() != null) ? exam.getStartTime().format(formatter) : "";
+            String formattedEndTime = (exam.getEndTime() != null) ? exam.getEndTime().format(formatter) : "";
+
+            model.addAttribute("formattedStartTime", formattedStartTime);
+            model.addAttribute("formattedEndTime", formattedEndTime);
+            model.addAttribute("examName", exam.getExamName());
+            model.addAttribute("examDuration", exam.getDurationInMinutes());
+            model.addAttribute("examDetails", exam);
+        } else {
+            model.addAttribute("examDetails", new Exam());
+        }
+
+        List<Long> selectedQuestionIds = (List<Long>) session.getAttribute("selectedQuestionIds");
+        if (selectedQuestionIds != null && !selectedQuestionIds.isEmpty()) {
+            List<ExamQuestion> selectedQuestions = selectedQuestionIds.stream()
+                                                                      .map(questionId -> examQuestionService.getExamQuestionById(questionId))
+                                                                      .collect(Collectors.toList());
+            model.addAttribute("selectedQuestions", selectedQuestions);
+        }
+
+        return prepareSelectChapterPage(model, session);
+    }
+
+    /**
+     * Generates an exam based on a specific chapter and displays it to the user.
+     *
+     * @param chapter The chapter number from which the exam is generated.
+     * @param model The model to add attributes to for the view.
+     * @param session The HTTP session to verify the ongoing exam creation process.
+     * @return The view name for the exam generation page.
+     */
+    @PostMapping("/selectChapter")
+    public String handleChapterSelection(@RequestParam("selectedChapter") int chapter, 
+                                         HttpSession session, RedirectAttributes redirectAttributes) {
+        Long examId = (Long) session.getAttribute("currentExamId");
+        if (examId == null) {
+            return "error"; // Handle error scenario
+        }
+
+        // Store the selected chapter in the session
+        session.setAttribute("lastSelectedChapter", chapter);
+
+        redirectAttributes.addFlashAttribute("selectedChapter", chapter);
+        return "redirect:/exam/generateExam";
+    }
+    
+
     @GetMapping("/exam-questions/filterByChapter")
     public String filterExamQuestionsByChapter(@RequestParam("selectedChapter") int chapter, Model model) {
         List<ExamQuestion> questions = examService.generateQuestionsForChapter(chapter);
@@ -105,7 +239,7 @@ public class ExamController {
             return "redirect:/error"; // Or handle the error appropriately
         }
 
-        List<ExamQuestion> allQuestions = examService.getAllExamQuestions(); // Assuming this method exists
+        List<ExamQuestion> allQuestions = examService.getAllExamQuestions();
         model.addAttribute("exam", exam);
         model.addAttribute("allQuestions", allQuestions);
         model.addAttribute("selectedQuestions", exam.getQuestions());
@@ -368,50 +502,23 @@ public class ExamController {
         return "display-exam-link"; // This view will display the exam link and details to the faculty.
     }
     
+  
     
-    /**
-     * Handles the chapter selection for exam generation and updates the session with the selected chapter.
-     *
-     * @param chapter The chapter number that has been selected.
-     * @param session The HTTP session to store the selected chapter number.
-     * @param redirectAttributes Attributes for a redirect scenario.
-     * @return A redirection to the exam generation page.
-     */
-    @GetMapping("/selectChapter")
-    public String selectChapter(Model model, HttpSession session) {
-        // Ensure there's an ongoing exam creation process
-        Long examId = (Long) session.getAttribute("currentExamId");
-        if (examId == null) {
-            return "error"; // Handle error scenario
-        }
 
-        List<Integer> chapters = examService.getAllChapters();
-        model.addAttribute("chapters", chapters);
-        return "selectChapter";
+    @PostMapping("/updateDetails")
+    public String updateExamDetails(@ModelAttribute("examDetails") Exam updatedExam) {
+        boolean success = examService.updateExamDetails(updatedExam);
+
+        if (success) {
+System.out.println("Updated");        
+} else {
+System.out.println("Error");        }
+
+
+        return "redirect:/exam/selectChapter"; // Redirect back to the exam page
     }
 
-    /**
-     * Generates an exam based on a specific chapter and displays it to the user.
-     *
-     * @param chapter The chapter number from which the exam is generated.
-     * @param model The model to add attributes to for the view.
-     * @param session The HTTP session to verify the ongoing exam creation process.
-     * @return The view name for the exam generation page.
-     */
-    @PostMapping("/selectChapter")
-    public String handleChapterSelection(@RequestParam("selectedChapter") int chapter, 
-                                         HttpSession session, RedirectAttributes redirectAttributes) {
-        Long examId = (Long) session.getAttribute("currentExamId");
-        if (examId == null) {
-            return "error"; // Handle error scenario
-        }
 
-        // Store the selected chapter in the session
-        session.setAttribute("lastSelectedChapter", chapter);
-
-        redirectAttributes.addFlashAttribute("selectedChapter", chapter);
-        return "redirect:/exam/generateExam";
-    }
 
     
     /**
@@ -556,61 +663,77 @@ public class ExamController {
      * @param authentication The {@link Authentication} to obtain the user's details.
      * @return The view name for displaying the score or an error page.
      */
-    @PostMapping("/submit/{id}")
+@PostMapping("/submit/{id}")
     public String submitExam(@PathVariable Long id, @RequestParam Map<String, String> formParams, Model model, Principal principal, Authentication authentication) {
         Exam exam = examService.getExamById(id);
 
-        if (exam != null) {
-            Map<Long, String> userAnswers = extractUserAnswers(formParams);
-            List<String> userAnswersList = new ArrayList<>(userAnswers.values()); // Assuming order is maintained
-            int totalScore = calculateTotalScore(exam, userAnswers);
-
-           // int totalScore = 0;
-            List<ExamQuestionDisplay> displayQuestions = new ArrayList<>();
-
-            for (ExamQuestion question : exam.getQuestions()) {
-                String userAnswer = userAnswers.get(question.getId());
-                String userAnswerText = getAnswerText(question, userAnswer);
-                
-             // Determine the user's role and add it to the model
-                String userRole = determineUserRole(principal.getName());
-                model.addAttribute("userRole", userRole);
-
-                
-                ExamQuestionDisplay displayQuestion = new ExamQuestionDisplay();
-                displayQuestion.setId(question.getId());
-                displayQuestion.setQuestionText(question.getQuestionText());
-                displayQuestion.setUserAnswer(userAnswerText);
-                displayQuestion.setCorrectAnswerText(question.getCorrectAnswerText());
-                
-                if (!question.getCorrectAnswer().equalsIgnoreCase(userAnswer)) {
-                    displayQuestions.add(displayQuestion); // Add only incorrect questions
-                }
-            }
-            
-         // Save the exam submission
-            ExamSubmission examSubmission = new ExamSubmission(); // Assuming you have a constructor or setters to set properties
-            examSubmission.setExamId(id); // Make sure you set the exam ID here as well
-            examSubmission.setAnswers(userAnswersList);
-            examSubmission.setScore(totalScore);
-            
-            // Obtain the user ID. This should be the actual logged-in user's ID.
-            Long userId = getUserIdFromAuthentication(authentication);
-            
-            // Call the method to save the exam submission
-            saveExamSubmission(examSubmission, userId);
-
-            model.addAttribute("score", totalScore);
-            model.addAttribute("totalQuestions", exam.getQuestions().size());
-            model.addAttribute("incorrectQuestions", displayQuestions);
-            
-
-            return "showScore"; // Thymeleaf template to display the score and answers
-        } else {
+        if (exam == null) {
             model.addAttribute("message", "Exam not found.");
-            return "error"; // Error page template
+            return "error";
+        }
+
+        Map<Long, String> userAnswers = extractUserAnswers(formParams);
+        List<ExamQuestionDisplay> displayQuestions = new ArrayList<>();
+        List<ExamQuestionDisplay> incorrectQuestions = new ArrayList<>();
+        int totalScore = 0;
+
+        for (ExamQuestion question : exam.getQuestions()) {
+            String userAnswerKey = userAnswers.getOrDefault(question.getId(), "No Answer");
+            String userAnswerText = mapAnswerKeyToText(question, userAnswerKey);
+            boolean isCorrect = question.getCorrectAnswer().equalsIgnoreCase(userAnswerKey);
+
+            if (isCorrect) {
+                totalScore++;
+            } else {
+                ExamQuestionDisplay incorrectQuestion = new ExamQuestionDisplay();
+                incorrectQuestion.setId(question.getId());
+                incorrectQuestion.setQuestionText(question.getQuestionText());
+                incorrectQuestion.setUserAnswer(userAnswerText);
+                incorrectQuestion.setCorrectAnswerText(question.getCorrectAnswerText());
+                incorrectQuestions.add(incorrectQuestion);
+            }
+
+            ExamQuestionDisplay displayQuestion = new ExamQuestionDisplay();
+            displayQuestion.setId(question.getId());
+            displayQuestion.setQuestionText(question.getQuestionText());
+            displayQuestion.setUserAnswer(userAnswerText);
+            displayQuestion.setCorrectAnswerText(question.getCorrectAnswerText());
+
+            displayQuestions.add(displayQuestion);
+        }
+
+        ExamSubmission examSubmission = new ExamSubmission();
+        examSubmission.setExamId(id);
+        examSubmission.setAnswers(new ArrayList<>(userAnswers.values()));
+        examSubmission.setScore(totalScore);
+
+        Long userId = getUserIdFromAuthentication(authentication);
+        saveExamSubmission(examSubmission, userId);
+
+        model.addAttribute("exam", exam);
+        model.addAttribute("score", totalScore);
+        model.addAttribute("totalQuestions", exam.getQuestions().size());
+        model.addAttribute("displayQuestions", displayQuestions);
+        model.addAttribute("incorrectQuestions", incorrectQuestions);
+
+        return "showScore";
+    }
+
+private String mapAnswerKeyToText(ExamQuestion question, String answerKey) {
+        switch (answerKey) {
+            case "A": return question.getOptionA();
+            case "B": return question.getOptionB();
+            case "C": return question.getOptionC();
+            case "D": return question.getOptionD();
+            default: return "No Answer";
         }
     }
+
+
+
+
+
+
 
     private String getAnswerText(ExamQuestion question, String answer) {
         switch (question.getQuestionType()) {

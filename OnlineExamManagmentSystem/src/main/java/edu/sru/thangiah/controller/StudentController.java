@@ -223,8 +223,16 @@ public class StudentController
 		            return "sv-edit-current-student";
 		        }
 		        
+		        Student Updatestudent = studentRepository.findByStudentUsername(student.getStudentUsername()).orElse(null);
+		        
+		        student.setStudentPassword(Updatestudent.getStudentPassword());
+		        student.setUser(Updatestudent.getUser());
+		        student.setCourses(Updatestudent.getCourses());
+		        
+		        Updatestudent = student;
+		        
 		        // Fetch the user (or create a new one if not found)
-		        User user = userRepository.findByUsername(student.getStudentUsername())
+		        User user = userRepository.findByUsername(Updatestudent.getStudentUsername())
 		                .orElse(new User());  
 
 		        boolean passwordError = false;
@@ -244,7 +252,7 @@ public class StudentController
 		            // Encrypt and set the new password if there's no error
 		            else {
 		                String encryptedPassword = passwordEncoder.encode(newStudentPassword);
-		                student.setStudentPassword(encryptedPassword);
+		                Updatestudent.setStudentPassword(encryptedPassword);
 		                user.setPassword(encryptedPassword); // Update the user's password
 		            }
 		        }
@@ -256,8 +264,8 @@ public class StudentController
 		        }
 
 		        // Update the user's username and email to match the student
-		        user.setUsername(student.getStudentUsername());
-		        user.setEmail(student.getStudentEmail());
+		        user.setUsername(Updatestudent.getStudentUsername());
+		        user.setEmail(Updatestudent.getStudentEmail());
 		        userRepository.save(user);  // Save the user to userRepository
 
 		        // Debugging: Print the received student data
@@ -268,11 +276,7 @@ public class StudentController
 		        System.out.println("Email: " + student.getStudentEmail());
 		        System.out.println("Path Variable ID: " + id);
 		        
-
-//		        student.setStudentId(id);
-//		        student.setRole(student.getRole());
-//		        student.setStudentPassword(student.getStudentPassword());
-		        studentRepository.save(student);
+		        studentRepository.save(Updatestudent);
 	    
 	    return "sv-student-edit-confirmation"; 
 	}

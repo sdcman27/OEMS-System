@@ -1,0 +1,26 @@
+av-account-management.puml@startuml
+participant Client
+participant Controller
+participant courseRepository
+participant Model
+participant Course
+
+Client -> Controller: GET Request: /smv-class-student-list
+activate Controller
+Controller -> courseRepository: findAll()
+activate courseRepository
+courseRepository --> Controller: List of Courses
+deactivate courseRepository
+
+Controller -> Model: Add courses to model
+Controller -> Model: Create courseStudentCountMap
+alt For each course
+    Controller -> Course: Get students associated with course
+    Course --> Controller: Student set
+    Controller -> courseStudentCountMap: Add course ID and student count
+    courseStudentCountMap --> Controller: Updated count map
+end
+
+Model --> Controller: Updated model
+Controller --> Client: Return view: smv-class-student-list
+@enduml

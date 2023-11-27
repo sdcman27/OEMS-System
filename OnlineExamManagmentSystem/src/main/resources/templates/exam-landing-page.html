@@ -66,6 +66,16 @@
 
 <body>
     <div id="nav-placeholder"></div>
+    
+    <script>
+        $(function() {
+            $("#nav-placeholder").load("/instructor/instructor_homepage", function(response, status, xhr) {
+                if (status == "error") {
+                    console.log("Error loading the navbar: " + xhr.status + " " + xhr.statusText);
+                }
+            });
+        });
+    </script>
 
     <h1>Exam Creation Form</h1>
 
@@ -223,13 +233,6 @@
     		}
 		}
 
-
-        $(function () {
-            $("#nav-placeholder").load("/instructor/instructor_homepage", function () {
-                // Once the navbar content is loaded, remove any video elements from the loaded content
-                $("#nav-placeholder video").remove();
-            });
-        });
     </script>
 </body>
 

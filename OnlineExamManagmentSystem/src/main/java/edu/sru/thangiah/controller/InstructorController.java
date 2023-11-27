@@ -327,7 +327,7 @@ public class InstructorController {
         
         // Redirect back to the question selection page with the last selected chapter
         redirectAttributes.addAttribute("selectedChapter", lastSelectedChapter);
-        return "redirect:/exam/generateExam";
+        return "redirect:/exam/selectChapter";
     }
 
 
@@ -498,6 +498,7 @@ public class InstructorController {
         return "iv-edit-student";
     }
 	
+
 	 /**
      * Displays a list of students associated with the instructor.
      * 
@@ -515,9 +516,11 @@ public class InstructorController {
 	    	        
 	    	        Student Updatestudent = studentRepository.findByStudentUsername(student.getStudentUsername()).orElse(null);
 	    	        
-	    	        Set<Course> studentCourses = Updatestudent.getCourses();
+	    	        student.setStudentPassword(Updatestudent.getStudentPassword());
+	    	        student.setUser(Updatestudent.getUser());
+	    	        student.setCourses(Updatestudent.getCourses());
 	    	        
-	    	        System.out.println(studentCourses);
+	    	        Updatestudent = student;
 	    	        
 	    	     // checking the user to exist and creating it if it does not already exist
 	    	        User user = userRepository.findByUsername(Updatestudent.getStudentUsername())
@@ -538,6 +541,8 @@ public class InstructorController {
 	    	        }
 
 	    	        // updating the users username and email to match the student
+	    	        user.setFirstName(Updatestudent.getStudentFirstName());
+	    	        user.setLastName(Updatestudent.getStudentFirstName());
 	    	        user.setUsername(Updatestudent.getStudentUsername());
 	    	        user.setEmail(Updatestudent.getStudentEmail());
 	    	        userRepository.save(user);  // Save the user to userRepository
@@ -550,12 +555,11 @@ public class InstructorController {
 	    	        System.out.println("Last Name: " + Updatestudent.getStudentLastName());
 	    	        System.out.println("Email: " + Updatestudent.getStudentEmail());
 	    	        System.out.println("Path Variable ID: " + Updatestudent.getStudentId());
-	    	        
-	    	        Updatestudent.getCourses().addAll(studentCourses);
-	    	        
+	    	        	    	        
 	    	        studentRepository.save(Updatestudent);
 	        return "iv-edit-confirmation";
 	    }
+
 	   
 	   /**
 	    * Deletes a student by their ID. Clears their associated courses before deletion.

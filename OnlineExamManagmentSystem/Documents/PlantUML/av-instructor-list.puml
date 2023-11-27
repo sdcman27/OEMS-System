@@ -1,0 +1,16 @@
+@startuml
+participant Client
+participant Controller
+participant instructorRepository
+participant Model
+
+Client -> Controller: GET Request: /list-instructors-av
+activate Controller
+Controller -> instructorRepository: findAll()
+activate instructorRepository
+instructorRepository --> Controller: List of Instructors
+deactivate instructorRepository
+Controller -> Model: addAttribute("instructors", instructors)
+Model --> Controller: Updated model
+Controller --> Client: Return view: av-instructor-list
+@enduml

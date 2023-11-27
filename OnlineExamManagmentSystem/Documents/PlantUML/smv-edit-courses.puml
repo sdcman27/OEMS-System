@@ -1,0 +1,29 @@
+@startuml
+participant Client
+participant Controller
+participant courseRepository
+participant Course
+participant Model
+
+Client -> Controller: GET Request: /smv-edit-class/{id}
+activate Controller
+
+Controller -> courseRepository: findById(id)
+activate courseRepository
+courseRepository --> Controller: Course
+deactivate courseRepository
+
+Controller -> Model: addAttribute("course", course)
+Controller --> Client: Return View: smv-edit-class
+
+Client -> Controller: POST Request: /smv-edit-class/{id}
+activate Controller
+
+Controller -> Model: validate Course
+Controller -> courseRepository: save(course)
+activate courseRepository
+courseRepository --> Controller: Saved Course
+deactivate courseRepository
+
+Controller --> Client: Return View: smv-edit-class-confirmation
+@enduml

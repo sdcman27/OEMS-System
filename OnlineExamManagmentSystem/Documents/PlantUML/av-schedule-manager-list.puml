@@ -1,0 +1,16 @@
+@startuml
+participant Client
+participant Controller
+participant SMRepo
+participant Model
+
+Client -> Controller: GET Request: /list-schedule-managers-av
+activate Controller
+Controller -> SMRepo: findAll()
+activate SMRepo
+SMRepo --> Controller: List of ScheduleManagers
+deactivate SMRepo
+Controller -> Model: addAttribute("scheduleManager", scheduleManager)
+Model --> Controller: Updated model
+Controller --> Client: Return view: av-schedule-manager-list
+@enduml
