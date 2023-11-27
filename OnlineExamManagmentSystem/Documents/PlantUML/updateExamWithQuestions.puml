@@ -1,0 +1,56 @@
+@startuml
+
+actor User
+participant "Upload Page" as UploadPage
+participant "Controller" as Controller
+participant "ExamRepository" as ExamRepository
+participant "ExamQuestionService" as ExamQuestionService
+participant "Exam" as Exam
+participant "RedirectAttributes" as RedirectAttributes
+participant "Model" as Model
+participant "ExamGeneratedConfirmation" as ExamConfirmationPage
+participant "Error Page" as ErrorPage
+participant "HttpSession" as HttpSession
+
+User -> UploadPage: Uploads file
+User -> UploadPage: Submits file
+
+UploadPage -> Controller: updateExamWithQuestions(file)
+
+Controller -> Controller: Check if file is empty
+alt file is empty
+    Controller -> RedirectAttributes: Add message\n'No file uploaded'
+    Controller -> UploadPage: Redirect to\nupload-path
+else file is not empty
+    Controller -> HttpSession: Get currentExamId
+    alt Exam ID available in session
+        HttpSession -> Controller: Return examId
+        Controller -> ExamRepository: Find exam by ID
+        ExamRepository -> ExamRepository: Fetch existing exam
+        alt Exam found
+            ExamRepository -> Exam: Return existing exam
+            Exam -> ExamQuestionService: readAIQuestionsFromFile(file)
+            ExamQuestionService -> ExamQuestionService: Read questions\nfrom file
+            ExamQuestionService -> ExamQuestionService: Get list of questions
+            alt Questions found in the file
+                Controller -> Exam: Update exam with new questions
+                Exam -> ExamRepository: Save updated exam
+                ExamRepository -> ExamRepository: Update exam in database
+                Controller -> Model: Add attributes\nfor confirmation page
+                Model -> ExamConfirmationPage: Return generatedExamId,\nexamDuration, and\nselectedQuestions
+                Controller -> ExamConfirmationPage: Redirect to\nexamGeneratedConfirmation
+            else No questions found in the file
+                Controller -> RedirectAttributes: Add message\n'No questions found\nin the file'
+                Controller -> UploadPage: Redirect to\nupload
+            end
+        else Exam not found
+            Controller -> RedirectAttributes: Add message\n'Exam not found'
+            Controller -> ErrorPage: Redirect to\nerror
+        end
+    else No exam ID available
+        Controller -> RedirectAttributes: Add message\n'No exam ID available'
+        Controller -> ErrorPage: Redirect to\nerror
+    end
+end
+
+@enduml
