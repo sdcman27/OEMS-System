@@ -35,6 +35,10 @@ import edu.sru.thangiah.web.dto.ChatGptResponse;
                         
  */
 
+/**
+ * Controller class for handling custom chat bot interactions.
+ * Allows users to interact with a chatbot, choose topics, and take quizzes on selected topics.
+ */
 @Controller
 @RequestMapping("/bot")
 public class CustomBotController {
@@ -58,22 +62,43 @@ public class CustomBotController {
     
     private int progress = 0;
 
+    /**
+     * Retrieves the user's current progress.
+     *
+     * @return ResponseEntity containing the progress as an integer.
+     */
     @GetMapping("/getProgress")
     public ResponseEntity<Integer> getProgress() {
         return new ResponseEntity<>(progress, HttpStatus.OK);
     }
     
+    /**
+     * Presents the user with a view to choose a topic.
+     *
+     * @return ModelAndView for the topic selection view.
+     */
     @GetMapping("/choose-topic")
     public ModelAndView chooseTopic() {
         return new ModelAndView("topic-choose");
     }
     
+    /**
+     * Displays the chatbox view where users can interact with the chat bot.
+     *
+     * @return The name of the chatbox view template.
+     */
     @GetMapping("/chatbox")
     public String showChatbox() {
         return "chat-bot";
     }
 
     
+    /**
+     * Handles chat interactions by sending the user's prompt to the chatbot and returning the response.
+     *
+     * @param prompt The user's chat message to the bot.
+     * @return The bot's response as a String.
+     */
     @GetMapping("/chat")
     @ResponseBody
     public String chat(@RequestParam("prompt") String prompt){
@@ -82,7 +107,12 @@ public class CustomBotController {
         return chatGptResponse.getChoices().get(0).getMessage().getContent();
     }
 
-    
+    /**
+     * Sets the current topic for quiz or discussion based on user selection.
+     *
+     * @param topic The chosen topic.
+     * @return ModelAndView confirming the topic selection.
+     */
     @PostMapping("/setTopic")
     public ModelAndView setTopic(@RequestParam("topic") String topic) {
         this.currentTopic = topic;
@@ -91,7 +121,11 @@ public class CustomBotController {
         return modelAndView;
     }
 
-    
+    /**
+     * Prepares and presents a quiz on the current topic to the user.
+     *
+     * @return ModelAndView containing quiz questions and associated data.
+     */
     @GetMapping("/quiz")
     public ModelAndView getQuiz() {
         progress = 0;  // Reset progress
@@ -109,7 +143,12 @@ public class CustomBotController {
         return modelAndView;
     }
 
-    
+    /**
+     * Generates and provides a downloadable Excel file of the quiz.
+     *
+     * @return ResponseEntity with the Excel file data.
+     * @throws IOException If an error occurs during file generation.
+     */
     @GetMapping("/download")
     public ResponseEntity<byte[]> downloadQuiz() throws IOException {
         byte[] excelData = excelGeneratorService.generateExcel(quizData);
@@ -122,7 +161,12 @@ public class CustomBotController {
     }
     
     
-    
+    /**
+     * Generates a single quiz question based on the current topic.
+     *
+     * @param topic The topic for the quiz question.
+     * @return A Map containing the question and multiple-choice options.
+     */
     private Map<String, Object> generateQuestion(String topic) {
         String prompt = "Generate a multiple choice question on the topic of " + topic + ".";
         ChatGPTRequest request = new ChatGPTRequest(model, prompt);
@@ -146,7 +190,12 @@ public class CustomBotController {
         return questionMap;
     }
 
-    
+    /**
+     * Handles the request to start a new quiz on a given topic.
+     *
+     * @param topic The topic for the quiz.
+     * @return ModelAndView with the generated quiz.
+     */
     @PostMapping("/quiz")
     public ModelAndView getQuiz(@RequestParam("topic") String topic) {
         progress = 0;  // Reset progress
@@ -160,6 +209,12 @@ public class CustomBotController {
         return modelAndView;
     }
     
+    /**
+     * Generates and provides a downloadable text file of the quiz.
+     *
+     * @return ResponseEntity with the text file data.
+     * @throws IOException If an error occurs during file generation.
+     */
     @GetMapping("/download/txt")
     public ResponseEntity<byte[]> downloadQuizTxt() throws IOException {
         String txtContent = generateTxtContent(quizData);
@@ -172,6 +227,12 @@ public class CustomBotController {
         return new ResponseEntity<>(txtData, headers, HttpStatus.OK);
     }
 
+    /**
+     * Compiles quiz data into a text format suitable for download.
+     *
+     * @param quizData List of quiz question data.
+     * @return A String representation of the quiz data.
+     */
     private String generateTxtContent(List<Map<String, Object>> quizData) {
         StringBuilder sb = new StringBuilder();
         int questionNumber = 1;

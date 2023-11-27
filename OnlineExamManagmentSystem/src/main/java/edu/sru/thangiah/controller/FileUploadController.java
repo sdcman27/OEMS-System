@@ -25,6 +25,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
                         
  */
 
+/**
+ * The {@code FileUploadController} class handles the file upload functionalities within the application,
+ * specifically for uploading questions and generating or updating exams. It interacts with the {@code ExamRepository}
+ * to persist exam data, and with the {@code ExamQuestionService} for processing questions from uploaded files.
+ */
 @Controller
 @RequestMapping("/file")
 public class FileUploadController {
@@ -38,6 +43,14 @@ public class FileUploadController {
     @Autowired
     private ExamService examService; 
 
+    
+    /* If the file is empty or an error occurs, it redirects to the upload page with an appropriate message.
+    *
+    * @param file               the uploaded file containing exam questions
+    * @param redirectAttributes attributes for flash attributes
+    * @param model              the model to add attributes to be used in the view
+    * @return the view name for exam generation confirmation or redirect to the upload path
+    */
     @PostMapping("/upload-questions")
     public String uploadQuestionsAndGenerateExam(@RequestParam("file") MultipartFile file, 
                                                 RedirectAttributes redirectAttributes, 
@@ -74,6 +87,17 @@ public class FileUploadController {
         
     }
     
+    /**
+     * Updates an existing exam with new questions from the uploaded file. It retrieves the exam ID from the session,
+     * validates the file content, and updates the exam information. Redirects to an error page or confirmation page
+     * based on the outcome of the process.
+     *
+     * @param file               the uploaded file containing new questions for the exam
+     * @param session            the HTTP session for retrieving exam information
+     * @param redirectAttributes attributes for flash attributes
+     * @param model              the model to add attributes to be used in the view
+     * @return the view name for exam update confirmation or redirect to the upload path
+     */
     @PostMapping("/upload/new/exam")
     public String updateExamWithQuestions(@RequestParam("file") MultipartFile file,
                                           HttpSession session,

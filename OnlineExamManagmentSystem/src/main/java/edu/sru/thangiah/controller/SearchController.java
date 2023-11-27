@@ -18,6 +18,24 @@ import edu.sru.thangiah.repository.ScheduleManagerRepository;
 import edu.sru.thangiah.repository.StudentRepository;
 import edu.sru.thangiah.service.ExamQuestionService;
 
+
+/**
+ * The {@code SearchController} class is responsible for handling search-related requests in the application.
+ * It provides methods to search for entities such as instructors, schedule managers, students, and exam questions
+ * based on different criteria like ID, name, or username. This controller makes use of repository classes to
+ * fetch data from the database and uses service classes to perform business logic operations.
+ * <p>
+ * The searches are performed through GET requests with parameters specifying the type of search and the search
+ * terms. The results are then added to the model and the appropriate view is returned to display the results.
+ * <p>
+ * Autowired components:
+ * <ul>
+ *     <li>{@code StudentRepository} to access student data</li>
+ *     <li>{@code ExamQuestionService} to access exam question operations</li>
+ *     <li>{@code InstructorRepository} to access instructor data</li>
+ *     <li>{@code ScheduleManagerRepository} to access schedule manager data</li>
+ * </ul>
+ */
 @Controller
 public class SearchController {
 	
@@ -42,6 +60,15 @@ public class SearchController {
     @Autowired
     private ScheduleManagerRepository scheduleManagerRepository;
 
+    
+    /**
+     * Searches for instructors based on a type of search and a parameter.
+     * 
+     * @param searchType The type of search (e.g., "id", "name", "username").
+     * @param searchParam The parameter to search for.
+     * @param model The model to add attributes to.
+     * @return The name of the view to render.
+     */
     @GetMapping("/instructor/search")
     public String searchInstructors(
         @RequestParam("searchType") String searchType,
@@ -74,6 +101,14 @@ public class SearchController {
         return "instructor-list";
     }
     
+    /**
+     * Searches for schedule managers based on a type of search and a parameter.
+     * 
+     * @param searchType The type of search (e.g., "id", "name", "username").
+     * @param searchParam The parameter to search for.
+     * @param model The model to add attributes to.
+     * @return The name of the view to render.
+     */
     @GetMapping("/schedule-manager/search")
     public String searchScheduleManagers(
         @RequestParam("searchType") String searchType,
@@ -108,7 +143,14 @@ public class SearchController {
     
     
 
-
+    /**
+     * Searches for students based on a type of search and a parameter.
+     * 
+     * @param searchType The type of search (e.g., "id", "name", "username").
+     * @param searchParam The parameter to search for.
+     * @param model The model to add attributes to.
+     * @return The name of the view to render.
+     */
     @GetMapping("/student/search")
     public String searchStudents(
         @RequestParam("searchType") String searchType,
@@ -141,6 +183,14 @@ public class SearchController {
         return "iv-student-list"; 
     }
     
+    /**
+     * Searches for exam questions based on a type of search and a parameter.
+     * 
+     * @param searchType The type of search (e.g., "id", "text").
+     * @param searchParam The parameter to search for.
+     * @param model The model to add attributes to.
+     * @return The name of the view to render.
+     */
     @GetMapping("/exam-question/search")
     public String searchExamQuestions(
         @RequestParam("searchType") String searchType,

@@ -42,6 +42,11 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ * Controller for managing administrator-related operations.
+ * This controller handles various requests for creating administrators,
+ * managing accounts, and associating students and instructors with courses.
+ */
 @Controller
 public class AdministratorController {
 
@@ -70,13 +75,23 @@ public class AdministratorController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	// This method handles HTTP POST requests to create a new Administrator.
+	 /**
+     * Processes the login and creates a new administrator.
+     *
+     * @param administrator The administrator details provided in the request body.
+     * @return The saved administrator object.
+     */
 	@PostMapping("/process_login")
 	public Administrator createAdministrator(@RequestBody Administrator administrator) {
 		// Save the Administrator object to the repository and return the saved user.
 		return administratorRepository.save(administrator);
 	}
 	
+	/**
+     * Displays the admin homepage view.
+     *
+     * @return The name of the admin homepage template.
+     */
 	@GetMapping("/admin_homepage")
 	@PreAuthorize("hasRole('ADMINISTRATOR')")
 	public String viewAdminHomepage() {
@@ -84,7 +99,12 @@ public class AdministratorController {
 		
 	}
 	
-	
+	/**
+     * Directs to the account management view for an administrator.
+     *
+     * @param model The model to pass attributes to the view.
+     * @return The name of the account management template.
+     */
 	@GetMapping("/av-account-management")
 	public String accountManager(Model model){
 		
@@ -104,6 +124,13 @@ public class AdministratorController {
 	}
 	
 	
+	/**
+     * Directs to the edit current admin view for updating admin details.
+     *
+     * @param id    The ID of the admin to be edited.
+     * @param model The model to pass attributes to the view.
+     * @return The name of the edit current admin template.
+     */
 	@GetMapping("/av-edit-current-admin/{id}")
 	public String editingCurrentUser(@PathVariable("id") long id, Model model) {
 		Administrator administrator = administratorRepository.findById(id)
@@ -113,6 +140,18 @@ public class AdministratorController {
 	    return "av-edit-current-admin"; 
 	}
 
+	/**
+     * Processes the editing of the current admin details.
+     *
+     * @param id                   The ID of the admin to be updated.
+     * @param administrator        The administrator details provided in the request.
+     * @param result               The binding result for validation.
+     * @param model                The model to pass attributes to the view.
+     * @param currentPassword      The current password for verification.
+     * @param newAdminPassword     The new password to be set.
+     * @param confirmAdminPassword The confirmation for the new password.
+     * @return Redirects to the admin edit confirmation page or back to the form if errors are found.
+     */
 	  @Transactional
 			@PostMapping("/av-edit-admin/{id}")
 			public String saveCurrentUserEdits(@PathVariable("id") long id, @Validated Administrator administrator , 
@@ -174,56 +213,109 @@ public class AdministratorController {
 			}
 	
 
+	  /**
+	     * Displays the exams page view.
+	     *
+	     * @return The name of the exams template.
+	     */
 	@GetMapping("/exams")
 	public String examsPage() {
 		// display the list of exams here
 		return "exams"; // the name of the HTML template for the exams page
 	}
 
+	/**
+     * Displays the students list view.
+     *
+     * @param model The model to pass attributes to the view.
+     * @return The name of the student list template.
+     */
 	@GetMapping("/classes")
 	public String classesPage() {
 		// displays the list of classes here
 		return "classes"; // the name of the HTML template for the classes page
 	}
 
+	/**
+     * Displays the page for the math quiz.
+     *
+     * @return The name of the math quiz template.
+     */
 	@GetMapping("/math-quiz")
 	public String mathQuizPage() {
 		// displays the math quiz
 		return "math-quiz"; // the name of the HTML template for the quiz page
 	}
 
+	/**
+     * Displays the page for the history quiz.
+     *
+     * @return The name of the history quiz template.
+     */
 	@GetMapping("/history-quiz")
 	public String historyQuizPage() {
 		// displays the math quiz
 		return "history-quiz"; // the name of the HTML template for the quiz page
 	}
 
+
+	/**
+     * Displays the page for the science quiz.
+     *
+     * @return The name of the science quiz template.
+     */
 	@GetMapping("/science-quiz")
 	public String scienceQuizPage() {
 		// displays the science quiz
 		return "science-quiz"; // the name of the HTML template for the quiz page
 	}
 
+	/**
+     * Shows the form for creating a new student.
+     *
+     * @return The name of the create student form template.
+     */
 	@GetMapping("/create-student")
 	public String showCreateStudentForm() {
 		return "create-student"; // This corresponds to the name of your HTML file
 	}
 
+	/**
+     * Shows the form for creating a new instructor.
+     *
+     * @return The name of the create instructor form template.
+     */
 	@GetMapping("/create-instructor")
 	public String showCreateInstructorForm() {
 		return "create-instructor"; // This corresponds to the name of your HTML file
 	}
 
+	 /**
+     * Shows the form for adding a new course.
+     *
+     * @return The name of the add course form template.
+     */
 	@GetMapping("/add-course")
 	public String showCreateCourseForm() {
 		return "add-course"; // This corresponds to the name of your HTML file
 	}
 
+	/**
+     * Handles the student import functionality.
+     *
+     * @return The name of the student import template.
+     */
 	@GetMapping("/import")
 	public String importStudents() {
 		return "import"; // This corresponds to the name of your HTML file
 	}
 
+	/**
+     * Shows the form for associating students with courses.
+     *
+     * @param model The model to pass attributes to the view.
+     * @return The name of the associate students form template.
+     */
 	@GetMapping("/associate")
 	public String associateStudentWithCourseForm(Model model) {
 		// Retrieve the list of students and courses from the repository
@@ -240,6 +332,15 @@ public class AdministratorController {
 	}
 
 
+	
+	/**
+     * Associates an instructor with a course and persists the association.
+     *
+     * @param instructorId The ID of the instructor.
+     * @param courseId     The ID of the course.
+     * @param model        The model to pass attributes to the view.
+     * @return A ResponseEntity indicating success or failure.
+     */
 	// Endpoint to associate an instructor with a course
 	@PostMapping("/instructor/course/associate")
 	public ResponseEntity<String> associateInstructorWithCourse(@RequestParam Long instructorId,
@@ -260,6 +361,11 @@ public class AdministratorController {
 		}
 	}
 
+	 /**
+     * Confirms the successful upload of data.
+     *
+     * @return The name of the upload success template.
+     */
 	@GetMapping("/upload-success")
 	public String uploadSuccess() {
 		return "upload-success"; // This corresponds to the name of your HTML file
@@ -270,6 +376,11 @@ public class AdministratorController {
 		return "upload-fail"; // This corresponds to the name of your HTML file
 	}
 	
+	/**
+     * Informs the user of a failed upload.
+     *
+     * @return The name of the upload failure template.
+     */
 	@GetMapping("/students_list")
 	@PreAuthorize("hasRole('ADMINISTRATOR')")
 	public String showStudentsListAV(Model model) {
@@ -284,6 +395,14 @@ public class AdministratorController {
 	}
 	
 
+	/**
+     * Associates an instructor with a course and persists the association.
+     *
+     * @param instructorId The ID of the instructor.
+     * @param courseId     The ID of the course.
+     * @param model        The model to pass attributes to the view.
+     * @return A ResponseEntity indicating success or failure.
+     */
 	@PostMapping("/student/course/associate")
 	public ResponseEntity<String> associateStudentWithCourse(@RequestParam Long studentId, @RequestParam Long courseId,
 			Model model) {
@@ -303,12 +422,24 @@ public class AdministratorController {
 	}
 
 
+    /**
+     * Displays the registration form for new users.
+     *
+     * @param model The model to pass attributes to the view.
+     * @return The name of the registration form template.
+     */
 	 @GetMapping("/register") 
 	 public String showRegistrationForm(Model model) {
 	 model.addAttribute("user", new User()); 
 	 return "register"; // This maps to the register.html file 
 	  }
 	 
+	    /**
+	     * Displays the registration form for Administrator Role.
+	     *
+	     * @param model The model to pass attributes to the view.
+	     * @return The name of the registration form template.
+	     */
 	 @GetMapping("/av-register") 
 	 @PreAuthorize("hasRole('ADMINISTRATOR')")
 	 public String showRegistrationFormAV(Model model) {
@@ -317,7 +448,13 @@ public class AdministratorController {
 	  }
 	 
 
-	 
+	    /**
+	     * Processes the registration of a new Schedule Manager by an Administrator.
+	     *
+	     * @param manager The Schedule Manager entity to be registered.
+	     * @param redirectAttributes Attributes for a redirect scenario.
+	     * @return Redirects to the registration confirmation page.
+	     */
 		@Transactional
 		@PostMapping("/register-av")
 		public String registerUserAV(@ModelAttribute ScheduleManager manager, RedirectAttributes redirectAttributes) {
@@ -353,7 +490,15 @@ public class AdministratorController {
 			return "redirect:/av-registration-confirmation"; //
 		}
 		
+
 	
+	/**
+     * Displays the form for editing a student's information by an Administrator.
+     *
+     * @param id The ID of the student to be edited.
+     * @param model The model to pass attributes to the view.
+     * @return The name of the student editing form template.
+     */
 	@GetMapping("/av-edit-student/{id}")
     public String showUpdateFormAV(@PathVariable("id") long id, Model model) {
 		Student student = studentRepository.findById(id)
@@ -363,6 +508,17 @@ public class AdministratorController {
         return "av-edit-student";
     }
 	
+    /**
+     * Updates a student's information by an Administrator.
+     *
+     * @param id The ID of the student to be updated.
+     * @param student The updated student entity.
+     * @param result BindingResult containing any errors.
+     * @param model The model to pass attributes to the view.
+     * @param newStudentPassword The new password for the student.
+     * @param confirmStudentPassword The confirmation of the new password.
+     * @return Redirects to the student edit confirmation page.
+     */
 	@Transactional
 	@PostMapping("/av-update/{id}")
 	public String updateStudentAV(@PathVariable("id") long id, @Validated Student student, BindingResult result,
@@ -416,6 +572,13 @@ public class AdministratorController {
 		return "av-edit-confirmation";
 	}
 	
+	  /**
+     * Deletes a student's information by an Administrator.
+     *
+     * @param id The ID of the student to be deleted.
+     * @param model The model to pass attributes to the view.
+     * @return Redirects to the student deletion confirmation page.
+     */
 	@GetMapping("/student/delete/{id}")
 	@PreAuthorize("hasRole('ADMINISTRATOR')")
     public String deleteStudentAV(@PathVariable("id") long id, Model model) {
@@ -430,27 +593,54 @@ public class AdministratorController {
         return "av-edit-confirmation";
     }
 
+	/**
+     * Displays the confirmation page after successful registration.
+     * 
+     * @return The name of the registration confirmation template.
+     */
 	@GetMapping("/registration-confirmation")
 	public String registerConfirm() {
 		return "registration-confirmation"; // The HTML file
 	}
 	
+	/**
+     * Displays the confirmation page for Administrator role after successful registration.
+     * 
+     * @return The name of the administrator-specific registration confirmation template.
+     */
 	@GetMapping("/av-registration-confirmation")
 	@PreAuthorize("hasRole('ADMINISTRATOR')")
 	public String registerConfirmAV() {
 		return "av-registration-confirmation"; // The HTML file
 	}
-
+	
+	/**
+    * Displays the success page after a course has been successfully created.
+    * 
+    * @return The name of the course success page template.
+    */
 	@GetMapping("/course-success-page")
 	public String showCourseSuccessForm() {
 		return "course-success-page";
 	}
 
+	/**
+     * Displays the success page after an instructor has been successfully created.
+     * 
+     * @return The name of the instructor success page template.
+     */
 	@GetMapping("/instructor-success")
 	public String showInstructorSuccessForm() {
 		return "/instructor-success";
 	}
 	
+	 /**
+     * Displays the form for editing an instructor's information by an Administrator.
+     * 
+     * @param id The ID of the instructor to be edited.
+     * @param model The model to pass attributes to the view.
+     * @return The name of the instructor editing form template.
+     */
 	@GetMapping("/av-edit-instructor/{id}")
 	public String showUpdateFormInstructorAV(@PathVariable("id") long id, Model model) {
 	    Instructor instructor = instructorRepository.findById(id)
@@ -460,6 +650,13 @@ public class AdministratorController {
 	    return "av-edit-instructor"; 
 	}
 	
+	/**
+     * Deletes an instructor's information by an Administrator.
+     * 
+     * @param id The ID of the instructor to be deleted.
+     * @param model The model to pass attributes to the view.
+     * @return Redirects to the instructor deletion confirmation page.
+     */
 	@GetMapping("/instructor/delete/{id}")
 	public String deleteInstructorAV(@PathVariable("id") long id, Model model) {
 	    Instructor instructor = instructorRepository.findById(id)
@@ -468,6 +665,17 @@ public class AdministratorController {
 	    return "av-instructor-edit-confirmation";
 	}
 
+	/**
+     * Updates an instructor's information by an Administrator.
+     * 
+     * @param id The ID of the instructor to be updated.
+     * @param instructor The updated instructor entity.
+     * @param result BindingResult containing any errors.
+     * @param model The model to pass attributes to the view.
+     * @param newInstructorPassword The new password for the instructor.
+     * @param confirmInstructorPassword The confirmation of the new password.
+     * @return Redirects to the instructor edit confirmation page.
+     */
 	@Transactional
 	@PostMapping("/av-edit-instructor/{id}")
 	public String updateInstructorAV(@PathVariable("id") long id, @Validated Instructor instructor, 
@@ -517,6 +725,12 @@ public class AdministratorController {
 	    return "av-instructor-edit-confirmation"; 
 	}
 	
+	/**
+     * Displays a list of instructors for viewing by an Administrator.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @return The name of the instructor list template.
+     */
 	@GetMapping("/list-instructors-av")
 	public String showInstructorsAV(Model model) {
         List<Instructor> instructors = instructorRepository.findAll();
@@ -524,6 +738,13 @@ public class AdministratorController {
         return "av-instructor-list";
     }
 	
+	/**
+     * Deletes a schedule manager's information by an Administrator.
+     * 
+     * @param id The ID of the schedule manager to be deleted.
+     * @param model The model to pass attributes to the view.
+     * @return Redirects to the schedule manager deletion confirmation page.
+     */
 	@GetMapping("/manager/delete/{id}")
     public String deleteScheduleManagerAV(@PathVariable("id") long id, Model model) {
         ScheduleManager scheduleManager = SMRepo.findById(id)
@@ -532,6 +753,13 @@ public class AdministratorController {
         return "av-schedule-manager-edit-confirmation";
     }
 	
+	 /**
+     * Displays the form for editing a schedule manager's information by an Administrator.
+     * 
+     * @param id The ID of the schedule manager to be edited.
+     * @param model The model to pass attributes to the view.
+     * @return The name of the schedule manager editing form template.
+     */
 	@GetMapping("/av-edit-schedule-manager/{id}")
 	public String showUpdateFormScheduleManagerAV(@PathVariable("id") long id, Model model) {
 	    ScheduleManager scheduleManager = SMRepo.findById(id)
@@ -541,6 +769,17 @@ public class AdministratorController {
 	    return "av-edit-schedule-manager"; 
 	}
 	
+	 /**
+     * Updates a schedule manager's information by an Administrator.
+     * 
+     * @param id The ID of the schedule manager to be updated.
+     * @param manager The updated schedule manager entity.
+     * @param result BindingResult containing any errors.
+     * @param model The model to pass attributes to the view.
+     * @param newManagerPassword The new password for the schedule manager.
+     * @param confirmManagerPassword The confirmation of the new password.
+     * @return Redirects to the schedule manager edit confirmation page.
+     */
 	@Transactional
 	@PostMapping("/av-edit-schedule-manager/{id}")
 	public String updateScheduleManagersAV(@PathVariable("id") long id, @Validated ScheduleManager manager, 
@@ -589,7 +828,12 @@ public class AdministratorController {
 	    return "av-schedule-manager-edit-confirmation"; 
 	}
 
-	
+	/**
+     * Displays a list of schedule managers for viewing by an Administrator.
+     * 
+     * @param model The model to pass attributes to the view.
+     * @return The name of the schedule manager list template.
+     */
 	@GetMapping("/list-schedule-managers-av")
 	public String showScheduleManagersAV(Model model) {
         List<ScheduleManager> scheduleManager = SMRepo.findAll();

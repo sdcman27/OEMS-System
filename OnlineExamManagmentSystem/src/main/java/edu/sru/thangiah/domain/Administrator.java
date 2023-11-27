@@ -18,6 +18,26 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+/**
+ * Represents an administrator within the educational institution's system.
+ * The {@code Administrator} class is an entity that maps to a table 'administrator'
+ * in the database and encapsulates all the information about an administrator,
+ * including personal details and roles within the system.
+ * <p>
+ * This class is annotated with {@code Entity} indicating it is a JPA entity.
+ * The table name is explicitly set as 'administrator' with a unique constraint
+ * on the 'id' column, ensuring that each administrator has a unique identifier.
+ * </p>
+ * <p>
+ * Administrators are associated with {@code User} and {@code Roles} entities,
+ * which define their credentials and access levels within the system. This class
+ * contains standard accessors and mutators and utilizes {@code @NonNull} to enforce
+ * non-nullability on certain fields.
+ * </p>
+ *
+ * @see User
+ * @see Roles
+ */
 @Entity
 @Table(name = "administrator", uniqueConstraints = @UniqueConstraint(columnNames = "id"))
 public class Administrator {
@@ -130,9 +150,24 @@ public class Administrator {
 		this.roles = administrator.getRoles();
 	}
 
+	/**
+     * Default constructor for JPA.
+     */
+
 	public Administrator() {}
 
 
+	/**
+     * Constructs a new Administrator with all the detailed properties set.
+     *
+     * @param adminId       The unique identifier for the administrator.
+     * @param adminFirstName The first name of the administrator.
+     * @param adminLastName  The last name of the administrator.
+     * @param adminEmail     The email of the administrator.
+     * @param adminPassword  The password of the administrator.
+     * @param adminUsername  The username of the administrator.
+     * @param roles          The roles associated with the administrator.
+     */
 	public Administrator(Long adminId, String adminFirstName, String adminLastName, String adminEmail,
 			String adminPassword, String adminUsername, List<Roles> roles) {
 		super();

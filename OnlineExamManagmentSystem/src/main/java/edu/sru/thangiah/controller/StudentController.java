@@ -41,6 +41,10 @@ import edu.sru.thangiah.repository.UserRepository;
 import edu.sru.thangiah.web.dto.CourseGradeDTO;
 import edu.sru.thangiah.web.dto.ExamGradeDTO;
 
+/**
+ * Controller responsible for handling student-related web requests.
+ * Provides methods for displaying student pages, handling student data, and interacting with the course repository.
+ */
 @Controller
 @RequestMapping("/student/course")
 public class StudentController 
@@ -70,11 +74,22 @@ public class StudentController
         this.userRepository = userRepository;
     }
 	
+	/**
+    * Displays the student homepage.
+    * 
+    * @return The name of the HTML template for the student homepage.
+    */
 	@RequestMapping("/student_homepage")
 	public String showStudentHomepage() {
 		return "student_homepage";
 	}
 
+	/**
+     * Shows a list of all students.
+     *
+     * @param model The model object to which the student list is added.
+     * @return The name of the HTML template that displays the list of students.
+     */
     @GetMapping("/students")
     public String showStudentList(Model model) {
         // Retrieve the list of students from the repository
@@ -87,33 +102,69 @@ public class StudentController
         return "student-list";
     }
     
+    /**
+     * Saves a student entity along with its associated course.
+     *
+     * @param student The student entity to be saved.
+     * @return The saved student entity.
+     */
 	@PostMapping
 	public Student saveStudentWithCourse(@RequestBody Student student) {
 		return studentRepository.save(student);
 	}
 	
-	
+	 /**
+     * Retrieves a student by their ID.
+     *
+     * @param studentId The ID of the student to retrieve.
+     * @return The {@link Student} object if found, otherwise null.
+     */
 	@GetMapping("/{studentId}")
 	public Student findStudent(@PathVariable Long studentId) {
 		return studentRepository.findById(studentId).orElse(null);
 	}
 	
+	 /**
+     * Finds students whose first name contains the given string.
+     *
+     * @param name The string to search for within student first names.
+     * @return A list of {@link Student} objects that meet the search criteria.
+     */
 	@GetMapping("/find/{name}")
 	public List<Student> findStudentsContainingByStudentFirstName(@PathVariable String name){
 		return studentRepository.findBystudentFirstNameContaining(name);
 	}
 	
+	/**
+     * Finds courses by an ID containing the given number.
+     *
+     * @param id The ID or part of the ID to search for within course IDs.
+     * @return A list of {@link Course} objects that meet the search criteria.
+     */
 	@GetMapping("/search")
 	public List<Course> findByIdContaining(@PathVariable Long id){
 		return courseRepository.findByIdContaining(id);
 	}
 	
+	/**
+     * Displays the account management page for the student.
+     *
+     * @param model The {@link Model} object to pass attributes to the view.
+     * @return The name of the HTML template for account management.
+     */
 	@GetMapping("/math-quiz")
     public String mathQuizPage() {
         // displays the math quiz
         return "math-quiz"; // the name of the HTML template for the quiz page
     }
 	
+	/**
+     * Displays the form for editing the current student's information.
+     *
+     * @param id The ID of the student to edit.
+     * @param model The {@link Model} object to pass attributes to the view.
+     * @return The name of the HTML template for editing the student.
+     */
 	@GetMapping("/sv-account-management")
 	public String accountManager(Model model){
 		
@@ -134,6 +185,15 @@ public class StudentController
 		return "sv-account-management";
 	}
 	
+	/**
+     * Handles the submission of the form for editing the current student's information.
+     *
+     * @param id The ID of the student being edited.
+     * @param student The updated {@link Student} object.
+     * @param result The {@link BindingResult} object to hold validation results.
+     * @param model The {@link Model} object to pass attributes to the view.
+     * @return A string indicating the view to render next.
+     */
 	@GetMapping("/sv-edit-current-student/{id}")
 	public String editingCurrentUser(@PathVariable("id") long id, Model model) {
     	Student student = studentRepository.findById(id)
@@ -144,6 +204,15 @@ public class StudentController
 	    return "sv-edit-current-student"; 
 	}
 	
+	  /**
+     * Handles the submission of the form for editing the current student's information.
+     *
+     * @param id The ID of the student being edited.
+     * @param student The updated {@link Student} object.
+     * @param result The {@link BindingResult} object to hold validation results.
+     * @param model The {@link Model} object to pass attributes to the view.
+     * @return A string indicating the view to render next.
+     */
 	@Transactional
 	@PostMapping("/sv-edit-student/{id}")
 	public String saveCurrentUserEdits(@PathVariable("id") long id, @Validated Student student, 
@@ -212,7 +281,12 @@ public class StudentController
 	    return "sv-student-edit-confirmation"; 
 	}
 	
-
+	/**
+     * Displays a list of courses that the student is enrolled in.
+     *
+     * @param model The {@link Model} object to pass attributes to the view.
+     * @return The name of the HTML template for the student course list.
+     */
 	@GetMapping("/sv-course-list")
 	public String showStudentCourses(Model model) {
 	    // retrieve the currently authenticated user's name
@@ -262,6 +336,12 @@ public class StudentController
 	    return "sv-course-list";
 	}
 	
+	/**
+     * Displays a list of grades for the student across all courses.
+     *
+     * @param model The {@link Model} object to pass attributes to the view.
+     * @return The name of the HTML template for the student grade list.
+     */
 	@Transactional
 	@GetMapping("/sv-grade-list")
 	public String showStudentGrades(Model model) {

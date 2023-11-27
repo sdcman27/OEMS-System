@@ -54,7 +54,10 @@ import edu.sru.thangiah.repository.UserRepository;
 import edu.sru.thangiah.service.ExcelExportService;
 
 
-
+/**
+ * Controller responsible for handling schedule manager-related web requests.
+ * Provides methods for displaying schedule manager pages, handling user and course data.
+ */
 @Controller
 @RequestMapping("/schedule-manager")
 public class ScheduleManagerController {
@@ -81,13 +84,24 @@ public class ScheduleManagerController {
     @Autowired
     private ExcelExportService excelExportService;
     
+    
+    /**
+	 * Displays the homepage for schedule managers.
+	 *
+	 * @return The name of the HTML template for the schedule manager homepage.
+	 */
 	@RequestMapping("/schedule_manager_homepage")
 	public String showScheduleManagerHomepage() {
 		
 		return "schedule_manager_homepage";
 	}
 	
-	
+	/**
+	 * Displays the password reset page for schedule managers.
+	 *
+	 * @param model The {@link Model} object to pass attributes to the view.
+	 * @return The name of the HTML template for password reset.
+	 */
 	@GetMapping("/smv-account-management")
 	public String passwordReset(Model model){
 		
@@ -108,7 +122,13 @@ public class ScheduleManagerController {
 		return "smv-password-reset";
 	}
 	
-
+	/**
+	 * Displays the form for editing the current schedule manager's information.
+	 *
+	 * @param id The ID of the schedule manager to edit.
+	 * @param model The {@link Model} object to pass attributes to the view.
+	 * @return The name of the HTML template for editing the schedule manager.
+	 */
 	@GetMapping("/smv-edit-current-manager/{id}")
 	public String editingCurrentUser(@PathVariable("id") long id, Model model) {
 	    ScheduleManager manager = scheduleManagerRepository.findById(id)
@@ -118,6 +138,15 @@ public class ScheduleManagerController {
 	    return "smv-edit-current-manager"; 
 	}
 	
+	/**
+	 * Handles the submission of the form for editing the current schedule manager's information.
+	 *
+	 * @param id The ID of the schedule manager being edited.
+	 * @param manager The updated {@link ScheduleManager} object.
+	 * @param result The {@link BindingResult} object to hold validation results.
+	 * @param model The {@link Model} object to pass attributes to the view.
+	 * @return A string indicating the view to render next.
+	 */
 	@Transactional
 	@PostMapping("/smv-edit-current-user/{id}")
 	public String saveCurrentUserEdits(@PathVariable("id") long id, @Validated ScheduleManager manager, 
@@ -170,30 +199,50 @@ public class ScheduleManagerController {
 
 	
 
-	
+	/**
+	 * Displays the course addition form for schedule managers.
+	 *
+	 * @return The name of the HTML template for adding a new course.
+	 */
     @GetMapping("/add-course")
     public String showCreateCourseForm() {
         return "add-course"; 
     }
 
+    /**
+     * Displays the form for adding a new course by a schedule manager.
+     *
+     * @return The name of the HTML template for adding a new course.
+     */
     @GetMapping("/add-courseSM")
     public String showCreateCourseFormSMV() {
         return "smv-add-course"; 
     }
     
-
+    /**
+     * Shows a list of all instructors.
+     *
+     * @param model The model to which the list of instructors will be added.
+     * @return The name of the HTML template for displaying the instructor list.
+     */
     @GetMapping("/instructor-list")
     public String showInstructorList(Model model) {
         List<Instructor> instructors = instructorRepository.findAll();
         model.addAttribute("instructors", instructors);
         return "instructor-list";
     }
-    
 
+    
+/**
+ * Displays the form for creating a new instructor.
+ *
+ * @return The name of the HTML template for creating a new instructor.
+ */
     @GetMapping("/create-instructor")
     public String showCreateInstructorForm() {
         return "create-instructor"; 
     }
+    
     
 	@GetMapping("/associateSM")
 	public String associateStudentWithCourseFormSMV(Model model) {
@@ -210,6 +259,12 @@ public class ScheduleManagerController {
 		return "smv-associate-students";
 	}
 	
+	/**
+	 * Displays the form for associating a student with a course.
+	 *
+	 * @param model The model to which the list of students and courses will be added.
+	 * @return The name of the HTML template for the association form.
+	 */
 	@PostMapping("/associateSM")
     public String handleAssociateStudentWithCourse(@RequestParam("studentId") Long studentId, @RequestParam("courseId") Long courseId) {
         System.out.println(studentId);
@@ -238,7 +293,13 @@ public class ScheduleManagerController {
 
     }
 
-	
+	/**
+	 * Handles the submission of the form for associating a student with a course.
+	 *
+	 * @param studentId The ID of the student to associate.
+	 * @param courseId The ID of the course to associate.
+	 * @return A redirection to the appropriate confirmation or error page.
+	 */
 	@GetMapping("/associate-instructorSM")
 	public String associateInstructorWithCourseFormSMV(Model model) {
 		// Retrieve the list of instructors and courses from the repository
@@ -253,6 +314,13 @@ public class ScheduleManagerController {
 		// Return the name of the HTML template for the form
 		return "smv-associate-instructor";
 	}
+	
+	/**
+	 * Displays the form for associating an instructor with a course.
+	 *
+	 * @param model The model to which the list of instructors and courses will be added.
+	 * @return The name of the HTML template for the association form.
+	 */
 	@PostMapping("/associate-instructorSM")
 	public String handleAssociateInstructorWithCourse(@RequestParam("instructorId") Long instructorId, @RequestParam("courseId") Long courseId) {
 		System.out.println(instructorId);
@@ -281,13 +349,25 @@ public class ScheduleManagerController {
 	}
     
 
-	
+	/**
+	 * Handles the submission of the form for associating an instructor with a course.
+	 *
+	 * @param instructorId The ID of the instructor to associate.
+	 * @param courseId The ID of the course to associate.
+	 * @return A redirection to the appropriate confirmation or error page.
+	 */
     @PreAuthorize("hasRole('SCHEDULE_MANAGER')")
     @GetMapping("/create-instructors")
     public String showCreateInstructorFormSMV() {
         return "smv-create-instructor"; 
     }
     
+    /**
+     * Shows a list of all students for a schedule manager with appropriate permissions.
+     *
+     * @param model The model to which the list of students will be added.
+     * @return The name of the HTML template to be displayed.
+     */
 	@GetMapping("/list-students")
 	@PreAuthorize("hasRole('SCHEDULE_MANAGER')")
 	public String showStudentsListSMV(Model model) {
@@ -321,6 +401,13 @@ public class ScheduleManagerController {
 	    return "smv-class-student-list";
 	}
     
+
+	/**
+	 * Shows a list of all schedule managers for a schedule manager with appropriate permissions.
+	 *
+	 * @param model The model to which the list of schedule managers will be added.
+	 * @return The name of the HTML template to be displayed.
+	 */
 	@GetMapping("/smv-student-list-by-class/{id}")
 	public String showStudentsListbyClassSMV(@PathVariable("id") long id, Model model) {
 		
@@ -340,12 +427,19 @@ public class ScheduleManagerController {
 		return "smv-student-list-by-class";
 	}
     
+
     @GetMapping("/instructors")
     @ResponseBody
     public List<Instructor> getInstructors() {
         return instructorRepository.findAll();
     }
     
+    /**
+     * Shows a list of all schedule managers for a schedule manager with appropriate permissions.
+     *
+     * @param model The model to which the list of schedule managers will be added.
+     * @return The name of the HTML template to be displayed.
+     */
     @GetMapping("/all-sm")
     public String showSMSMV(Model model) {
         List<ScheduleManager> ScheduleManager = scheduleManagerRepository.findAll();
@@ -353,6 +447,12 @@ public class ScheduleManagerController {
         return "smv-schedule-manager-list";
     }
     
+    /**
+     * Shows a list of all schedule managers for a schedule manager with appropriate permissions.
+     *
+     * @param model The model to which the list of schedule managers will be added.
+     * @return The name of the HTML template to be displayed.
+     */
     @GetMapping("/all")
     public String showSM(Model model) {
         List<ScheduleManager> ScheduleManager = scheduleManagerRepository.findAll();
@@ -361,6 +461,14 @@ public class ScheduleManagerController {
     }
 
     
+    /**
+     * Provides a form for updating a student's information.
+     *
+     * @param id    The ID of the student to update.
+     * @param model The model to which the student object will be added.
+     * @return The name of the HTML template for editing the student.
+     */
+
     @GetMapping("/iv-edit-student/{id}")
     public String showUpdateFormIV(@PathVariable("id") long id, Model model) {
 		Student student = studentRepository.findById(id)
@@ -371,7 +479,12 @@ public class ScheduleManagerController {
     }
 
     
-    
+    /**
+     * Loads the main page of the manager interface with a list of instructors.
+     *
+     * @param model The model to which the list of instructors will be added.
+     * @return The name of the HTML template for the manager page.
+     */
     @GetMapping("/page")
     public String loadManagerPage(Model model) {
         List<Instructor> instructors = instructorRepository.findAll();
@@ -386,7 +499,13 @@ public class ScheduleManagerController {
 		return "smv-instructor-success";
 	}
     
-    // Load/Create Instructor
+
+
+/**
+ * Redirects to the success page after creating an instructor.
+ *
+ * @return The name of the success page template.
+ */
     @Transactional
     @PostMapping("/add")
     public String addInstructorSMV(@ModelAttribute Instructor instructor, RedirectAttributes redirectAttributes) {
@@ -432,12 +551,23 @@ public class ScheduleManagerController {
         }
     }
     
+    /**
+     * Shows the course addition success page.
+     *
+     * @return The name of the course success page template.
+     */
     @GetMapping("smv-course-success-page")
     public String showSuccessPageSMV() {
         return "smv-course-success-page";  // This should be the name of your Thymeleaf template (without .html)
     }
 
-    
+    /**
+     * Handles the addition of a new course.
+     *
+     * @param course The course object to be added.
+     * @param model  The model to pass messages to the view.
+     * @return A redirection to either the success page or back to the form with an error.
+     */
     @PreAuthorize("hasRole('SCHEDULE_MANAGER')")
     @PostMapping("/add-courseSM")
     public String addCourseSM(@ModelAttribute Course course, Model model) {
@@ -459,7 +589,14 @@ public class ScheduleManagerController {
     }
 
     
-    // Load/Create Course
+
+    /**
+     * Handles the addition of a new course.
+     *
+     * @param course The course object to be added.
+     * @param model  The model to pass messages to the view.
+     * @return A redirection to either the success page or back to the form with an error.
+     */
     @PostMapping("/course/add")
     public ResponseEntity<?> addCourse(@ModelAttribute Course course){
         try {
@@ -470,7 +607,14 @@ public class ScheduleManagerController {
         }
     }
 
-    // Assign instructor to course
+
+     /**
+      * Assigns an instructor to a course.
+      *
+      * @param courseId     The ID of the course.
+      * @param instructorId The ID of the instructor.
+      * @return A ResponseEntity indicating success or failure.
+      */
     @PostMapping("/course/assign-instructor")
     public ResponseEntity<?> assignInstructorToCourse(
         @RequestParam Long courseId, 
@@ -492,6 +636,13 @@ public class ScheduleManagerController {
         }
     }
 
+    /**
+     * Shows a form for updating an instructor's information.
+     *
+     * @param id    The ID of the instructor to update.
+     * @param model The model to which the instructor object will be added.
+     * @return The name of the HTML template for editing the instructor.
+     */
     @GetMapping("/smv-edit-instructor/{id}")
     public String showInstructorUpdateFormSMV(@PathVariable("id") long id, Model model) {
     	Instructor instructor = instructorRepository.findById(id)
@@ -501,6 +652,17 @@ public class ScheduleManagerController {
         return "smv-edit-instructor";
     }
     
+    /**
+     * Updates an instructor's information.
+     *
+     * @param id                    The ID of the instructor to update.
+     * @param instructor            The updated instructor object.
+     * @param result                Binding result for validation.
+     * @param model                 The model to pass attributes to the view.
+     * @param newInstructorPassword The new password for the instructor.
+     * @param confirmInstructorPassword Confirmation of the new password.
+     * @return A redirection to the appropriate confirmation or error page.
+     */
     @PostMapping("/update/{id}")
     public String updateInstructorSMV(@PathVariable("id") long id, @Validated Instructor instructor, 
       BindingResult result, Model model, @RequestParam("newPassword") String newInstructorPassword, 
@@ -549,7 +711,14 @@ public class ScheduleManagerController {
         return "smv-edit-instructor-confirmation";
     }
 
-    // Delete instructor
+
+    /**
+     * Deletes an instructor from the system.
+     *
+     * @param id    The ID of the instructor to delete.
+     * @param model The model to pass attributes to the view.
+     * @return A redirection to the confirmation page.
+     */
     @Transactional
     @GetMapping("/instructor/delete/{id}")
 	public String deleteInstructorSMV(@PathVariable("id") long id, Model model) {
@@ -574,12 +743,23 @@ public class ScheduleManagerController {
      return "smv-edit-instructor-confirmation";
  }
     
-    
+    /**
+     * Shows a form for creating a new student.
+     *
+     * @return The name of the HTML template for creating a student.
+     */
 	@GetMapping("/create-students")
 	public String showCreateStudentFormSMV() {
 		return "smv-create-student"; // This corresponds to the name of your HTML file
 	}
     
+	/**
+	 * Creates a new student along with the corresponding user account.
+	 *
+	 * @param student              The student object to be created.
+	 * @param redirectAttributes   Redirect attributes to pass messages.
+	 * @return A redirection to either the success or error page.
+	 */
     @Transactional
 	@PostMapping("/create")
 	public String createSMV(@ModelAttribute Student student, RedirectAttributes redirectAttributes) {
@@ -632,6 +812,13 @@ public class ScheduleManagerController {
 	    }
 	}
     
+    /**
+     * Shows the form for editing a student's information.
+     *
+     * @param id    the ID of the student to edit
+     * @param model the Spring MVC model
+     * @return the name of the template to show
+     */
 	@GetMapping("/smv-edit-student/{id}")
     public String showUpdateFormSMV(@PathVariable("id") long id, Model model) {
 		Student student = studentRepository.findById(id)
@@ -641,6 +828,17 @@ public class ScheduleManagerController {
         return "smv-edit-student";
     }
 
+	/**
+	 * Processes the form for updating a student's information.
+	 *
+	 * @param id the ID of the student to update
+	 * @param student the updated student information
+	 * @param result the binding result for error handling
+	 * @param model the Spring MVC model
+	 * @param newPassword the new password for the student
+	 * @param confirmPassword the confirmation of the new password
+	 * @return the name of the template to show
+	 */
 	@PostMapping("/smv-update/{id}")
     public String updateStudentSMV(@PathVariable("id") long id, @Validated Student student, 
       BindingResult result, Model model, @RequestParam("newPassword") String newStudentPassword, 
@@ -697,6 +895,13 @@ public class ScheduleManagerController {
         return "smv-edit-confirmation";
     }
 	
+	/**
+	 * Deletes a student.
+	 *
+	 * @param id    the ID of the student to delete
+	 * @param model the Spring MVC model
+	 * @return the name of the template to show after deletion
+	 */
 	@GetMapping("/student/delete/{id}")
     public String deleteStudentSMV(@PathVariable("id") long id, Model model) {
         Student student = studentRepository.findById(id)
@@ -717,6 +922,11 @@ public class ScheduleManagerController {
         return "smv-edit-confirmation";
     }
 	
+	/**
+	 * Shows the form for importing students from an Excel file.
+	 *
+	 * @return the name of the template to show
+	 */
 	@GetMapping("/exportStudentSMV")
 	public ResponseEntity<String> exportStudentDataSMV() {
 	    try {
@@ -751,18 +961,31 @@ public class ScheduleManagerController {
 	    }
 	}
 	
-	//NTS
-	
+	/**
+	 * Shows the success page after a successful upload.
+	 *
+	 * @return the name of the template to show
+	 */
 	@GetMapping("/uploadExcelSMV")
 	public String importStudentsSMV() {
 		return "smv-import"; // This corresponds to the name of your HTML file
 	}
-	
+	/**
+	 * Shows the success page if the upload does succeed.
+	 *
+	 * @return the name of the template to show
+	 */
 	@GetMapping("/smv-upload-success")
 	public String uploadSuccessSMV() {
 		return "smv-upload-success"; // This corresponds to the name of your HTML file
 	}
 	
+	/**
+	 * Handles the upload of an Excel file containing student data.
+	 *
+	 * @param file the Excel file to upload
+	 * @return the name of the template to show after processing the file
+	 */
 	@Transactional
 	@PostMapping("/uploadExcelSMV")
 	public String uploadExcelSMV(@RequestParam("file") MultipartFile file) {
@@ -875,16 +1098,32 @@ public class ScheduleManagerController {
         }
     }
 	
+	/**
+	 * Shows the failure page if the upload does not succeed.
+	 *
+	 * @return the name of the template to show
+	 */
 	@GetMapping("/smv-upload-fail")
 	public String showSmvUploadFail() {
 		return "smv-upload-fail"; // This corresponds to the name of your HTML file
 	}
 	
+	/**
+	 * Shows the form for importing class data from an Excel file.
+	 *
+	 * @return the name of the template to show
+	 */
 	@GetMapping("/smv-class-import")
 	public String showSmvClassImport() {
 		return "smv-class-import"; // This corresponds to the name of your HTML file
 	}
 	
+	/**
+	 * Handles the upload of an Excel file containing class and instructor data.
+	 *
+	 * @param file the Excel file to upload
+	 * @return the name of the template to show after processing the file
+	 */
 	@PostMapping("/smv-upload")
 	public String upload(@RequestParam("file") MultipartFile file) throws IOException {
 
@@ -1143,6 +1382,13 @@ public class ScheduleManagerController {
 	        }
 	    }
 	    
+	    /**
+	     * Deletes a class.
+	     *
+	     * @param id    the ID of the class to delete
+	     * @param model the Spring MVC model
+	     * @return the name of the template to show after deletion
+	     */
 		@GetMapping("/delete/{id}")
 		public String deleteClassSMV(@PathVariable("id") long id, Model model) {
 		    Course course = courseRepository.findById(id)
@@ -1160,6 +1406,12 @@ public class ScheduleManagerController {
 		    return "smv-edit-class-confirmation";
 		}
 		
+		/**
+		 * Lists all classes in the system.
+		 *
+		 * @param model the Spring MVC model
+		 * @return the name of the template to show
+		 */
 		@GetMapping("/smv-class-list")
 		public String showClassListSMV(Model model) {
 		    // Retrieve the list of all courses from the repository
@@ -1180,6 +1432,13 @@ public class ScheduleManagerController {
 		    return "smv-class-list";
 		}		
 		
+		/**
+		 * Shows the form for editing class information.
+		 *
+		 * @param id    the ID of the class to edit
+		 * @param model the Spring MVC model
+		 * @return the name of the template to show
+		 */
 		@GetMapping("/smv-edit-class/{id}")
 		public String showUpdateClassSMV(@PathVariable("id") long id, Model model) {
 		    Course course = courseRepository.findById(id)
@@ -1189,6 +1448,15 @@ public class ScheduleManagerController {
 		    return "smv-edit-class"; 
 		}
 		
+		/**
+		 * Processes the form for updating a class's information.
+		 *
+		 * @param id     the ID of the class to update
+		 * @param course the updated course information
+		 * @param result the binding result for error handling
+		 * @param model  the Spring MVC model
+		 * @return the name of the template to show after update
+		 */
 		@PostMapping("/smv-edit-class/{id}")
 	    public String updateClassSMV(@PathVariable("id") long id, @Validated Course course, 
 	      BindingResult result, Model model) {

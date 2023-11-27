@@ -9,9 +9,11 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Represents an exam submission entity which includes user details, exam details, answers, and submission time.
+ */
 @Entity
 @Table(name = "exam_submission")
-
 public class ExamSubmissionEntity {
 
     @Id
@@ -32,10 +34,20 @@ public class ExamSubmissionEntity {
 
     private LocalDateTime submissionTime;
 
+    /**
+     * Gets the submission time for the exam.
+     * 
+     * @return The submission time as a {@link LocalDateTime}.
+     */
     public LocalDateTime getSubmissionTime() {
 		return submissionTime;
 	}
 
+    /**
+     * Sets the submission time for the exam.
+     * 
+     * @param submissionTime The submission time to set as a {@link LocalDateTime}.
+     */
 	public void setSubmissionTime(LocalDateTime submissionTime) {
 		this.submissionTime = submissionTime;
 	}
@@ -84,10 +96,19 @@ public class ExamSubmissionEntity {
         this.score = score;
     }
     
-    // Add setter methods for userId and examId
+    /**
+     * Sets the user ID associated with this submission.
+     * 
+     * @param userId The ID of the user.
+     */
     public void setUserId(Long userId) {
     }
 
+    /**
+     * Sets the exam ID associated with this submission.
+     * 
+     * @param examId The ID of the exam.
+     */
     public void setExamId(Long examId) {
     }
 }
