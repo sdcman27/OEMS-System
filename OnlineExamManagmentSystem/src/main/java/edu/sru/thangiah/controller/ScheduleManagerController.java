@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -52,6 +53,7 @@ import edu.sru.thangiah.repository.ScheduleManagerRepository;
 import edu.sru.thangiah.repository.StudentRepository;
 import edu.sru.thangiah.repository.UserRepository;
 import edu.sru.thangiah.service.ExcelExportService;
+import edu.sru.thangiah.web.dto.StudentDTO;
 
 
 /**
@@ -292,6 +294,20 @@ public class ScheduleManagerController {
 		}
 
     }
+	
+	@GetMapping("/eligible_students")
+	@ResponseBody
+	public List<StudentDTO> getEligibleStudents(@RequestParam("courseId") Long courseId) {
+	    Course course = courseRepository.findById(courseId).orElse(null);
+	    if (course != null) {
+	        return studentRepository.findAll().stream()
+	                .filter(student -> !student.getCourses().contains(course))
+	                .map(student -> new StudentDTO(student.getStudentId(), student.getStudentFirstName(), student.getStudentLastName()))
+	                .collect(Collectors.toList());
+	    }
+	    return new ArrayList<>();
+	}
+
 
 	/**
 	 * Handles the submission of the form for associating a student with a course.
