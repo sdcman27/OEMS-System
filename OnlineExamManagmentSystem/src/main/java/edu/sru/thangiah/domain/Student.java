@@ -34,7 +34,7 @@ public class Student {
     @Column(name = "id")
     private Long studentId;
     
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "STUDENT_AND_COURSES_TABLE", 
     joinColumns = {
     		@JoinColumn(name = "student_id", referencedColumnName = "id")

@@ -130,19 +130,19 @@ $(function(){
     <h2>Associate Instructor with Course</h2>
     
     <form id="associateInstructorWithCourseFormSMV" action="/schedule-manager/associate-instructorSM" method="POST">
-        <label for="instructorId">Select an Instructor:</label>
-        <select id="instructorId" name="instructorId" required>
-            <option value="">Please select an instructor</option>
-            <option th:each="instructor : ${instructors}" th:value="${instructor.instructorId}" th:text="${instructor.instructorFirstName + ' ' + instructor.instructorLastName}"></option>
-        </select>
+        <label for="courseId">Select a Course:</label>
+			<select id="courseId" name="courseId" required onchange="fetchEligibleInstructors()">
+				<option value="">Please Select Course via ID</option>
+    			<option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseName}"></option>			
+    		</select>
 
         <br><br>
 
-        <label for="courseId">Select a Course:</label>
-        <select id="courseId" name="courseId" required>
-            <option value="">Please Select Course via ID</option>
-            <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseName}"></option>
-        </select>
+        <label for="instructorId">Select an Instructor:</label>
+			<select id="instructorId" name="instructorId" required>
+    		<option value="">Please select an instructor</option>
+    		<!-- Instructors will be populated dynamically -->
+		</select>
 
         <br><br>
 
@@ -161,6 +161,28 @@ $(function(){
                 alert('Please select both an instructor and a course.');
             }
         };
+    </script>
+    
+    <script>
+    function fetchEligibleInstructors() {
+    var courseId = document.getElementById('courseId').value;
+    if (courseId) {
+        fetch('/schedule-manager/eligible_instructors?courseId=' + courseId)
+            .then(response => response.json())
+            .then(data => {
+                var instructorSelect = document.getElementById('instructorId');
+                instructorSelect.innerHTML = '<option value="">Please select an instructor</option>';
+                data.forEach(instructor => {
+                    var option = new Option(instructor.instructorFirstName + ' ' + instructor.instructorLastName, instructor.instructorId);
+                    instructorSelect.add(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching instructors:', error);
+            });
+    }
+}
+    
     </script>
 
 </body>
