@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -1463,6 +1464,30 @@ public class ScheduleManagerController {
 		    return "smv-class-list";
 		}		
 		
+		@GetMapping("/smv-instructor-courses/{instructorId}")
+		public String showInstructorCourses(@PathVariable Long instructorId, Model model) {
+		    Instructor instructor = instructorRepository.findById(instructorId).orElse(null);
+		    Set<Course> courses = new HashSet<>();
+
+		    if (instructor != null) {
+		        courses = instructor.getCourses();
+		    }
+		    // Create a map to hold the course IDs and their respective student counts
+		    Map<Long, Long> courseStudentCountMap = new HashMap<>();
+		    for (Course course : courses) {
+		        Long studentCount = Long.valueOf(course.getStudents().size()); // Get the size of the student set
+		        courseStudentCountMap.put(course.getId(), studentCount); // Use course ID as key
+		    }
+
+		    model.addAttribute("instructor", instructor);
+		    model.addAttribute("courses", courses);
+		    model.addAttribute("courseCounts", courseStudentCountMap);
+
+
+		    return "smv-instructor-courses";
+		}
+
+		
 		/**
 		 * Shows the form for editing class information.
 		 *
@@ -1489,19 +1514,28 @@ public class ScheduleManagerController {
 		 * @return the name of the template to show after update
 		 */
 		@PostMapping("/smv-edit-class/{id}")
-	    public String updateClassSMV(@PathVariable("id") long id, @Validated Course course, 
+	    public String updateClassSMV(@PathVariable("id") long id, @Validated Course updatedCourse, 
 	      BindingResult result, Model model) {
 	        if (result.hasErrors()) {
-	            course.setId(id);
+	        	updatedCourse.setId(id);
 	            return "smv-edit-class";
 	        }
+	        
+	        Course existingCourse = courseRepository.findById(id)
+	        	      .orElseThrow(() -> new IllegalArgumentException("Invalid Course Id:" + id));
+
+	        	    // Maintain the existing instructor
+	        	    if (existingCourse.getInstructor() != null) {
+	        	        updatedCourse.setInstructor(existingCourse.getInstructor());
+	        	    }
+	        	    
 	        // Debugging: Print the received student data
 	        System.out.println("Received Class Data:");
-	        System.out.println("ID: " + course.getId());
-	        System.out.println("Course Name: " + course.getCourseName());
+	        System.out.println("ID: " + updatedCourse.getId());
+	        System.out.println("Course Name: " + updatedCourse.getCourseName());
 	        System.out.println("Path Variable ID: " + id);
 	        
-	        courseRepository.save(course);
+	        courseRepository.save(updatedCourse);
 	        return "smv-edit-class-confirmation";
 	    }
 		
