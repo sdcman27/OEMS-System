@@ -1,0 +1,29 @@
+@startuml
+
+actor User
+participant "Web Browser" as Browser
+participant "Controller" as Controller
+participant "HttpSession" as HttpSession
+participant "RedirectAttributes" as RedirectAttributes
+
+User -> Browser: Accesses remove-selected-question/{id}
+Browser -> Controller: GET /remove-selected-question/{id}
+
+Controller -> HttpSession: Get selectedQuestionIds from session
+activate HttpSession
+HttpSession --> Controller: Return selectedQuestionIds
+deactivate HttpSession
+
+alt SelectedQuestionIds exist in session
+    Controller -> HttpSession: Remove selected question with ID
+    HttpSession --> Controller: Update selectedQuestionIds in session
+
+    Controller -> HttpSession: Get lastSelectedChapter from session
+    HttpSession --> Controller: Return lastSelectedChapter
+    Controller -> RedirectAttributes: Add selectedChapter attribute
+    RedirectAttributes --> Browser: Redirect to /exam/generateExam with selectedChapter
+else SelectedQuestionIds not found in session
+    Controller --> Browser: Redirect to /exam/generateExam without modifications
+end
+
+@enduml

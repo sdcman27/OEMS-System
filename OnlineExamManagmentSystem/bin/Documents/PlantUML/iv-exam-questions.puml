@@ -1,0 +1,28 @@
+@startuml
+
+actor User
+participant "Controller" as Controller
+participant "Model" as Model
+participant "ExamQuestionService" as ExamQuestionService
+participant "ExamService" as ExamService
+
+User -> Controller: Access exam questions
+
+Controller -> ExamQuestionService: readExamQuestionsFromFile()
+alt File reading successful
+    ExamQuestionService -> ExamQuestionService: Read exam questions from file
+    ExamQuestionService -> ExamQuestionService: Store exam questions
+    ExamQuestionService -> ExamQuestionService: Retrieve all exam questions
+    ExamQuestionService --> Controller: Return exam questions
+    Controller -> Model: Add attribute\nfor examQuestions
+else File reading failed
+    ExamQuestionService -> Controller: Throw IOException
+    Controller -> Controller: Handle IOException\n(Print stack trace)
+end
+
+Controller -> ExamService: getAllChapters()
+ExamService --> Controller: Return chapters
+Controller -> Model: Add attribute\nfor chapters
+Controller -> "listExamQuestions": Return view 'listExamQuestions'
+
+@enduml

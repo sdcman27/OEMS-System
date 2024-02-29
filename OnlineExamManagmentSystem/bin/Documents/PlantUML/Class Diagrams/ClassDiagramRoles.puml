@@ -1,0 +1,12 @@
+@startuml
+class Roles [[java:edu.sru.thangiah.model.Roles]] {
+	-id: Long
+	-name: String
+	+Roles()
+	+Roles(id: Long, name: String)
+	+getId(): Long
+	+setId(id: Long): void
+	+getName(): String
+	+setName(name: String): void
+}
+@enduml

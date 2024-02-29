@@ -1,0 +1,13 @@
+@startuml
+skinparam classAttributeIconSize 0
+class SearchController {
+    private StudentRepository studentRepository
+    private ExamQuestionService examQuestionService
+    private InstructorRepository instructorRepository
+    private ScheduleManagerRepository scheduleManagerRepository
+    public String searchInstructors(("searchType")
+    public String searchScheduleManagers(("searchType")
+    public String searchStudents(("searchType")
+    public String searchExamQuestions(("searchType")
+}
+@enduml

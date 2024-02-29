@@ -1,0 +1,58 @@
+@startuml
+
+actor User
+participant "Web Browser" as Browser
+participant "Controller" as Controller
+participant "Model" as Model
+participant "HttpSession" as HttpSession
+participant "Authentication" as Authentication
+participant "InstructorRepository" as InstructorRepository
+participant "Exam" as Exam
+participant "CourseRepository" as CourseRepository
+
+User -> Browser: Access exam landing page
+Browser -> Controller: showExamLandingPage()
+
+activate Controller
+Controller -> Authentication: Get authentication details
+Authentication --> Controller: Return user details
+Controller -> InstructorRepository: Find instructor by username
+activate InstructorRepository
+InstructorRepository --> Controller: Return instructor details
+deactivate InstructorRepository
+
+Controller -> Model: Add attribute for courses
+Controller --> Browser: Return exam-landing-page view
+
+User -> Browser: Fills exam details
+Browser -> Controller: captureExamLandingPageData()
+
+activate Controller
+Controller -> Authentication: Get authentication details
+Authentication --> Controller: Return user details
+Controller -> Exam: Create Exam object
+Controller -> CourseRepository: Find course by ID
+activate CourseRepository
+CourseRepository --> Controller: Return course details
+deactivate CourseRepository
+
+alt Course found and instructor matches
+    Controller -> Exam: Set exam details
+    Controller -> ExamRepository: Save exam
+    activate ExamRepository
+    ExamRepository --> Controller: Return saved exam details
+    deactivate ExamRepository
+
+    Controller -> HttpSession: Set currentExamId
+    HttpSession --> Controller: Acknowledge session update
+
+    alt Generate manual exam
+        Controller --> Browser: Redirect to selectChapter
+    else Other action
+        Controller --> Browser: Redirect to auto-generate
+    end
+else Course not found or instructor mismatch
+    Controller --> Browser: Redirect to error page
+end
+
+@enduml

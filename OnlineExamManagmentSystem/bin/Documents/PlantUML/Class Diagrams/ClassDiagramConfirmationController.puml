@@ -1,0 +1,7 @@
+@startuml
+skinparam classAttributeIconSize 0
+class ConfirmationController {
+    private UserRepository userRepository
+    public String confirmRegistration(("token")
+}
+@enduml

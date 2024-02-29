@@ -1,0 +1,34 @@
+@startuml
+participant Client
+participant Controller
+participant courseRepository
+participant studentRepository
+participant Model
+
+
+Client -> Controller: GET Request: /smv-student-list-by-class/{id}
+activate Controller
+Controller -> courseRepository: findById(id)
+activate courseRepository
+courseRepository --> Controller: Optional<Course>
+deactivate courseRepository
+alt Course found
+    Controller -> courseRepository: findById(id)
+    activate courseRepository
+    courseRepository --> Controller: Course entity
+    deactivate courseRepository
+    Controller -> studentRepository: findByCoursesId(foundCourse.getId())
+    activate studentRepository
+    studentRepository --> Controller: List of Students
+    deactivate studentRepository
+    alt Students found for the Course
+        Controller -> Model: addAttribute("students", students)
+        Model --> Controller: Updated model
+        Controller --> Client: Return view: smv-student-list-by-class
+    else No Students found for the Course
+        Controller --> Client: Return view: smv-student-list-by-class (No students)
+    end
+else Course not found
+    Controller --> Client: Return view: <Error view>
+end
+@enduml

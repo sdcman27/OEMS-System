@@ -1,0 +1,10 @@
+@startuml
+class SecurityConfig [[java:edu.sru.thangiah.config.SecurityConfig]] {
+	-userDetailsService: UserDetailsService
+	-passwordEncoder: PasswordEncoder
+	-successHandler: CustomAuthenticationSuccessHandler
+	+passwordEncoder(): PasswordEncoder
+	#configure(http: HttpSecurity): DefaultSecurityFilterChain
+	+configureGlobal(auth: AuthenticationManagerBuilder): void
+}
+@enduml

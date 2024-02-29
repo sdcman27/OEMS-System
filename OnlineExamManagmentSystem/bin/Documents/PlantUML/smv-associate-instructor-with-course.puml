@@ -1,0 +1,42 @@
+@startuml
+participant Client
+participant Controller
+participant instructorRepository
+participant courseRepository
+participant Model
+participant Instructor
+participant Course
+
+Client -> Controller: GET Request: /associate-instructorSM
+activate Controller
+Controller -> instructorRepository: findAll()
+activate instructorRepository
+instructorRepository --> Controller: List of Instructors
+deactivate instructorRepository
+Controller -> courseRepository: findAll()
+activate courseRepository
+courseRepository --> Controller: List of Courses
+deactivate courseRepository
+Controller -> Model: addAttribute("instructors", instructors), addAttribute("courses", courses)
+Model --> Controller: Updated model
+Controller --> Client: Return view: smv-associate-instructor
+Client -> Controller: POST Request: /associate-instructorSM
+activate Controller
+Controller -> instructorRepository: findById(instructorId)
+activate instructorRepository
+instructorRepository --> Controller: Instructor entity
+deactivate instructorRepository
+Controller -> courseRepository: findById(courseId)
+activate courseRepository
+courseRepository --> Controller: Course entity
+deactivate courseRepository
+alt Instructor and Course found
+    Controller -> courseRepository: save(course)
+    activate courseRepository
+    courseRepository --> Controller: Saved Course entity with associated Instructor
+    deactivate courseRepository
+    Controller --> Client: Return view: smv-instructor-association-confirmation
+else Instructor or Course not found
+    Controller --> Client: Return view: smv-instructor-association-fail
+end
+@enduml

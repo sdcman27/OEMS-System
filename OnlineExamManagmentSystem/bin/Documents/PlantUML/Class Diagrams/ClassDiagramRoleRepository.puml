@@ -1,0 +1,8 @@
+@startuml
+interface RoleRepository [[java:edu.sru.thangiah.repository.RoleRepository]] {
+	findByName(name: String): Optional<Roles>
+}
+interface "JpaRepository<Roles,Long>" as JpaRepository_Roles_Long_ {
+}
+JpaRepository_Roles_Long_ <|-- RoleRepository
+@enduml

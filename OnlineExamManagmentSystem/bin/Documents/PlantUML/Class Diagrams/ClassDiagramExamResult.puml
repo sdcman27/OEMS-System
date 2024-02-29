@@ -1,0 +1,13 @@
+@startuml
+skinparam classAttributeIconSize 0
+class ExamResult {
+    private int score
+    public int getScore()
+    public void setScore(int)
+    public List<String> getCorrectAnswers()
+    public void setCorrectAnswers(List<String>)
+    public List<String> getIncorrectAnswers()
+    public void setIncorrectAnswers(List<String>)
+    public void setIncorrectAnswersWithCorrections(Map<String, String>)
+}
+@enduml

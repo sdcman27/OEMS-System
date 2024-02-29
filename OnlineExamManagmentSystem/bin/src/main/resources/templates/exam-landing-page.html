@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Generate Exam</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto !important;
+            position: relative;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            background-color: rgba(0, 112, 85, 0.7);
+            color: #fff;
+            padding: 15px;
+            margin: 0;
+            border-bottom: 2px solid #004c3b;
+        }
+        
+        h2{
+        text-align: center;
+        }
+
+        /* Container for the form and the exam information */
+        .content-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        /* Styles for the form */
+        form {
+            flex: 1;
+            margin-right: 20px; 
+        }
+
+        /* Styles for the exam information */
+        #examInfo {
+            flex: 1;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            min-width: 150px; /* Ensure it doesn't get too narrow */
+        }
+        
+        .error-input {
+    		border-color: red;
+		}
+
+		.error-message {
+		    color: red;
+		    font-size: 12px;
+		}
+        
+    </style>
+</head>
+
+
+<body>
+    <div id="nav-placeholder"></div>
+    
+    <script>
+        $(function() {
+            $("#nav-placeholder").load("/instructor/instructor_homepage", function(response, status, xhr) {
+                if (status == "error") {
+                    console.log("Error loading the navbar: " + xhr.status + " " + xhr.statusText);
+                }
+            });
+        });
+    </script>
+
+    <h1>Exam Creation Form</h1>
+
+    <div class="content-container">
+		<form th:action="@{/instructor/exam-landing-page}" method="post" onsubmit="return formValidation()">
+
+            
+            
+            <label for="course">Your Course:</label>
+				<select id="course" name="courseId">
+    				<option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseName}"></option>
+				</select><br><br>
+			
+            
+            
+            <label for="examName">Exam Name:</label>
+            <input type="text" id="examName" name="examName" oninput="updateUI()"><br><br>
+
+            <label for="startDate">Start Date:</label>
+			<input type="datetime-local" id="startDate" name="startDate" required oninput="updateUI()">
+			<span id="startDate-message" class="error-message"></span><br><br>
+
+			<label for="endDate">End Date:</label>
+			<input type="datetime-local" id="endDate" name="endDate" required oninput="updateUI()">
+			<span id="endDate-message" class="error-message"></span><br><br>
+
+			<label for="duration">Duration (in minutes):</label>
+			<input type="number" id="duration" name="duration" required oninput="updateUI()">
+			<span id="duration-message" class="error-message"></span><br><br>
+
+            <input type="submit" name="manual" value="Manual Exam Generation">
+            <input type="submit" name="auto" value="Automatic Exam Generation">
+        </form>
+	
+
+        <div id="examInfo">
+            <h2>Exam Information</h2>
+            <p id="infoName"></p>
+            <p id="infoDates"></p>
+            <p id="infoDuration"></p>
+        </div>
+    </div>
+
+    <script>
+		
+		window.onload = function() {
+    		updateUI(); 
+		};
+		
+        function updateUI() {
+            var name = document.getElementById('examName').value;
+            var startDate = document.getElementById('startDate').value;
+            var endDate = document.getElementById('endDate').value;
+            var duration = document.getElementById('duration').value;
+
+            var courseSelected = document.getElementById('course').value;
+
+            // checking if the course isn't selected
+              if (courseSelected === "") {
+                  disableInputs(true); // grey out inputs if there are no courses
+            } else {
+                disableInputs(false); // allow inputs if there are courses
+
+            document.getElementById('infoName').textContent = 'Exam Name: ' + name;
+            document.getElementById('infoDates').textContent = 'Start Date: ' + startDate + ' - End Date: ' + endDate;
+            document.getElementById('infoDuration').textContent = 'Duration: ' + duration + ' minutes';
+        }
+      }
+
+      
+      function displayError(inputId, messageId, message) {
+        document.getElementById(messageId).textContent = message;
+        document.getElementById(inputId).classList.add('error-input');
+
+    }
+
+    function clearError(inputId, messageId) {
+        document.getElementById(messageId).textContent = '';
+        document.getElementById(inputId).classList.remove('error-input');
+    }
+        
+       function validateStartDate() {
+    		var startDateInput = document.getElementById('startDate').value;
+    		var startDate = new Date(startDateInput);
+    		var currentDate = new Date();
+
+    		console.log('Start Date:', startDate);
+   		 	console.log('Current Date:', currentDate);
+
+    		if (startDate < currentDate) {
+        		displayError('startDate', 'startDate-message', 'Start date cannot be before the current date.');
+        		return false;
+    		} else {
+     		   clearError('startDate', 'startDate-message');
+        		return true;
+    		}
+		}
+
+ function validateEndDate() {
+        var startDate = new Date(document.getElementById('startDate').value);
+        var endDate = new Date(document.getElementById('endDate').value);
+
+        if (endDate <= startDate) {
+            displayError('endDate', 'endDate-message', 'End date must be after the start date.');
+            return false;
+        } else {
+            clearError('endDate', 'endDate-message');
+            return true;
+        }
+    }
+
+		function validateDuration() {
+        var durationInput = document.getElementById("duration");
+        var duration = parseInt(durationInput.value, 10);
+
+        if (isNaN(duration) || duration <= 0) {
+            displayError('duration', 'duration-message', 'The duration must be a positive number.');
+            return false;
+        } else if (duration < 10) {
+            displayError('duration', 'duration-message', 'The minimum amount of duration for an exam is 10 minutes.');
+            return false;
+        } else {
+            clearError('duration', 'duration-message');
+            return true;
+        }
+    }
+    
+    // Add input event listeners for real-time UI updates
+	document.getElementById('startDate').addEventListener('input', validateStartDate);
+	document.getElementById('endDate').addEventListener('input', validateEndDate);
+	document.getElementById('duration').addEventListener('input', validateDuration);
+    
+
+
+    function disableInputs(isDisabled) {
+            var inputs = document.querySelectorAll('input, select'); 
+
+            inputs.forEach(function (input) {
+            input.disabled = isDisabled; 
+          
+          });
+	}
+       function formValidation() {
+   		 	var isStartDateValid = validateStartDate();
+   		 	var isEndDateValid = validateEndDate();
+    		var isDurationValid = validateDuration();
+
+    			// If all validations are true, update the UI and allow form submission.
+    		if (isStartDateValid && isEndDateValid && isDurationValid) {
+        		updateUI();
+        		return true; // Proceed with form submission.
+    		} else {
+        		// Prevent form submission if validations fail.
+        		return false;
+    		}
+		}
+
+    </script>
+</body>
+
+</html>

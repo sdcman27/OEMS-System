@@ -1,0 +1,32 @@
+@startuml
+skinparam classAttributeIconSize 0
+class Instructor {
+    private Long instructorId
+    private String instructorFirstName
+    private String instructorLastName
+    private String instructorEmail
+    private String instructorPassword
+    private String instructorUsername
+    private float creditsTaught
+    public long getInstructorId()
+    public void setInstructorId(long)
+    public List<Roles> getRoles()
+    public void setRoles(List<Roles>)
+    public String getInstructorFirstName()
+    public void setInstructorFirstName(String)
+    public String getInstructorLastName()
+    public void setInstructorLastName(String)
+    public String getInstructorEmail()
+    public void setInstructorEmail(String)
+    public String getInstructorPassword()
+    public void setInstructorPassword(String)
+    public String getInstructorUsername()
+    public void setInstructorUsername(String)
+    public float getCreditsTaught()
+    public void setCreditsTaught(float)
+    public Set<Course> getCourses()
+    public void setCourses(Set<Course>)
+    public void setInstructorId(Long)
+    public void setUser(User)
+}
+@enduml

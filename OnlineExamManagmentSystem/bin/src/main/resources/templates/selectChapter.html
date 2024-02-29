@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chapter Selection for Exam Generation</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <style>
+   body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto !important;
+            position: relative;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        header {
+            text-align: center;
+            background-color: rgba(0, 112, 85, 0.7);
+            color: #fff;
+            padding: 15px;
+            margin: 0;
+            border-bottom: 2px solid #004c3b;
+        }
+
+    header h1 {
+        margin: 0;
+        padding: 0;
+        font-size: 28px;
+    }
+
+    .container {
+        width: 70%; /* Slightly widened */
+        margin: 20px auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .success-message {
+        background-color: #daf5da;
+        color: #097509;
+        border: 1px solid #0c970c;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .form-section, .exam-details, .exam-overview {
+        background-color: #fff;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section label, .exam-detail-form label {
+        display: inline-block;
+        margin-right: 15px;
+        font-weight: bold;
+    }
+
+    .form-section select, .exam-detail-form input {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        width: calc(100% - 120px); /* Adjusted for smaller buttons */
+    }
+
+    .form-section input[type="submit"], .exam-detail-form input[type="submit"], .edit-remove-btn {
+        padding: 6px 10px; /* Smaller buttons */
+        background-color: #007055;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .form-section input[type="submit"]:hover, .exam-detail-form input[type="submit"]:hover, .edit-remove-btn:hover {
+        background-color: #005c43;
+    }
+
+    .edit-remove-btn {
+        padding: 4px 8px; /* Even smaller for edit/remove */
+        margin-right: 5px;
+        font-size: 12px;
+    }
+
+    .generate-button {
+        padding: 10px 20px;
+        background-color: #009688; /* Distinct style */
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease;
+    }
+
+    .generate-button:hover {
+        background-color: #00796b; /* Darker shade on hover */
+    }
+
+    .exam-detail-form {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .exam-detail-form label {
+        flex-basis: 30%;
+    }
+
+    .exam-detail-form input:not([type="submit"]) {
+        flex-grow: 1;
+    }
+
+    .exam-detail-form input[type="submit"] {
+        flex-basis: 15%; /* Smaller and aligned save buttons */
+    }
+    
+    .exam-overview {
+        margin-top: 20px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .overview-title {
+        text-align: center;
+        background-color: #007055;
+        color: #fff;
+        padding: 10px;
+        margin: -20px -20px 20px -20px;
+        border-bottom: 2px solid #004c3b;
+    }
+
+    .overview-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .overview-table th, .overview-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .overview-table th {
+        background-color: #007055;
+        color: white;
+    }
+
+    .overview-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .overview-table tr:hover {
+        background-color: #ddd;
+    }
+
+    .overview-table td {
+        text-align: center; /* Align text to center for better readability */
+    }
+
+    /* Styles for edit and remove buttons inside the table */
+    .overview-table .edit-remove-btn {
+        padding: 4px 8px;
+        margin-right: 5px;
+        font-size: 12px;
+        background-color: #007055;
+        color: #fff;
+        text-decoration: none;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .overview-table .edit-remove-btn:hover {
+        background-color: #005c43;
+    }
+</style>
+
+</head>
+<body>
+    <div id="nav-placeholder"></div>
+    
+    <script>
+        $(function() {
+            $("#nav-placeholder").load("/instructor/instructor_homepage", function(response, status, xhr) {
+                if (status == "error") {
+                    console.log("Error loading the navbar: " + xhr.status + " " + xhr.statusText);
+                }
+            });
+        });
+    </script>
+    
+    <header>
+        <h1>Exam Generation Portal</h1>
+    </header>
+    <div class="container">
+        <div th:if="${successMessage}" class="success-message">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <form action="#" th:action="@{/exam/selectChapter}" th:object="${selectedChapter}" method="post" class="form-section">
+            <label for="chapter">Select Chapter:</label>
+            <select id="chapter" name="selectedChapter">
+                <option value="" th:each="chapter : ${chapters}" th:value="${chapter}" th:text="${'Chapter ' + chapter}">Chapter</option>
+            </select>
+            <input type="submit" value="Select" class="submit-button">
+        </form>
+
+        <div class="exam-overview">
+            <h2 class="overview-title">Exam Overview</h2>
+            <table class="overview-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Question Text</th>
+                        <th>Chapter</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="question : ${selectedQuestions}">
+                        <td th:text="${question.id}"></td>
+                        <td th:text="${question.questionText}"></td>
+                        <td th:text="${question.chapter}"></td>
+                        <td>
+                            <a class="edit-remove-btn" th:href="@{'/instructor/exam-questions/edit/' + ${question.id}}">Edit</a>
+                            <a class="edit-remove-btn" th:href="@{'/instructor/remove-selected-question/' + ${question.id}}">Remove</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- Exam details forms -->
+        <div class="exam-details">
+            <!-- Form for updating Exam Name -->
+            <form th:action="@{/exam/updateExamName}" th:object="${examDetails}" method="post" class="exam-detail-form">
+                <input type="hidden" th:field="*{id}" />
+                <label class="exam-detail-label" for="examName">Name:</label>
+                <input type="text" th:field="*{examName}" id="examName" />
+                <input type="submit" value="Update" class="submit-button">
+            </form>
+
+            <!-- Form for updating Duration -->
+			<form th:action="@{/exam/updateDuration}" th:object="${examDetails}" method="post" class="exam-detail-form">
+    			<input type="hidden" th:field="*{id}" />
+    			<label class="exam-detail-label" for="duration">Duration (minutes):</label>
+    			<input type="number" th:field="*{durationInMinutes}" id="duration" min="10" /> 
+   				<input type="submit" value="Update" class="submit-button">
+			</form>
+
+        </div>
+
+
+        <form id="generateExamForm" action="#" th:action="@{/exam/generate}" method="post">
+            <input type="hidden" name="examId" th:value="${currentExamId}" />
+            <div style="text-align: center;">
+                <input type="submit" value="Generate Exam" class="generate-button">
+            </div>
+        </form>
+    </div>
+    
+    <script>
+    document.getElementById('updateExamDetailsForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var examId = document.querySelector('[name="examId"]').value;
+        var examName = document.querySelector('[name="examName"]').value;
+        var duration = document.querySelector('[name="duration"]').value;
+        var startTime = document.querySelector('[name="startTime"]').value;
+        var endTime = document.querySelector('[name="endTime"]').value;
+
+        // Validate duration
+        if (duration < 10) { // Check if duration is less than 11 minutes
+            alert("Duration must be at least 10 minutes.");
+            return; // Prevent form submission if validation fails
+        }
+
+        var data = {
+            examId: examId,
+            examName: examName,
+            duration: duration,
+            startTime: startTime,
+            endTime: endTime
+        };
+
+        fetch('/exam/updateDetails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Exam details updated successfully');
+                    // Additional actions on success (e.g., display a success message)
+                } else {
+                    console.error('Error updating exam details');
+                    // Additional actions on failure (e.g., display an error message)
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+</body>
+</html>

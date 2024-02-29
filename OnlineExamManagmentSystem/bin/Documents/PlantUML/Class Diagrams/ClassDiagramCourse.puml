@@ -1,0 +1,18 @@
+@startuml
+skinparam classAttributeIconSize 0
+class Course {
+    private Long id
+    private String courseName
+    private Instructor instructor
+    public Instructor getInstructor()
+    public void setInstructor(Instructor)
+    public Long getId()
+    public void setId(Long)
+    public String getCourseName()
+    public void setCourseName(String)
+    public Set<Student> getStudents()
+    public void setStudents(Set<Student>)
+    public Set<Exam> getExams()
+    public void setExams(Set<Exam>)
+}
+@enduml

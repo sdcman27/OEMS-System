@@ -1,0 +1,13 @@
+@startuml
+class ChatGptResponse [[java:edu.sru.thangiah.web.dto.ChatGptResponse]] {
+	-choices: List<Choice>
+	+getChoices(): List<Choice>
+	+setChoices(choices: List<Choice>): void
+	+equals(o: Object): boolean
+	#canEqual(other: Object): boolean
+	+hashCode(): int
+	+toString(): String
+	+ChatGptResponse(choices: List<Choice>)
+	+ChatGptResponse()
+}
+@enduml

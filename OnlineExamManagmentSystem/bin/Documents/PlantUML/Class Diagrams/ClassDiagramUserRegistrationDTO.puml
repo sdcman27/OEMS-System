@@ -1,0 +1,21 @@
+@startuml
+class UserRegistrationDto [[java:edu.sru.thangiah.web.dto.UserRegistrationDto]] {
+	-firstName: String
+	-lastName: String
+	-email: String
+	-password: String
+	-username: String
+	+UserRegistrationDto(firstName: String, lastName: String, email: String, password: String, username: String)
+	+getFirstName(): String
+	+setFirstName(firstName: String): void
+	+getLastName(): String
+	+setLastName(lastName: String): void
+	+getEmail(): String
+	+setEmail(email: String): void
+	+getPassword(): String
+	+setPassword(password: String): void
+	+getUsername(): String
+	+setUsername(username: String): void
+	+getVerificationCode(): String
+}
+@enduml

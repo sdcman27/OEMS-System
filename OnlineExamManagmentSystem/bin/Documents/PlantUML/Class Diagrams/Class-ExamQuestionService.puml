@@ -1,0 +1,19 @@
+@startuml
+interface ExamQuestionService [[java:edu.sru.thangiah.service.ExamQuestionService]] {
+	getAllExamQuestions(): List<ExamQuestion>
+	getExamQuestionById(id: Long): ExamQuestion
+	saveExamQuestion(examQuestion: ExamQuestion): void
+	deleteExamQuestion(id: Long): void
+	readExamQuestionsFromFile(): void
+	getQuestionsByChapter(chapter: int): List<ExamQuestion>
+	generateQuestionsForChapter(chapter: int): List<ExamQuestion>
+	getAllChapters(): List<Integer>
+	readBlanksFromFile(): List<ExamQuestion>
+	generateFillInTheBlanksQuestions(numBlanks: int): List<ExamQuestion>
+	readTrueFalseFromFile(): List<ExamQuestion>
+	readAIQuestionsFromFile(file: MultipartFile): List<ExamQuestion>
+	findQuestionsContainingText(searchText: String): List<ExamQuestion>
+	getRandomTrueFalseQuestions(numTrueFalse: int): List<ExamQuestion>
+	getRandomFillInTheBlanksQuestions(numBlanks: int): List<ExamQuestion>
+}
+@enduml

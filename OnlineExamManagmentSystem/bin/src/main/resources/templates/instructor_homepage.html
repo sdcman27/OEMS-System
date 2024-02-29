@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: relative;
+        height: 100vh;
+        color: #333;
+    }
+
+    .home-background {
+        background-image: url('https://pbs.twimg.com/media/EWO_5adXgAUgXck.jpg:large');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.9;
+    }
+    
+</style>
+
+</head>
+
+<body class="home-background">
+
+<!-- This div sets up a class called navbar that holds all the buttons. -->
+    <div class="navbar">
+     <!-- Home button -->
+        <div class="dropdown-nav">
+            <a th:href="@{/instructor/instructor_homepage}" class="dropbutton">
+            <i class="fas fa-home"></i> 
+        </a>
+        </div>
+        <!-- Management button -->
+        <div class="dropdown-nav">
+            <button class="dropbutton">Class Management</button>
+            <div class="dropdown-info">
+                <a href="/instructor/iv-student-list">View All Students</a><br>
+                <a href="/instructor/iv-create-student">Add Students</a><br>
+                <a href="/instructor/associateIV">Assign Students</a><br>
+                
+               	<a href="/instructor/iv-course-list">Classes</a><br>
+   				<a href="/instructor/iv-class-import">Load a Class</a>
+            </div>
+        </div>
+        <!-- Exam button -->
+        <div class="dropdown-nav">
+            <button class="dropbutton">Exam Management</button>
+            <div class="dropdown-info">
+ 				<a href="/instructor/exam-landing-page">Regular Exam Generation</a><br>            
+                <a href="/bot/choose-topic">A.I. Exam Generation</a><br>
+ 				<a href="/instructor/exam-questions">View/Edit All Questions</a><br>
+                <a href="/instructor/all-exams">View All Exams</a>               
+   
+            </div>
+        </div>
+        <!-- Grading button -->
+        <div class="dropdown-nav">
+            <button class="dropbutton">Grades</button>
+            <div class="dropdown-info">
+                <!-- Example links for instructor's classes -->
+               <a href="/exam/submissions">View Exam Submissions</a>
+            </div>
+        </div>
+        <div class="profile-nav">
+            <!-- Account options -->
+            <button class="dropbutton">Account</button>
+            <div class="dropdown-info">
+				<a href="/instructor/iv-account-management">Edit Account</a><br>
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+
+</body>
+
+</html>

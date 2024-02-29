@@ -1,0 +1,24 @@
+@startuml
+skinparam classAttributeIconSize 0
+class ExamSubmissionEntity {
+    private Long id
+    private User user
+    private Exam exam
+    private LocalDateTime submissionTime
+    private int score
+    public LocalDateTime getSubmissionTime()
+    public void setSubmissionTime(LocalDateTime)
+    public Long getId()
+    public void setId(Long)
+    public User getUser()
+    public void setUser(User)
+    public Exam getExam()
+    public void setExam(Exam)
+    public List<String> getUserAnswers()
+    public void setUserAnswers(List<String>)
+    public int getScore()
+    public void setScore(int)
+    public void setUserId(Long)
+    public void setExamId(Long)
+}
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+skinparam classAttributeIconSize 0
+class ExamQuestionDisplay {
+    private Long id
+    private String questionText
+    private String userAnswer
+    private String correctAnswerText
+    public String getCorrectAnswerText()
+    public void setCorrectAnswerText(String)
+}
+@enduml

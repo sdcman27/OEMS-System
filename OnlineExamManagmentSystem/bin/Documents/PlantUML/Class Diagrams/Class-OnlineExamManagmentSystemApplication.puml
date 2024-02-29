@@ -1,0 +1,16 @@
+@startuml
+class OnlineExamManagmentSystemApplication [[java:edu.sru.thangiah.OnlineExamManagmentSystemApplication]] {
+	-passwordEncoder: PasswordEncoder
+	-roleRepository: RoleRepository
+	-userRepository: UserRepository
+	-administratorRepository: AdministratorRepository
+	-studentRepository: StudentRepository
+	-instructorRepository: InstructorRepository
+	-scheduleManagerRepository: ScheduleManagerRepository
+	+{static} main(args: String[]): void
+	+setupRoles(): CommandLineRunner
+	+setupDefaultUser(): CommandLineRunner
+	-createRoleIfNotFound(roleName: String): void
+	-createUserIfNotFound(username: String, password: String, roleName: String, email: String, firstName: String, lastName: String): void
+}
+@enduml

@@ -1,0 +1,6 @@
+@startuml
+class StudentService [[java:edu.sru.thangiah.service.StudentService]] {
+	-studentRepository: StudentRepository
+	+saveAll(students: Set<Student>): void
+}
+@enduml

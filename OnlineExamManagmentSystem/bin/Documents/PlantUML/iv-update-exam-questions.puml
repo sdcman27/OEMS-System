@@ -1,0 +1,30 @@
+@startuml
+
+actor User
+participant "Web Page" as WebPage
+participant "Controller" as Controller
+participant "ExamQuestion" as ExamQuestion
+participant "ExamQuestionService" as ExamQuestionService
+
+User -> WebPage: Modify exam question details
+User -> WebPage: Submits updated details
+
+WebPage -> Controller: updateExamQuestion(examQuestion)
+
+Controller -> ExamQuestionService: getExamQuestionById(examQuestion.getId())
+activate ExamQuestionService
+ExamQuestionService --> Controller: Return existingQuestion or null
+deactivate ExamQuestionService
+
+alt Existing question found
+    Controller -> ExamQuestion: Set updated details
+    Controller -> ExamQuestionService: saveExamQuestion(existingQuestion)
+    activate ExamQuestionService
+    ExamQuestionService --> Controller: Confirm question update
+    deactivate ExamQuestionService
+    Controller --> WebPage: Redirect to /exam/selectChapter
+else Question not found
+    Controller -> WebPage: Display error message\nor take appropriate action
+end
+
+@enduml

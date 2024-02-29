@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Generate Exam</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto !important;
+            position: relative;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            text-align: center;
+            background-color: rgba(0, 112, 85, 0.7);
+            color: #fff;
+            padding: 15px;
+            margin: 0;
+            border-bottom: 2px solid #004c3b;
+        }
+        .fixed-generate-button {
+            position: fixed; 
+            right: 10px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            z-index: 1000; 
+        }
+        input[type="submit"], input[type="button"] {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #007055;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover, input[type="button"]:hover {
+            background-color: #004c3b;
+        }
+        .selected-questions {
+            background-color: #eee;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .selected-question {
+            margin: 5px 0;
+        }
+		.edit-remove-btn {
+            padding: 5px 10px; /* Smaller padding */
+            margin: 3px; /* Smaller margin */
+            background-color: #007055;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            font-family: 'Arial', sans-serif; /* Match font family */
+            font-size: 0.8em; /* Smaller font size */
+        }
+        .edit-remove-btn:hover {
+            background-color: #004c3b;
+        }
+    </style>
+</head>
+<body>
+    <div id="nav-placeholder"></div>
+    
+
+    <h2>Generate Exam From Selected Questions</h2>
+
+
+    <div th:if="${generatedExamId != null}">
+        <p>Generated Exam Link: 
+            <a th:href="@{'http://localhost:8080/exam/take/' + ${generatedExamId}}" 
+               th:text="@{'http://localhost:8080/exam/take/' + ${generatedExamId}}" 
+               target="_blank">Exam Link</a>
+        </p>
+        <p>Please copy the above link to share.</p>
+        <a href="/instructor/exam-questions">Back to Exam Questions Selection</a>
+    </div>
+
+    <form id="examForm" action="#" th:action="@{/exam/generate}" method="post">
+        <input type="hidden" name="examId" th:value="${currentExamId}" />
+        <h3>Select Questions:</h3>
+        <div th:each="question, iterStat : ${questions}">
+            <input type="checkbox" th:id="${'question' + iterStat.index}" th:value="${question.id}" name="selectedExamQuestionIds" />
+            <label th:for="${'question' + iterStat.index}" th:text="${question.questionText}">Question Text</label><br>
+            <a th:href="@{'/instructor/exam-questions/edit/' + ${question.id}}">Edit</a><br>
+            <ul>
+                <li th:text="${question.optionA}">Option A</li>
+                <li th:text="${question.optionB}">Option B</li>
+                <li th:text="${question.optionC}">Option C</li>
+                <li th:text="${question.optionD}">Option D</li>
+            </ul>
+        </div>
+
+        <div class="fixed-generate-button">
+
+       <input type="button" value="Select Question(s)" onclick="setFormAction('/exam/addMoreChapters')">
+        </div>
+    </form>
+
+    <script>
+    function setFormAction(action) {
+        var form = document.getElementById('examForm');
+        form.action = action;
+        form.submit();
+    }
+
+    $(function(){
+        $("#nav-placeholder").load("/instructor/instructor_homepage", function() {
+        });
+    });
+    </script>
+</body>
+</html>

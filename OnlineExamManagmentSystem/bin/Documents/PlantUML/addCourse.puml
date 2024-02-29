@@ -1,0 +1,30 @@
+@startuml
+
+actor User
+participant "Web Page" as WebPage
+participant "Controller" as Controller
+participant "Course" as Course
+participant "CourseRepository" as CourseRepository
+participant "Model" as Model
+participant "Success Page" as SuccessPage
+participant "Error Page" as ErrorPage
+
+User -> WebPage: Enters course details
+User -> WebPage: Submits course details
+
+WebPage -> Controller: addCourse(course)
+
+Controller -> Course: Create Course object
+Controller -> CourseRepository: Save course to database
+alt Course saved successfully
+    CourseRepository -> CourseRepository: Save course
+    CourseRepository --> Controller: Return savedCourse
+    Controller -> Model: Add attribute\nfor success message
+    Model -> SuccessPage: Redirect to\ncourse-success-page
+else Error while saving course
+    CourseRepository -> Controller: Return null
+    Controller -> Model: Add attribute\nfor error message
+    Model -> ErrorPage: Stay on the same page\n(add-course) and display the error
+end
+
+@enduml
